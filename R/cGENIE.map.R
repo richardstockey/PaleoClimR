@@ -26,6 +26,8 @@ cGENIE.map <- function(var, experiment,
   library(sp)
   library(ggspatial)
   library(reshape2)
+  library(ggplot2)
+
 
   if(model == "biogem"){
     prefix <- "/biogem/fields_biogem_"
@@ -60,24 +62,24 @@ cGENIE.map <- function(var, experiment,
   }
 
   if(dims == 3){
-  # generate dataframe of 2d genie slice from 3d genie array
-  df <- as.data.frame(cbind(
-    rep(lon, times = length(lat), each = 1),
-    rep(lon.edges[1:(length(lon.edges)-1)], times = length(lat), each = 1),
-    rep(lon.edges[2:(length(lon.edges))], times = length(lat), each = 1),
-    rep(lat, times = 1, each = length(lon)),
-    rep(lat.edges[1:(length(lat.edges)-1)], times = 1, each = length(lon)),
-    rep(lat.edges[2:(length(lat.edges))], times = 1, each = length(lon)),
-    as.data.frame(melt(var.arr[,, depth.level, time.step]))$value))
+    # generate dataframe of 2d genie slice from 3d genie array
+    df <- as.data.frame(cbind(
+      rep(lon, times = length(lat), each = 1),
+      rep(lon.edges[1:(length(lon.edges)-1)], times = length(lat), each = 1),
+      rep(lon.edges[2:(length(lon.edges))], times = length(lat), each = 1),
+      rep(lat, times = 1, each = length(lon)),
+      rep(lat.edges[1:(length(lat.edges)-1)], times = 1, each = length(lon)),
+      rep(lat.edges[2:(length(lat.edges))], times = 1, each = length(lon)),
+      as.data.frame(melt(var.arr[,, depth.level, time.step]))$value))
 
-  names(df) <- c("lon.mid",
-                      "lon.min",
-                      "lon.max",
-                      "lat.mid",
-                      "lat.min",
-                      "lat.max",
-                      "var"
-  )
+    names(df) <- c("lon.mid",
+                   "lon.min",
+                   "lon.max",
+                   "lat.mid",
+                   "lat.min",
+                   "lat.max",
+                   "var"
+    )
   }
   if(dims == 2){
     # generate dataframe of 2d genie slice from 3d genie array
@@ -121,8 +123,8 @@ cGENIE.map <- function(var, experiment,
 
   SpDf <- SpatialPolygonsDataFrame(SpP, attr)
 
-  proj4string(SpDf) = CRS("+proj=longlat +ellps=sphere")
   SpDfSf <- st_as_sf(SpDf)
+  st_crs(SpDfSf) = "+proj=longlat +ellps=sphere"
 
   ## Outline of map using a framing line
   l1 <- cbind(c(-180, 180, rep(180, 1801), 180, -180, rep(-180, 1801), -180), c(-90, -90, seq(-90,90,0.1),  90, 90, seq(90,-90,-0.1), -90))
@@ -130,12 +132,11 @@ cGENIE.map <- function(var, experiment,
   Ls1 <- Polygons(list(L1), ID="a")
   SLs1 <-  SpatialPolygons(list(Ls1))
 
-  proj4string(SLs1) = CRS("+proj=longlat +ellps=sphere")
-
   df1 <- data.frame(rep(2,1), row.names = rep("a",  1))
   names(df1)[1] <- "var"
   SLs1df = SpatialPolygonsDataFrame(SLs1, data = df1)
   SLs1dfSf <- st_as_sf(SLs1df)
+  st_crs(SLs1dfSf) = "+proj=longlat +ellps=sphere"
 
   map <- ggplot() +
     geom_sf(data = SpDfSf, aes(geometry = geometry, fill=var*unit.factor), color = NA, linewidth=10, linetype=0) +
@@ -160,5 +161,5 @@ cGENIE.map <- function(var, experiment,
     theme(legend.position="bottom")+
     labs(fill = scale.label)
 
-  return(map)
+  map
 }
