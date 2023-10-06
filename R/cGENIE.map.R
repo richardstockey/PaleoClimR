@@ -164,3 +164,5 @@ cGENIE.map <- function(var, experiment,
 
   map
 }
+
+
