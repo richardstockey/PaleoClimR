@@ -139,9 +139,10 @@ cGENIE.map <- function(var, experiment,
   st_crs(SLs1dfSf) = '+proj=longlat +ellps=sphere'
 
   map <- ggplot() +
-    geom_sf(data = SpDfSf, aes(geometry = geometry, fill=var*unit.factor), color = NA, linewidth=10, linetype=0) +
-    geom_sf(data = SLs1dfSf, aes(geometry = geometry), fill=NA, color = "grey5", linewidth=0.9) +
-    coord_sf(crs = '+proj=eqearth +lon_0=0 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs +type=crs')+
+    geom_sf(data = SpDfSf %>% st_transform(4326), aes(geometry = geometry, fill=var*unit.factor), color = NA, linewidth=10, linetype=0) + # WGS 84 / Equal Earth Greenwich
+    geom_sf(data = SLs1dfSf %>% st_transform(4326), aes(geometry = geometry), fill=NA, color = "grey5", linewidth=0.9) +
+    #coord_sf(crs = '+proj=eqearth +lon_0=0 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs +type=crs')+
+    #coord_sf(crs = "ESRI:102003")+
     scale_fill_binned(type = scale,
                       guide = guide_colorbar(title.position = "top",
                                              barwidth = 12,
