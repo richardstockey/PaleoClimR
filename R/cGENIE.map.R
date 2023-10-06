@@ -124,7 +124,7 @@ cGENIE.map <- function(var, experiment,
   SpDf <- SpatialPolygonsDataFrame(SpP, attr)
 
   SpDfSf <- st_as_sf(SpDf)
-  st_crs(SpDfSf) = "+proj=longlat +ellps=sphere"
+  st_crs(SpDfSf) = '+proj=longlat +ellps=sphere'
 
   ## Outline of map using a framing line
   l1 <- cbind(c(-180, 180, rep(180, 1801), 180, -180, rep(-180, 1801), -180), c(-90, -90, seq(-90,90,0.1),  90, 90, seq(90,-90,-0.1), -90))
@@ -136,12 +136,12 @@ cGENIE.map <- function(var, experiment,
   names(df1)[1] <- "var"
   SLs1df = SpatialPolygonsDataFrame(SLs1, data = df1)
   SLs1dfSf <- st_as_sf(SLs1df)
-  st_crs(SLs1dfSf) = "+proj=longlat +ellps=sphere"
+  st_crs(SLs1dfSf) = '+proj=longlat +ellps=sphere'
 
   map <- ggplot() +
     geom_sf(data = SpDfSf, aes(geometry = geometry, fill=var*unit.factor), color = NA, linewidth=10, linetype=0) +
     geom_sf(data = SLs1dfSf, aes(geometry = geometry), fill=NA, color = "grey5", linewidth=0.9) +
-    coord_sf(crs = "+proj=eqearth +lon_0=0 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs +type=crs")+
+    coord_sf(crs = '+proj=eqearth +lon_0=0 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs +type=crs')+
     scale_fill_binned(type = scale,
                       guide = guide_colorbar(title.position = "top",
                                              barwidth = 12,
