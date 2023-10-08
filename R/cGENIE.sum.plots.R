@@ -32,7 +32,7 @@ temp.map.surf <- cGENIE.map(var = "ocn_temp",
                            intervals = 5,
                            continents.outlined = FALSE,
                            scale.label = expression("Seawater Temperature (°C)"),
-                           scale = "inferno")
+                           scale = "magma")
 
 temp.map.benth <- cGENIE.map(var = "ocn_ben_temp",
                              experiment = experiment,
@@ -43,7 +43,7 @@ temp.map.benth <- cGENIE.map(var = "ocn_ben_temp",
                              intervals = 5,
                              continents.outlined = FALSE,
                              scale.label = expression("Seawater Temperature (°C)"),
-                             scale = "inferno")
+                             scale = "magma")
 
 O2.time <- cGENIE.res.plot(var = "ocn_O2",
                            experiment = experiment
