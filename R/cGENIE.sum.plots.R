@@ -10,7 +10,7 @@
 # - global marine O2 through time
 # - second level marine O2 map
 # - bottom water  O2 map
-# This produces a 3x2 landscape panelled plot
+# This produces a 3x2 landscape paneled plot
 ###################################################
 # full comments to follow...
 
@@ -31,7 +31,7 @@ temp.map.surf <- cGENIE.map(var = "ocn_temp",
                            max.value = 35,
                            intervals = 5,
                            continents.outlined = FALSE,
-                           scale.label = expression("Seawater Temperature (°)"))
+                           scale.label = expression("Seawater Temperature (°C)"))
 
 temp.map.benth <- cGENIE.map(var = "ocn_ben_temp",
                              experiment = experiment,
@@ -41,7 +41,7 @@ temp.map.benth <- cGENIE.map(var = "ocn_ben_temp",
                              max.value = 40,
                              intervals = 5,
                              continents.outlined = FALSE,
-                             scale.label = expression("Seawater Temperature (°)"))
+                             scale.label = expression("Seawater Temperature (°C)"))
 
 O2.time <- cGENIE.res.plot(var = "ocn_O2",
                            experiment = experiment

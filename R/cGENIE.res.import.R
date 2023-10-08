@@ -15,7 +15,7 @@ if(model == "biogem"){
 suffix <- ".res"
 
 # import results table
-res_file <- read_table(paste0(experiment, "/", model, "/", prefix, var, suffix))
+res_file <- read_table(paste0(experiment, "/", model, "/", prefix, var, suffix), show_col_types = FALSE)
 # remove NAs (this import naturally creates a lot of columns just full of NAs)
 res_file <- res_file %>% select_if(~ !any(is.na(.)))
 # identify the column names from the res file. As these have a different delimiter we have to do this separately
