@@ -66,7 +66,7 @@ cGENIE.omz.volume <- function(experiment, thresh = 4.8e-6, time.step = "default"
 
       }}}
 
-  print(paste("omz vol is", omz.vol, "non omz vol is", non.omz.vol, "total (rel) ocean vol is", total.vol))
+  #print(paste("omz vol is", omz.vol, "non omz vol is", non.omz.vol, "total (rel) ocean vol is", total.vol))
   prop.omz.vol <- omz.vol/total.vol
 
   return(prop.omz.vol)
