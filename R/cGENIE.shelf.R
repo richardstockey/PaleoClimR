@@ -17,7 +17,7 @@ cGENIE.shelf <- function(nc.sum, shelf.depth = 3, array.only = TRUE, surf = FALS
   # -------------------------------------------------------------------------------------------------------
 
     var <- nc.sum$var
-    if(time.step = "default"){
+    if(time.step == "default"){
     time <- length(nc.sum$time)
     }
     shelf.array <- array(dim=c(length(nc.sum$lon),length(nc.sum$lat),length(nc.sum$depth)))
