@@ -5,7 +5,7 @@
 ###################################################
 # full comments to follow...
 
-cGENIE.shelf <- function(nc.sum, shelf.depth = 3, array.only = TRUE){
+cGENIE.shelf <- function(nc.sum, shelf.depth = 3, array.only = TRUE, surf = FALSE){
   # -------------------------------------------------------------------------------------------------------
   # default shelf is the same as that used in Stockey et al. 2021 PNAS and Pohl et al. 2023 Sci Adv
   # i.e. top 3 layers of cells directly adjacent to land
