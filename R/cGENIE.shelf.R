@@ -20,10 +20,16 @@ cGENIE.shelf <- function(nc.sum, shelf.depth = 3, array.only = TRUE){
     time <- length(nc.sum$time)
     shelf.array <- array(dim=c(length(nc.sum$lon),length(nc.sum$lat),length(nc.sum$depth)))
 
+    if(surf == TRUE){
+      depth.vec <- 1:shelf.depth
+    }
+    if(surf == FALSE){
+      depth.vec <- 2:shelf.depth
+    }
 
     for(lon in 1:length(nc.sum$lon)){
       for(lat in 1:length(nc.sum$lat)){
-        for(depth in 1:shelf.depth){ # note 3 not whole 16
+        for(depth in depth.vec){
 
           if(is.na(var[lon, lat, depth, time]) == TRUE){ #if we're on land
             shelf.array[lon, lat, depth] <- NA
