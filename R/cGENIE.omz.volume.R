@@ -51,6 +51,7 @@ cGENIE.omz.volume <- function(experiment, thresh = 4.8e-6, time.step = "default"
           #print("we're on land")
         }else{
           #print(var.arr[lon, lat, depth, time])
+
           if(var.arr[lon, lat, depth, time] <= thresh){
             omz.vol <- omz.vol + (1 * depth.thicknesses[depth])
 
