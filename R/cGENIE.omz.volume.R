@@ -49,7 +49,8 @@ cGENIE.omz.volume <- function(experiment, thresh = 4.8e-6, time.step = "default"
           if(var.arr[lon, lat, depth, time] <= thresh){
             omz.vol <- omz.vol + (1 * depth.thicknesses[depth])
 
-          }else{
+          }
+          f(var.arr[lon, lat, depth, time] > thresh){
             non.omz.vol <- non.omz.vol + (1 * depth.thicknesses[depth])
 
           }
