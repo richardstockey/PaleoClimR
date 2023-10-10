@@ -33,24 +33,29 @@ cGENIE.omz.volume <- function(experiment, thresh = 4.8e-6, time.step = "default"
 
   depth.thicknesses <- depth.edges[2:(length(depth.edges))] - depth.edges[1:(length(depth.edges)-1)]
 
+  lon.length <- length(lon)
+  lat.length <- length(lat)
+  depth.length <- length(depth)
+
   omz.vol <- 0
   non.omz.vol <- 0
   total.vol <- 0
 
-  for(lon in 1:length(lon)){
-    for(lat in 1:length(lat)){
-      for(depth in length(depth)){
+  for(lon in 1:lon.length){
+    for(lat in 1:lat.length){
+      for(depth in 1:depth.length){
 
 
         if(is.na(var.arr[lon, lat, depth, time]) == TRUE){ #if we're on land
           # do nothing!
           #print("we're on land")
         }else{
+          #print(var.arr[lon, lat, depth, time])
           if(var.arr[lon, lat, depth, time] <= thresh){
             omz.vol <- omz.vol + (1 * depth.thicknesses[depth])
 
           }
-          f(var.arr[lon, lat, depth, time] > thresh){
+          if(var.arr[lon, lat, depth, time] > thresh){
             non.omz.vol <- non.omz.vol + (1 * depth.thicknesses[depth])
 
           }
