@@ -18,7 +18,8 @@ HADCM3.map <- function(var, file, experiment,
                        scale = "viridis",
                        projection = 'ESRI:54012',
                        calcs = TRUE,
-                       plot = TRUE){
+                       plot = TRUE,
+                       polygons){
 
   # other projection options include:
   # - 6933 - Lambert Cylindrical Equal Area (need only numbers no text and no quotes) [this is equal area rectangle]
@@ -147,8 +148,15 @@ HADCM3.map <- function(var, file, experiment,
 
   SpDfSf <- st_as_sf(SpDf)
   st_crs(SpDfSf) = '+proj=longlat +ellps=sphere'
+  if(plot == FALSE){
+    return(SpDfSf)
+  }
   }
   if(plot == TRUE){
+    if(calcs == FALSE){
+      SpDfSf <- polygons
+    }
+
   ## Outline of map using a framing line
   l1 <- cbind(c(-180, 180, rep(180, 1801), 180, -180, rep(-180, 1801), -180), c(-90, -90, seq(-90,90,0.1),  90, 90, seq(90,-90,-0.1), -90))
   L1 <- Polygon(l1)
