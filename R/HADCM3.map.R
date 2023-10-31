@@ -1,11 +1,11 @@
 ###################################################
-# scotese.map.R
-# Rich Stockey 20231030
-# designed to make maps from imported .nc files (from https://zenodo.org/records/5460860)
+# HADCM3.map.R
+# Rich Stockey 20231031
+# designed to make maps from imported .nc files (from e.g. from Valdes et al. 2021)
 ###################################################
 # full comments to follow...
 
-scotese.map <- function(var, file, experiment,
+HADCM3.map <- function(var, file, experiment,
                         depth.level = 1,
                         dims = 3,
                        min.value,
