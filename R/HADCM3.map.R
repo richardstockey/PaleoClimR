@@ -5,7 +5,7 @@
 ###################################################
 # full comments to follow...
 
-scotese.map <- function(var, experiment,
+scotese.map <- function(var, file, experiment,
                         depth.level = 1,
                         dims = 3,
                        min.value,
@@ -13,7 +13,8 @@ scotese.map <- function(var, experiment,
                        intervals,
                        continents.outlined,
                        scale.label,
-                       model = "biogem",
+                       unit.factor = 1,
+                       time.present = FALSE,
                        scale = "viridis",
                        projection = 'ESRI:54012'){
 
@@ -30,22 +31,44 @@ scotese.map <- function(var, experiment,
   library(reshape2)
   library(ggplot2)
 
-  nc <- open.nc(paste0(map))
+  #experiment <- "~/Valdes2021_HADCM3L/teXPl_444/teXPl_444"
+  #file <- "o.pgclann"
+  #var <- "insitu_T_ym_dpth"
+  # can set things up so that "if var == xxx, then file <- yyy"
 
-  nc <- open.nc(paste0(experiment, prefix, dims, "d", ".nc"))
+  nc <- open.nc(paste0(experiment, file, ".nc"))
 
   # Extract general variables
-  lat <- var.get.nc(nc, "lat") # units: degrees north
-  lat.edges <- var.get.nc(nc, "lat_edges")
-  lon <- var.get.nc(nc, "lon") # units: degrees east
-  lon.edges <- var.get.nc(nc, "lon_edges")
-  depth <- var.get.nc(nc, "zt") # units: metres
-  depth.edges <- var.get.nc(nc, "zt_edges") # units: metres
-  time <- var.get.nc(nc, "time") # units: year mid-point
+  # NOTE - these may not precisely represent the HADCM3 grid
+  # fudged slightly for ease of plotting from the xxx and xxx_1 variables.
+  # worth checking with HADCM3 users to be doubly sure
+  # this should be kept separate from variable matching scripts with point data such as PBDB and therefore be functionally fine
+  lat <- var.get.nc(nc, "latitude") # units: degrees north
+  lat.edges <- c(lat - mean(diff(lat)/2), lat[length(lat)] + mean(diff(lat)/2)) # should work for any evenly spaced grid (although note we have values outside reality! removed later...)
+  lon <- var.get.nc(nc, "longitude") # units: degrees east
+  lon.edges <- c(lon - mean(diff(lon)/2), lon[length(lon)] + mean(diff(lon)/2)) # should work for any evenly spaced grid (although note we have values outside reality! removed later...)
+  depth <- var.get.nc(nc, "depth_1") # units: metres
+  depth.edges <- c(0, var.get.nc(nc, "depth"), (depth[length(depth)]+307.5)) # units: metres # NOTE - the bounding of the bottom box is fudged but seems to be reasonably fudged. All deep ocean cells ~307.5*2m deep
+  if(time.present == TRUE){
+  time <- var.get.nc(nc, "t") # units: year mid-point - NOTE, if want to use this then would need to update time name.
   # note that not all of these general variables will be available for fields_biogem_2d (address later)
-
+}
   # Extract named variable
   var.arr <- var.get.nc(nc, var)
+
+  # NOTE - this is what i have done with cGENIE models.
+  # Is this the best way to deal with here,
+  # or just another way of translating to a nice grid?
+  # maybe for plotting either is kind of fine.
+  # but definitely would need to be fixed for point data matching.
+  # deal with weird lon coordinates if present
+  # does lon live between -180 and 180? and are there a normal 36 increments? (is the second one important?)
+  if(mean(between(lon, -180, 180)) < 1){
+    add_on <- -(lon.edges[1] + 180)
+    lon.edges <- lon.edges + add_on
+    lon <- lon + add_on
+  }
+
 
   if(dims == 3){
     # generate dataframe of 2d genie slice from 3d genie array
@@ -56,7 +79,8 @@ scotese.map <- function(var, experiment,
       rep(lat, times = 1, each = length(lon)),
       rep(lat.edges[1:(length(lat.edges)-1)], times = 1, each = length(lon)),
       rep(lat.edges[2:(length(lat.edges))], times = 1, each = length(lon)),
-      as.data.frame(melt(var.arr[,, depth.level, time.step]))$value))
+      #as.data.frame(melt(var.arr[,, depth.level, time.step]))$value))
+      as.data.frame(melt(var.arr[,, depth.level]))$value))
 
     names(df) <- c("lon.mid",
                    "lon.min",
@@ -76,6 +100,7 @@ scotese.map <- function(var, experiment,
       rep(lat, times = 1, each = length(lon)),
       rep(lat.edges[1:(length(lat.edges)-1)], times = 1, each = length(lon)),
       rep(lat.edges[2:(length(lat.edges))], times = 1, each = length(lon)),
+      #as.data.frame(melt(var.arr[,, time.step]))$value))
       as.data.frame(melt(var.arr[,, time.step]))$value))
 
     names(df) <- c("lon.mid",
@@ -89,10 +114,10 @@ scotese.map <- function(var, experiment,
   }
 
     df <- df %>%
-      filter(lon.max < 180,
-             lon.min > -180,
-             lat.max < 90,
-             lat.min > -90
+      filter(lon.max <= 180,
+             lon.min >= -180,
+             lat.max <= 90,
+             lat.min >= -90
              )
 
 

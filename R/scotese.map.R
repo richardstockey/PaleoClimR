@@ -6,12 +6,11 @@
 # full comments to follow...
 
 scotese.map <- function(map, # netcdf file
-                       min.value,
-                       max.value,
-                       intervals,
+                       min.value = -6000,
+                       max.value = 6000,
+                       intervals = 2000,
                        continents.outlined,
                        scale.label,
-                       model = "biogem",
                        scale = "viridis",
                        projection = 'ESRI:54012'){
 
