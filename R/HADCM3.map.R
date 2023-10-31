@@ -16,7 +16,9 @@ HADCM3.map <- function(var, file, experiment,
                        unit.factor = 1,
                        time.present = FALSE,
                        scale = "viridis",
-                       projection = 'ESRI:54012'){
+                       projection = 'ESRI:54012',
+                       calcs = TRUE,
+                       plot = TRUE){
 
   # other projection options include:
   # - 6933 - Lambert Cylindrical Equal Area (need only numbers no text and no quotes) [this is equal area rectangle]
@@ -35,7 +37,7 @@ HADCM3.map <- function(var, file, experiment,
   #file <- "o.pgclann"
   #var <- "insitu_T_ym_dpth"
   # can set things up so that "if var == xxx, then file <- yyy"
-
+  if(calcs == TRUE){
   nc <- open.nc(paste0(experiment, file, ".nc"))
 
   # Extract general variables
@@ -145,7 +147,8 @@ HADCM3.map <- function(var, file, experiment,
 
   SpDfSf <- st_as_sf(SpDf)
   st_crs(SpDfSf) = '+proj=longlat +ellps=sphere'
-
+  }
+  if(plot == TRUE){
   ## Outline of map using a framing line
   l1 <- cbind(c(-180, 180, rep(180, 1801), 180, -180, rep(-180, 1801), -180), c(-90, -90, seq(-90,90,0.1),  90, 90, seq(90,-90,-0.1), -90))
   L1 <- Polygon(l1)
@@ -183,6 +186,7 @@ HADCM3.map <- function(var, file, experiment,
     labs(fill = scale.label)
 
   map
+  }
 }
 
 
