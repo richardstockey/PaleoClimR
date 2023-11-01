@@ -5,9 +5,10 @@
 ###################################################
 # full comments to follow...
 
-HADCM3.map <- function(var, file, experiment,
+HADCM3.map <- function(experiment,
                         depth.level = 1,
                         dims = 3,
+                       land.opt = "default",
                        min.value,
                        max.value,
                        intervals,
@@ -35,8 +36,8 @@ HADCM3.map <- function(var, file, experiment,
   library(ggplot2)
 
   #experiment <- "~/Valdes2021_HADCM3L/teXPl_444/teXPl_444"
-  #file <- "o.pgclann"
-  #var <- "insitu_T_ym_dpth"
+  file <- "o.pgclann"
+  var <- "insitu_T_ym_dpth"
   # can set things up so that "if var == xxx, then file <- yyy"
   if(calcs == TRUE){
   nc <- open.nc(paste0(experiment, file, ".nc"))
@@ -50,16 +51,25 @@ HADCM3.map <- function(var, file, experiment,
   lat.edges <- c(lat - mean(diff(lat)/2), lat[length(lat)] + mean(diff(lat)/2)) # should work for any evenly spaced grid (although note we have values outside reality! removed later...)
   lon <- var.get.nc(nc, "longitude") # units: degrees east
   lon.edges <- c(lon - mean(diff(lon)/2), lon[length(lon)] + mean(diff(lon)/2)) # should work for any evenly spaced grid (although note we have values outside reality! removed later...)
-  if(dims == 3){
   depth <- var.get.nc(nc, "depth_1") # units: metres
   depth.edges <- c(0, var.get.nc(nc, "depth"), (depth[length(depth)]+307.5)) # units: metres # NOTE - the bounding of the bottom box is fudged but seems to be reasonably fudged. All deep ocean cells ~307.5*2m deep
-  }
   if(time.present == TRUE){
   time <- var.get.nc(nc, "t") # units: year mid-point - NOTE, if want to use this then would need to update time name.
   # note that not all of these general variables will be available for fields_biogem_2d (address later)
-}
+  }
+
   # Extract named variable
   var.arr <- var.get.nc(nc, var)
+
+  # now we're going to load a second netcdf with orography values
+
+  file_2 <- ".qrparm.orog"
+  var_2 <- "ht"
+
+  nc_2 <- open.nc(paste0(experiment, file_2, ".nc"))
+
+  # Extract second named variable
+  var.arr_2 <- var.get.nc(nc_2, var_2)
 
   # NOTE - this is what i have done with cGENIE models.
   # Is this the best way to deal with here,
@@ -85,7 +95,8 @@ HADCM3.map <- function(var, file, experiment,
       rep(lat.edges[1:(length(lat.edges)-1)], times = 1, each = length(lon)),
       rep(lat.edges[2:(length(lat.edges))], times = 1, each = length(lon)),
       #as.data.frame(melt(var.arr[,, depth.level, time.step]))$value))
-      as.data.frame(melt(var.arr[,, depth.level]))$value))
+      as.data.frame(melt(var.arr[,, depth.level]))$value,
+      as.data.frame(melt(var.arr_2))$value))
 
     names(df) <- c("lon.mid",
                    "lon.min",
@@ -93,36 +104,31 @@ HADCM3.map <- function(var, file, experiment,
                    "lat.mid",
                    "lat.min",
                    "lat.max",
-                   "var"
+                   "var",
+                   "var_2"
     )
   }
-  if(dims == 2){
-    # generate dataframe of 2d genie slice from 3d genie array
-    df <- as.data.frame(cbind(
-      rep(lon, times = length(lat), each = 1),
-      rep(lon.edges[1:(length(lon.edges)-1)], times = length(lat), each = 1),
-      rep(lon.edges[2:(length(lon.edges))], times = length(lat), each = 1),
-      rep(lat, times = 1, each = length(lon)),
-      rep(lat.edges[1:(length(lat.edges)-1)], times = 1, each = length(lon)),
-      rep(lat.edges[2:(length(lat.edges))], times = 1, each = length(lon)),
-      #as.data.frame(melt(var.arr[,, time.step]))$value))
-      as.data.frame(melt(var.arr))$value))
-
-    names(df) <- c("lon.mid",
-                   "lon.min",
-                   "lon.max",
-                   "lat.mid",
-                   "lat.min",
-                   "lat.max",
-                   "var"
-    )
-
-    if(file == ".qrparm.orog" & var == "ht"){
-    df$var <-as.factor(df$var)
-    df <- filter(df, var != "0")
-    df$var <-as.numeric(paste(df$var))
-    }
-  }
+  # if(dims == 2){
+  #   # generate dataframe of 2d genie slice from 3d genie array
+  #   df <- as.data.frame(cbind(
+  #     rep(lon, times = length(lat), each = 1),
+  #     rep(lon.edges[1:(length(lon.edges)-1)], times = length(lat), each = 1),
+  #     rep(lon.edges[2:(length(lon.edges))], times = length(lat), each = 1),
+  #     rep(lat, times = 1, each = length(lon)),
+  #     rep(lat.edges[1:(length(lat.edges)-1)], times = 1, each = length(lon)),
+  #     rep(lat.edges[2:(length(lat.edges))], times = 1, each = length(lon)),
+  #     #as.data.frame(melt(var.arr[,, time.step]))$value))
+  #     as.data.frame(melt(var.arr[,, time.step]))$value))
+  #
+  #   names(df) <- c("lon.mid",
+  #                  "lon.min",
+  #                  "lon.max",
+  #                  "lat.mid",
+  #                  "lat.min",
+  #                  "lat.max",
+  #                  "var"
+  #   )
+  # }
 
     df <- df %>%
       filter(lon.max <= 180,
@@ -156,6 +162,14 @@ HADCM3.map <- function(var, file, experiment,
 
   SpDfSf <- st_as_sf(SpDf)
   st_crs(SpDfSf) = '+proj=longlat +ellps=sphere'
+
+  attr_2 <- data.frame(var = df$var_2, row.names = paste(poly.names.list))
+
+  SpDf_2 <- SpatialPolygonsDataFrame(SpP, attr_2)
+
+  SpDfSf_2 <- st_as_sf(SpDf_2)
+  st_crs(SpDfSf_2) = '+proj=longlat +ellps=sphere'
+
   if(plot == FALSE){
     return(SpDfSf)
   }
@@ -178,7 +192,8 @@ HADCM3.map <- function(var, file, experiment,
   st_crs(SLs1dfSf) = '+proj=longlat +ellps=sphere'
 
   map <- ggplot() +
-    geom_sf(data = SpDfSf %>% st_transform(projection), aes(geometry = geometry, fill=var*unit.factor), color = NA, linewidth=10, linetype=0) + # WGS 84 / Equal Earth Greenwich
+   geom_sf(data = SpDfSf %>% st_transform(projection), aes(geometry = geometry, fill=var), color = NA, linewidth=10, linetype=0) + # WGS 84 / Equal Earth Greenwich
+    #geom_sf(data = SpDfSf_2 %>% st_transform(projection), aes(geometry = geometry, fill=var), color = NA, linewidth=10, linetype=0) + # WGS 84 / Equal Earth Greenwich
     #geom_sf(data = SLs1dfSf %>% st_transform(projection), aes(geometry = geometry), fill=NA, color = "grey5", linewidth=0.9) +
     #coord_sf(crs = '+proj=eqearth +lon_0=0 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs +type=crs')+
     #coord_sf(crs = "ESRI:102003")+
@@ -193,7 +208,7 @@ HADCM3.map <- function(var, file, experiment,
                                              ticks = TRUE,
                                              ticks.colour = "grey6",
                                              ticks.linewidth = 2/.pt),
-                      breaks = seq(min.value, max.value, interval),
+                      breaks = seq(min.value, max.value, intervals),
                       limits=c(min.value, max.value),
                       #labels = c("0", "", "50", "", "100", "", "150", "", "200", "", "250")
     )+
