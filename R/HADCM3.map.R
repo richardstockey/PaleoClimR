@@ -193,7 +193,7 @@ HADCM3.map <- function(var, file, experiment,
                                              ticks = TRUE,
                                              ticks.colour = "grey6",
                                              ticks.linewidth = 2/.pt),
-                      breaks = seq(min.value, max.value, interval),
+                      breaks = seq(min.value, max.value, intervals),
                       limits=c(min.value, max.value),
                       #labels = c("0", "", "50", "", "100", "", "150", "", "200", "", "250")
     )+
