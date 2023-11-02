@@ -59,7 +59,7 @@ cGENIE.map <- function(var, experiment,
 
   # deal with weird lon coordinates if present
   # does lon live between -180 and 180? and are there a normal 36 increments? (is the second one important?)
-  if(mean(between(lon, -180, 180)) < 1 & length(lon) == 36){
+  if(mean(between(lon, -180, 180)) < 1){
     add_on <- -(lon.edges[1] + 180)
     lon.edges <- lon.edges + add_on
     lon <- lon + add_on
