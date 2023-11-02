@@ -1,12 +1,14 @@
 ###################################################
-# HADCM3.map.pretty.R
+# HADCM3.map.R
 # Rich Stockey 20231101
 # designed to make pretty maps from imported .nc files (from e.g. from Valdes et al. 2021)
 # aimed to include key information to visualise as much of earth system as possible at one time
+# THIS VERSION ALSO INCLUDES
+# sea ice, ...
 ###################################################
 # full comments to follow...
 
-HADCM3.map.pretty <- function(experiment,
+HADCM3.map.pretty.2 <- function(experiment,
                         depth.level = 1,
                         dims = 3,
                        land.opt = "default",
@@ -38,11 +40,9 @@ HADCM3.map.pretty <- function(experiment,
   library(ggnewscale)
 
   palette_name_ocean <- pals::parula(1000)
-  #palette_name_ocean <- viridis::magma(1000)
-  #palette_name_ocean <- viridis::plasma(1000)
-  #palette_name_land <- paletteer::paletteer_c("grDevices::Terrain 2", 30)
+  palette_name_land <- paletteer::paletteer_c("grDevices::Terrain 2", 30)
   palette_name_land <- paletteer::paletteer_c("grDevices::Light Grays", 30)
-
+  palette_name_ice <- paletteer::paletteer_c("ggthemes::Blue Light", 30)
 
 
   #experiment <- "~/Valdes2021_HADCM3L/teXPl_444/teXPl_444"
@@ -81,24 +81,29 @@ HADCM3.map.pretty <- function(experiment,
   # Extract second named variable
   var.arr_2 <- var.get.nc(nc_2, var_2)
 
-  # # NOTE - this is what i have done with cGENIE models.
-  # # Is this the best way to deal with here,
-  # # or just another way of translating to a nice grid?
-  # # maybe for plotting either is kind of fine.
-  # # but definitely would need to be fixed for point data matching.
-  # # deal with weird lon coordinates if present
-  # # does lon live between -180 and 180? and are there a normal 36 increments? (is the second one important?)
-  # if(mean(between(lon, -180, 180)) < 1){
-  #   add_on <- -(lon.edges[1] + 180)
-  #   lon.edges <- lon.edges + add_on
-  #   lon <- lon + add_on
-  # }
+  # now we're going to load a third netcdf with ice sheet
 
-  # amend HADCM3 grid to project on 0 degs
-   if(mean(between(lon, -180, 180)) < 1){
-     lon.edges[lon.edges >180] <- lon.edges[lon.edges >180] -360
-     lon[lon >180] <- lon[lon >180] -360
-   }
+  file_3 <- "o.pgclann"
+  var_3 <- "icedepth_ym_uo"
+
+  nc_3 <- open.nc(paste0(experiment, file_3, ".nc"))
+
+  # Extract second named variable
+  var.arr_3 <- var.get.nc(nc_3, var_3)
+
+  # NOTE - this is what i have done with cGENIE models.
+  # Is this the best way to deal with here,
+  # or just another way of translating to a nice grid?
+  # maybe for plotting either is kind of fine.
+  # but definitely would need to be fixed for point data matching.
+  # deal with weird lon coordinates if present
+  # does lon live between -180 and 180? and are there a normal 36 increments? (is the second one important?)
+  if(mean(between(lon, -180, 180)) < 1){
+    add_on <- -(lon.edges[1] + 180)
+    lon.edges <- lon.edges + add_on
+    lon <- lon + add_on
+  }
+
 
   # if(dims == 3){
     # generate dataframe of 2d genie slice from 3d genie array
@@ -111,7 +116,8 @@ HADCM3.map.pretty <- function(experiment,
       rep(lat.edges[2:(length(lat.edges))], times = 1, each = length(lon)),
       #as.data.frame(melt(var.arr[,, depth.level, time.step]))$value))
       as.data.frame(melt(var.arr[,, depth.level]))$value,
-      as.data.frame(melt(var.arr_2))$value))
+      as.data.frame(melt(var.arr_2))$value,
+      as.data.frame(melt(var.arr_3))$value))
 
     names(df) <- c("lon.mid",
                    "lon.min",
@@ -120,7 +126,8 @@ HADCM3.map.pretty <- function(experiment,
                    "lat.min",
                    "lat.max",
                    "var",
-                   "var_2"
+                   "var_2",
+                   "var_3"
     )
   # }
   # if(dims == 2){
@@ -166,6 +173,12 @@ HADCM3.map.pretty <- function(experiment,
     df_2$lat.mid <- -df_2$lat.mid
     df_2$lat.min <- -df_2$lat.min
     df_2$lat.max <- -df_2$lat.max
+
+    # currently assuming all layers have the same grid
+    df_3 <- df
+    df_3$var_3 <-as.factor(df_3$var_3)
+    df_3 <- filter(df_3, var_3 != "0")
+    df_3$var_3 <-as.numeric(paste(df_3$var_3))
 
   poly.list <- list()
   poly.names.list <- list()
@@ -217,6 +230,31 @@ HADCM3.map.pretty <- function(experiment,
   SpDfSf_2 <- st_as_sf(SpDf_2)
   st_crs(SpDfSf_2) = '+proj=longlat +ellps=sphere'
 
+  poly.list_3 <- list()
+  poly.names.list_3 <- list()
+  for(poly_3 in 1:(nrow(df_3))){
+
+    polygon.code_3 <- Polygon(cbind(
+      c(df_3$lon.min[poly_3], df_3$lon.max[poly_3], df_3$lon.max[poly_3], df_3$lon.min[poly_3]),
+      c(df_3$lat.min[poly_3], df_3$lat.min[poly_3], df_3$lat.max[poly_3], df_3$lat.max[poly_3])))
+    assign(paste0("Polygon_", poly_3), polygon.code_3)
+
+    polygons.code_3 <- Polygons(list(polygon.code_3), paste0("p",poly_3))
+    assign(paste0("Polygons_", poly_3), polygons.code_3)
+
+    poly.list_3 <- append(poly.list_3, polygons.code_3)
+    poly.names.list_3 <- append(poly.names.list_3, paste0("p",poly_3))
+  }
+
+  SpP_3 <- SpatialPolygons(poly.list_3)
+
+  attr_3 <- data.frame(var = df_3$var_3, row.names = paste(poly.names.list_3))
+
+  SpDf_3 <- SpatialPolygonsDataFrame(SpP_3, attr_3)
+
+  SpDfSf_3 <- st_as_sf(SpDf_3)
+  st_crs(SpDfSf_3) = '+proj=longlat +ellps=sphere'
+
   if(plot == FALSE){
     return(SpDfSf)
   }
@@ -247,10 +285,14 @@ HADCM3.map.pretty <- function(experiment,
   max.value_2 <- 3200
   intervals_2 <- 400
 
+  min.value_3 <- 0
+  max.value_3 <- 5
+  intervals_3 <- 1
+
   map <- ggplot() +
    geom_sf(data = SpDfSf %>% st_transform(projection), aes(geometry = geometry, fill=var), color = NA, linewidth=10, linetype=0) + # WGS 84 / Equal Earth Greenwich
     #geom_sf(data = SpDfSf_2 %>% st_transform(projection), aes(geometry = geometry, fill=var), color = NA, linewidth=10, linetype=0) + # WGS 84 / Equal Earth Greenwich
-    geom_sf(data = SLs1dfSf %>% st_transform(projection), aes(geometry = geometry), fill=NA, color = "grey5", linewidth=0.9) +
+    #geom_sf(data = SLs1dfSf %>% st_transform(projection), aes(geometry = geometry), fill=NA, color = "grey5", linewidth=0.9) +
     #coord_sf(crs = '+proj=eqearth +lon_0=0 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs +type=crs')+
     #coord_sf(crs = "ESRI:102003")+
     scale_fill_stepsn(colours = palette_name_ocean,
@@ -269,6 +311,7 @@ HADCM3.map.pretty <- function(experiment,
                       limits=c(min.value_1, max.value_1),
                       #labels = c("0", "", "50", "", "100", "", "150", "", "200", "", "250")
     )+
+    theme_minimal()+
     theme(legend.position="bottom")+
     labs(fill = "Sea Surface Temperature (°C)")+
     new_scale_fill() +
@@ -289,9 +332,28 @@ HADCM3.map.pretty <- function(experiment,
                       limits=c(min.value_2, max.value_2),
                       #labels = c("0", "", "50", "", "100", "", "150", "", "200", "", "250")
     )+
-    theme_minimal()+
     theme(legend.position="bottom")+
-    labs(fill = "Topography (m)")
+    labs(fill = "Topography (m)")+
+    new_scale_fill() +
+    geom_sf(data = SpDfSf_3 %>% st_transform(projection), aes(geometry = geometry, fill=var), color = NA, linewidth=10, linetype=0) + # WGS 84 / Equal Earth Greenwich
+    scale_fill_stepsn(colours = palette_name_ice,
+                      #scale_fill_stepsn(colours = parula(1000),# seems like we can keep the n value (1000) just at something big?
+                      guide = guide_colorbar(title.position = "top",
+                                             barwidth = 12,
+                                             barheight = 1,
+                                             raster = FALSE,
+                                             frame.colour = "grey6",
+                                             frame.linewidth = 2/.pt,
+                                             frame.linetype = 1,
+                                             ticks = TRUE,
+                                             ticks.colour = "grey6",
+                                             ticks.linewidth = 2/.pt),
+                      breaks = seq(min.value_3, max.value_3, intervals_3),
+                      limits=c(min.value_3, max.value_3),
+                      #labels = c("0", "", "50", "", "100", "", "150", "", "200", "", "250")
+    )+
+    theme(legend.position="bottom")+
+    labs(fill = "Sea Ice Thickness (m)")
 
   map
   }

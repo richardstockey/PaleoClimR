@@ -1,11 +1,11 @@
 ###################################################
-# HADCM3.map.R
-# Rich Stockey 20231031
-# designed to make maps from imported .nc files (from e.g. from Valdes et al. 2021)
+# HADCM3.data.R
+# Rich Stockey 20231102
+# designed to extract data from imported .nc files (from e.g. from Valdes et al. 2021)
 ###################################################
 # full comments to follow...
 
-HADCM3.map <- function(var, file, experiment,
+HADCM3.data <- function(var, file, experiment,
                         depth.level = 1,
                         dims = 3,
                        min.value,
@@ -15,7 +15,7 @@ HADCM3.map <- function(var, file, experiment,
                        scale.label,
                        unit.factor = 1,
                        time.present = FALSE,
-                       projection = 'ESRI:54012',
+                       #projection = 'ESRI:54012',
                        calcs = TRUE,
                        plot = TRUE,
                        palette_name = parula(1000),
@@ -41,7 +41,7 @@ HADCM3.map <- function(var, file, experiment,
   #file <- "o.pgclann"
   #var <- "insitu_T_ym_dpth"
   # can set things up so that "if var == xxx, then file <- yyy"
-  if(calcs == TRUE){
+
   nc <- open.nc(paste0(experiment, file, ".nc"))
 
   # Extract general variables
@@ -133,80 +133,7 @@ HADCM3.map <- function(var, file, experiment,
              lat.max <= 90,
              lat.min >= -90
              )
-
-
-  poly.list <- list()
-  poly.names.list <- list()
-  for(poly in 1:(nrow(df))){
-
-    polygon.code <- Polygon(cbind(
-      c(df$lon.min[poly], df$lon.max[poly], df$lon.max[poly], df$lon.min[poly]),
-      c(df$lat.min[poly], df$lat.min[poly], df$lat.max[poly], df$lat.max[poly])))
-    assign(paste0("Polygon_", poly), polygon.code)
-
-    polygons.code <- Polygons(list(polygon.code), paste0("p",poly))
-    assign(paste0("Polygons_", poly), polygons.code)
-
-    poly.list <- append(poly.list, polygons.code)
-    poly.names.list <- append(poly.names.list, paste0("p",poly))
-  }
-
-  SpP <- SpatialPolygons(poly.list)
-
-  attr <- data.frame(var = df$var, row.names = paste(poly.names.list))
-
-  SpDf <- SpatialPolygonsDataFrame(SpP, attr)
-
-  SpDfSf <- st_as_sf(SpDf)
-  st_crs(SpDfSf) = '+proj=longlat +ellps=sphere'
-  if(plot == FALSE){
-    return(SpDfSf)
-  }
-  }
-  if(plot == TRUE){
-    if(calcs == FALSE){
-      SpDfSf <- polygons
-    }
-
-  ## Outline of map using a framing line
-  l1 <- cbind(c(-180, 180, rep(180, 1801), 180, -180, rep(-180, 1801), -180), c(-90, -90, seq(-90,90,0.1),  90, 90, seq(90,-90,-0.1), -90))
-  L1 <- Polygon(l1)
-  Ls1 <- Polygons(list(L1), ID="a")
-  SLs1 <-  SpatialPolygons(list(Ls1))
-
-  df1 <- data.frame(rep(2,1), row.names = rep("a",  1))
-  names(df1)[1] <- "var"
-  SLs1df = SpatialPolygonsDataFrame(SLs1, data = df1)
-  SLs1dfSf <- st_as_sf(SLs1df)
-  st_crs(SLs1dfSf) = '+proj=longlat +ellps=sphere'
-
-  map <- ggplot() +
-    geom_sf(data = SpDfSf %>% st_transform(projection), aes(geometry = geometry, fill=var*unit.factor), color = NA, linewidth=10, linetype=0) + # WGS 84 / Equal Earth Greenwich
-    geom_sf(data = SLs1dfSf %>% st_transform(projection), aes(geometry = geometry), fill=NA, color = "grey5", linewidth=0.9) +
-    #coord_sf(crs = '+proj=eqearth +lon_0=0 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs +type=crs')+
-    #coord_sf(crs = "ESRI:102003")+
-    scale_fill_stepsn(colours = palette_name,
-    #scale_fill_stepsn(colours = parula(1000),# seems like we can keep the n value (1000) just at something big?
-                      guide = guide_colorbar(title.position = "top",
-                                             barwidth = 12,
-                                             barheight = 1,
-                                             raster = FALSE,
-                                             frame.colour = "grey6",
-                                             frame.linewidth = 2/.pt,
-                                             frame.linetype = 1,
-                                             ticks = TRUE,
-                                             ticks.colour = "grey6",
-                                             ticks.linewidth = 2/.pt),
-                      breaks = seq(min.value, max.value, intervals),
-                      limits=c(min.value, max.value),
-                      #labels = c("0", "", "50", "", "100", "", "150", "", "200", "", "250")
-    )+
-    theme_minimal()+
-    theme(legend.position="bottom")+
-    labs(fill = scale.label)
-
-  map
-  }
+return(df)
 }
 
 
