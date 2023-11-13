@@ -18,7 +18,7 @@ HADCM3.map <- function(var, file, experiment,
                        projection = 'ESRI:54012',
                        calcs = TRUE,
                        plot = TRUE,
-                       palette_name = parula(1000),
+                       palette_name = pals::parula(1000),
                        polygons){
 
   # other projection options include:
@@ -71,10 +71,16 @@ HADCM3.map <- function(var, file, experiment,
   # but definitely would need to be fixed for point data matching.
   # deal with weird lon coordinates if present
   # does lon live between -180 and 180? and are there a normal 36 increments? (is the second one important?)
+  # if(mean(between(lon, -180, 180)) < 1){
+  #   add_on <- -(lon.edges[1] + 180)
+  #   lon.edges <- lon.edges + add_on
+  #   lon <- lon + add_on
+  # }
+
+  # amend HADCM3 grid to project on 0 degs
   if(mean(between(lon, -180, 180)) < 1){
-    add_on <- -(lon.edges[1] + 180)
-    lon.edges <- lon.edges + add_on
-    lon <- lon + add_on
+    lon.edges[lon.edges >180] <- lon.edges[lon.edges >180] - 360
+    lon[lon >180] <- lon[lon >180] -360
   }
 
 
@@ -127,12 +133,19 @@ HADCM3.map <- function(var, file, experiment,
     }
   }
 
-    df <- df %>%
-      filter(lon.max <= 180,
-             lon.min >= -180,
-             lat.max <= 90,
-             lat.min >= -90
-             )
+  # eliminate cells outside of reasonable range
+  df <- df %>%
+    filter(lon.max <= 180,
+           lon.min >= -180,
+           lat.max <= 90,
+           lat.min >= -90
+    )
+
+  # also eliminate cells that bridge left and right side of map (i.e. extreme -180ish and 180ish longitude)
+  df$lon.range <- abs(df$lon.min-df$lon.max)
+  df <- df %>%
+    filter(lon.range < 180 #could just be greater than 4, but this will work for all model grids
+    )
 
 
   poly.list <- list()
@@ -186,7 +199,7 @@ HADCM3.map <- function(var, file, experiment,
     #coord_sf(crs = '+proj=eqearth +lon_0=0 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs +type=crs')+
     #coord_sf(crs = "ESRI:102003")+
     scale_fill_stepsn(colours = palette_name,
-    #scale_fill_stepsn(colours = parula(1000),# seems like we can keep the n value (1000) just at something big?
+                      #scale_fill_stepsn(colours = parula(1000),# seems like we can keep the n value (1000) just at something big?
                       guide = guide_colorbar(title.position = "top",
                                              barwidth = 12,
                                              barheight = 1,

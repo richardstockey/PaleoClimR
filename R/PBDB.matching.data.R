@@ -17,28 +17,38 @@ PBDB.matching.data <- function(HADCM3.data,
                        terrestrial.or.marine = "marine",
                        phylum,
                        order,
-                       family
+                       family,
+                       add.body.sizes = TRUE
                        ){
 
   library(readr)
-
-  #Valdes_stage <- "380_0_MaBP"
+  library(stringr)
+  #Valdes_stage <- "525_0_MaBP"
 
   if(terrestrial.or.marine == "marine"){
-    load("/Users/rgs1e22/Phanero_niches/marine_cleaned_binned.RData")
+    load("/Users/rgs1e22/Phanero_niches/Phanerozoic_marine_cleaned_binned.RData")
     occs <- marine_cleaned_binned
   }
   if(terrestrial.or.marine == "terrestrial"){
-    load("/Users/rgs1e22/Phanero_niches/terrestrial_cleaned_binned.RData")
+    load("/Users/rgs1e22/Phanero_niches/Phanerozoic_terrestrial_cleaned_binned.RData")
     occs <- terrestrial_cleaned_binned
   }
 
+  occs$stage_no_spaces <- occs$stage %>% str_replace(" ", "_")
   stage_translations <- read_csv("~/Phanero_niches/stage_translations.csv")
   stage_translations <- filter(stage_translations, !is.na(stage_translations$diDyn_stage))
 
-  divdyn_stage <- stage_translations$diDyn_stage[stage_translations$description == Valdes_stage]
+  diDyn_stage_no_spaces <- stage_translations$diDyn_stage_no_spaces[stage_translations$description == Valdes_stage]
 
-  stage_occs <- filter(occs, stage == divdyn_stage)
+  stage_occs <- filter(occs, stage_no_spaces == diDyn_stage_no_spaces)
+
+  if(add.body.sizes == TRUE){
+  sizeData <- read_delim("~/Heim+_2020_data/sizeData.txt",
+                         delim = "\t", escape_double = FALSE,
+                         trim_ws = TRUE)
+
+  stage_occs <- merge(stage_occs, sizeData, by.x = "genus", by.y = "taxon_genus")
+  }
 
   library(stringr)
 

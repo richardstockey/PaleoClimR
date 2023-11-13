@@ -96,7 +96,7 @@ HADCM3.map.pretty <- function(experiment,
 
   # amend HADCM3 grid to project on 0 degs
    if(mean(between(lon, -180, 180)) < 1){
-     lon.edges[lon.edges >180] <- lon.edges[lon.edges >180] -360
+     lon.edges[lon.edges >180] <- lon.edges[lon.edges >180] - 360
      lon[lon >180] <- lon[lon >180] -360
    }
 
@@ -145,6 +145,7 @@ HADCM3.map.pretty <- function(experiment,
   #   )
   # }
 
+    # eliminate cells outside of reasonable range
     df <- df %>%
       filter(lon.max <= 180,
              lon.min >= -180,
@@ -152,6 +153,11 @@ HADCM3.map.pretty <- function(experiment,
              lat.min >= -90
              )
 
+    # also eliminate cells that bridge left and right side of map (i.e. extreme -180ish and 180ish longitude)
+    df$lon.range <- abs(df$lon.min-df$lon.max)
+    df <- df %>%
+      filter(lon.range < 180 #could just be greater than 4, but this will work for all model grids
+      )
     # currently have some issues with 0s in the orography raster.
     # for now just getting rid of them - later return to 0s vs 0.0s
 

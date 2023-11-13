@@ -16,7 +16,7 @@ cGENIE.map <- function(var, experiment,
                        continents.outlined,
                        scale.label,
                        model = "biogem",
-                       scale = "viridis",
+                       palette_name = pals::parula(1000),
                        projection = 'ESRI:54012'){
 
   # other projection options include:
@@ -57,12 +57,10 @@ cGENIE.map <- function(var, experiment,
     time.step <- length(time)
   }
 
-  # deal with weird lon coordinates if present
-  # does lon live between -180 and 180? and are there a normal 36 increments? (is the second one important?)
+  # amend grid to project on 0 degs - note cGENIE differs from HADCM3
   if(mean(between(lon, -180, 180)) < 1){
-    add_on <- -(lon.edges[1] + 180)
-    lon.edges <- lon.edges + add_on
-    lon <- lon + add_on
+    lon.edges[lon.edges <= - 180] <- lon.edges[lon.edges <= - 180] + 360
+    lon[lon <= - 180] <- lon[lon <= - 180] + 360
   }
 
   if(dims == 3){
@@ -105,6 +103,20 @@ cGENIE.map <- function(var, experiment,
                    "var"
     )
   }
+
+  # eliminate cells outside of reasonable range
+  df <- df %>%
+    filter(lon.max <= 180,
+           lon.min >= -180,
+           lat.max <= 90,
+           lat.min >= -90
+    )
+
+  # also update cells that bridge left and right side of map (i.e. extreme -180ish and 180ish longitude)
+  df$lon.range <- abs(df$lon.min-df$lon.max)
+  df$lon.min[df$lon.range > 180 & abs(df$lon.min) == 180] <- -df$lon.min[df$lon.range > 180 & abs(df$lon.min) == 180]
+  df$lon.max[df$lon.range > 180 & abs(df$lon.max) == 180] <- -df$lon.max[df$lon.range > 180 & abs(df$lon.max) == 180]
+
   poly.list <- list()
   poly.names.list <- list()
   for(poly in 1:(nrow(df))){
@@ -147,7 +159,8 @@ cGENIE.map <- function(var, experiment,
     geom_sf(data = SLs1dfSf %>% st_transform(projection), aes(geometry = geometry), fill=NA, color = "grey5", linewidth=0.9) +
     #coord_sf(crs = '+proj=eqearth +lon_0=0 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs +type=crs')+
     #coord_sf(crs = "ESRI:102003")+
-    scale_fill_binned(type = scale,
+    scale_fill_stepsn(colours = palette_name,
+                      #scale_fill_stepsn(colours = parula(1000),# seems like we can keep the n value (1000) just at something big?
                       guide = guide_colorbar(title.position = "top",
                                              barwidth = 12,
                                              barheight = 1,

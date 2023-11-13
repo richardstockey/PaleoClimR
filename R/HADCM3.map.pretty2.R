@@ -91,19 +91,11 @@ HADCM3.map.pretty.2 <- function(experiment,
   # Extract second named variable
   var.arr_3 <- var.get.nc(nc_3, var_3)
 
-  # NOTE - this is what i have done with cGENIE models.
-  # Is this the best way to deal with here,
-  # or just another way of translating to a nice grid?
-  # maybe for plotting either is kind of fine.
-  # but definitely would need to be fixed for point data matching.
-  # deal with weird lon coordinates if present
-  # does lon live between -180 and 180? and are there a normal 36 increments? (is the second one important?)
+  # amend HADCM3 grid to project on 0 degs
   if(mean(between(lon, -180, 180)) < 1){
-    add_on <- -(lon.edges[1] + 180)
-    lon.edges <- lon.edges + add_on
-    lon <- lon + add_on
+    lon.edges[lon.edges >180] <- lon.edges[lon.edges >180] -360
+    lon[lon >180] <- lon[lon >180] -360
   }
-
 
   # if(dims == 3){
     # generate dataframe of 2d genie slice from 3d genie array

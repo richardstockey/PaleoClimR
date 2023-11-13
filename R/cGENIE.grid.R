@@ -1,11 +1,11 @@
 ###################################################
-# HADCM3.grid.R
-# Rich Stockey 20231102
-# designed to extract grid data from imported .nc files (from e.g. from Valdes et al. 2021)
+# cGENIE.grid.R
+# Rich Stockey 20231105
+# designed to extract grid data from imported cGENIE .nc files
 ###################################################
 # full comments to follow...
 
-HADCM3.grid <- function(var, file, experiment, dims){
+cGENIE.grid <- function(experiment, dims, model = "biogem"){
 
   # other projection options include:
   # - 6933 - Lambert Cylindrical Equal Area (need only numbers no text and no quotes) [this is equal area rectangle]
@@ -29,27 +29,28 @@ HADCM3.grid <- function(var, file, experiment, dims){
   #var <- "insitu_T_ym_dpth"
   # can set things up so that "if var == xxx, then file <- yyy"
 
-  nc <- open.nc(paste0(experiment, file, ".nc"))
+  if(model == "biogem"){
+    prefix <- "/biogem/fields_biogem_"
+  }
+
+
+  nc <- open.nc(paste0(experiment, prefix, dims, "d", ".nc"))
 
   # Extract general variables
-  # NOTE - these may not precisely represent the HADCM3 grid
-  # fudged slightly for ease of plotting from the xxx and xxx_1 variables.
-  # worth checking with HADCM3 users to be doubly sure
-  # this should be kept separate from variable matching scripts with point data such as PBDB and therefore be functionally fine
-  lat <- var.get.nc(nc, "latitude") # units: degrees north
-  lat.edges <- c(lat - mean(diff(lat)/2), lat[length(lat)] + mean(diff(lat)/2)) # should work for any evenly spaced grid (although note we have values outside reality! removed later...)
-  lon <- var.get.nc(nc, "longitude") # units: degrees east
-  lon.edges <- c(lon - mean(diff(lon)/2), lon[length(lon)] + mean(diff(lon)/2)) # should work for any evenly spaced grid (although note we have values outside reality! removed later...)
-  if(dims == 3){
-    depth <- var.get.nc(nc, "depth_1") # units: metres
-    depth.edges <- c(0, var.get.nc(nc, "depth"), (depth[length(depth)]+307.5)) # units: metres # NOTE - the bounding of the bottom box is fudged but seems to be reasonably fudged. All deep ocean cells ~307.5*2m deep
-  }
-  # amend HADCM3 grid to project on 0 degs
-  if(mean(between(lon, -180, 180)) < 1){
-    lon.edges[lon.edges >180] <- lon.edges[lon.edges >180] - 360
-    lon[lon >180] <- lon[lon >180] -360
-  }
+  lat <- var.get.nc(nc, "lat") # units: degrees north
+  lat.edges <- var.get.nc(nc, "lat_edges")
+  lon <- var.get.nc(nc, "lon") # units: degrees east
+  lon.edges <- var.get.nc(nc, "lon_edges")
+  depth <- var.get.nc(nc, "zt") # units: metres
+  depth.edges <- var.get.nc(nc, "zt_edges") # units: metres
+  time <- var.get.nc(nc, "time") # units: year mid-point
+  # note that not all of these general variables will be available for fields_biogem_2d (address later)
 
+  # amend grid to project on 0 degs - note cGENIE differs from HADCM3
+  if(mean(between(lon, -180, 180)) < 1){
+    lon.edges[lon.edges <= - 180] <- lon.edges[lon.edges <= - 180] + 360
+    lon[lon <= - 180] <- lon[lon <= - 180] + 360
+  }
 
 
 lat <- lat[lat<90 & lat>-90]
