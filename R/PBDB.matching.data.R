@@ -18,6 +18,7 @@ PBDB.matching.data <- function(HADCM3.data,
                        phylum,
                        order,
                        family,
+                       genus,
                        add.body.sizes = TRUE
                        ){
 

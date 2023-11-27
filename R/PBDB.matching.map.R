@@ -18,13 +18,19 @@ PBDB.matching.map <- function(HADCM3.map,
                        terrestrial.or.marine = "marine",
                        phylum,
                        order,
-                       family
+                       family,
+                       genus,
+                       pbdb.data,
+                       data.already = TRUE,
+                       var.present = FALSE,
+                       var.name = "HADCM3.var"
                        ){
 
   library(readr)
   library(stringr)
   #Valdes_stage <- "525_0_MaBP"
 
+  if(data.already == FALSE){
   if(terrestrial.or.marine == "marine"){
     load("/Users/rgs1e22/Phanero_niches/Phanerozoic_marine_cleaned_binned.RData")
     occs <- marine_cleaned_binned
@@ -53,17 +59,33 @@ PBDB.matching.map <- function(HADCM3.map,
   library(palaeoverse)
 
   stage_occs_rotd <- palaeorotate(occdf = stage_occs, lng="lng", lat="lat", age="age", model="PALEOMAP", method="point", uncertainty=FALSE, round=1 )
-
+  }
+  if(data.already == FALSE){
+    stage_occs_rotd <- pbdb.data
+  }
+  if(var.present == FALSE){
   rotd_coords <- cbind(stage_occs_rotd$p_lng, stage_occs_rotd$p_lat)
   rotd_coords <- na.omit(rotd_coords)
-
   rotd_coords_sp <- SpatialPoints(coords = rotd_coords)
   rotd_coords_spsf <- st_as_sf(rotd_coords_sp)
   st_crs(rotd_coords_spsf) = '+proj=longlat +ellps=sphere'
-
   HADCM3.map.w.fossils <- HADCM3.map +
     #geom_point(data = stage_occs_rotd, aes(x = p_lng, y = p_lat), shape = 21, size = 5, fill = "#D44D44")
-  geom_sf(data = rotd_coords_spsf %>% st_transform(projection), aes(geometry = geometry), shape = 21, size = 4, alpha = 0.6, fill = "#D44D44") # WGS 84 / Equal Earth Greenwich
+    geom_sf(data = rotd_coords_spsf %>% st_transform(projection), aes(geometry = geometry), shape = 21, size = 4, alpha = 0.6, fill = "#D44D44") # WGS 84 / Equal Earth Greenwich
+
+  }
+  if(var.present == TRUE){
+  # rotd_coords <- cbind(stage_occs_rotd$p_lng, stage_occs_rotd$p_lat, get(paste0("stage_occs_rotd$", var.name)))
+  rotd_coords <- cbind(stage_occs_rotd$p_lng, stage_occs_rotd$p_lat, stage_occs_rotd$HADCM3.var))
+  rotd_coords <- na.omit(rotd_coords)
+  rotd_coords_sp <- SpatialPointsDataFrame(coords = rotd_coords[1:2], data = rotd_coords3)
+  rotd_coords_spsf <- st_as_sf(rotd_coords_sp)
+  st_crs(rotd_coords_spsf) = '+proj=longlat +ellps=sphere'
+  HADCM3.map.w.fossils <- HADCM3.map +
+    #geom_point(data = stage_occs_rotd, aes(x = p_lng, y = p_lat), shape = 21, size = 5, fill = "#D44D44")
+    geom_sf(data = rotd_coords_spsf %>% st_transform(projection), aes(geometry = geometry, fill = var), shape = 21, size = 4, alpha = 0.6) # WGS 84 / Equal Earth Greenwich
+
+  }
 
   HADCM3.map.w.fossils
 }
