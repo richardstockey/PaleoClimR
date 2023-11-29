@@ -60,7 +60,7 @@ PBDB.matching.map <- function(HADCM3.map,
 
   stage_occs_rotd <- palaeorotate(occdf = stage_occs, lng="lng", lat="lat", age="age", model="PALEOMAP", method="point", uncertainty=FALSE, round=1 )
   }
-  if(data.already == FALSE){
+  if(data.already == TRUE){
     stage_occs_rotd <- pbdb.data
   }
   if(var.present == FALSE){
@@ -76,14 +76,41 @@ PBDB.matching.map <- function(HADCM3.map,
   }
   if(var.present == TRUE){
   # rotd_coords <- cbind(stage_occs_rotd$p_lng, stage_occs_rotd$p_lat, get(paste0("stage_occs_rotd$", var.name)))
-  rotd_coords <- cbind(stage_occs_rotd$p_lng, stage_occs_rotd$p_lat, stage_occs_rotd$HADCM3.var))
+  rotd_coords <- cbind(stage_occs_rotd$p_lng, stage_occs_rotd$p_lat, stage_occs_rotd$HADCM3.var)
   rotd_coords <- na.omit(rotd_coords)
-  rotd_coords_sp <- SpatialPointsDataFrame(coords = rotd_coords[1:2], data = rotd_coords3)
+  rotd_coords_sp <- SpatialPointsDataFrame(coords = rotd_coords[,1:2], data = as.data.frame(rotd_coords[,3]))
+  names(rotd_coords_sp) <- "HADCM3.var"
+
+  # gardcoding in palettes for now  - 20231127
+  palette_name_ocean <- pals::parula(1000)
+  min.value_1 <- 0
+  max.value_1 <- 40
+  intervals_1 <- 5
+
   rotd_coords_spsf <- st_as_sf(rotd_coords_sp)
   st_crs(rotd_coords_spsf) = '+proj=longlat +ellps=sphere'
   HADCM3.map.w.fossils <- HADCM3.map +
     #geom_point(data = stage_occs_rotd, aes(x = p_lng, y = p_lat), shape = 21, size = 5, fill = "#D44D44")
-    geom_sf(data = rotd_coords_spsf %>% st_transform(projection), aes(geometry = geometry, fill = var), shape = 21, size = 4, alpha = 0.6) # WGS 84 / Equal Earth Greenwich
+    new_scale_fill() +
+    scale_fill_stepsn(colours = palette_name_ocean,
+                      #scale_fill_stepsn(colours = parula(1000),# seems like we can keep the n value (1000) just at something big?
+                      guide = guide_colorbar(title.position = "top",
+                                             barwidth = 12,
+                                             barheight = 1,
+                                             raster = FALSE,
+                                             frame.colour = "grey6",
+                                             frame.linewidth = 2/.pt,
+                                             frame.linetype = 1,
+                                             ticks = TRUE,
+                                             ticks.colour = "grey6",
+                                             ticks.linewidth = 2/.pt),
+                      breaks = seq(min.value_1, max.value_1, intervals_1),
+                      limits=c(min.value_1, max.value_1),
+                      #labels = c("0", "", "50", "", "100", "", "150", "", "200", "", "250")
+    )+
+    theme(legend.position="bottom")+
+    labs(fill = "Fossil Occurrence Temperature (°C)")+
+    geom_sf(data = rotd_coords_spsf %>% st_transform(projection), aes(geometry = geometry, fill = HADCM3.var), shape = 21, size = 4, alpha = 0.6) # WGS 84 / Equal Earth Greenwich
 
   }
 
