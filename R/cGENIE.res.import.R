@@ -20,7 +20,7 @@ res_file <- read_table(paste0(experiment, "/", model, "/", prefix, var, suffix),
 res_file <- res_file %>% select_if(~ !any(is.na(.)))
 # identify the column names from the res file. As these have a different delimiter we have to do this separately
 res_file_names_frame <- read_delim(paste0(experiment, "/", model, "/", prefix, var, suffix),
-           delim = "/", escape_double = FALSE, trim_ws = TRUE)
+           delim = "/", escape_double = FALSE, trim_ws = TRUE, show_col_types = FALSE)
 # apply the column names we just obtained to the data columns in the res file
 names(res_file) <- names(res_file_names_frame)
 return(res_file)
