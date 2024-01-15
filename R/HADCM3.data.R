@@ -8,13 +8,8 @@
 HADCM3.data <- function(var, file, experiment,
                         depth.level = 1,
                         dims = 3,
-                       unit.factor = 1,
-                       time.present = FALSE,
-                       #projection = 'ESRI:54012',
-                       calcs = TRUE,
-                       plot = TRUE,
-                       palette_name = parula(1000)){ #,
-                       #polygons){
+                       time.present = FALSE
+                       ){
 
   # other projection options include:
   # - 6933 - Lambert Cylindrical Equal Area (need only numbers no text and no quotes) [this is equal area rectangle]
