@@ -5,7 +5,7 @@
 ###################################################
 
 
-temp.matching.coords <- function(var = "insitu_T_ym_dpth",
+temp.matching.coords <- function(var = "insitu_T_ym_dpth", # default assumption is for marine
                                  file = "o.pgclann",
                                  experiment,
                         depth.level = 1,
@@ -15,9 +15,10 @@ temp.matching.coords <- function(var = "insitu_T_ym_dpth",
                         lat.name = "p_lat",
                         lng.name = "p_lng"
                         ){
+
   grid.dat <- HADCM3.grid(file = file,
                           experiment = experiment,
-                          dims = 3)
+                          dims = dims)
 
 
   clim.dat <- NA
@@ -25,7 +26,7 @@ temp.matching.coords <- function(var = "insitu_T_ym_dpth",
                           file = file,
                           experiment = experiment,
                           depth.level = 1,
-                          dims = 3)
+                          dims = dims)
 
   # omit NAs in the var value for climate data file
   clim.dat <- filter(clim.dat, is.na(var) == FALSE)
