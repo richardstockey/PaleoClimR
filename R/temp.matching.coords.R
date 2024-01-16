@@ -16,6 +16,7 @@ temp.matching.coords <- function(var = "insitu_T_ym_dpth", # default assumption 
                         lng.name = "p_lng"
                         ){
 
+
   grid.dat <- HADCM3.grid(file = file,
                           experiment = experiment,
                           dims = dims)
