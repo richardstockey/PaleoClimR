@@ -18,7 +18,7 @@ divdyn_to_HADCM3 <- function(divdyn_stage
   stage_no_spaces <- divdyn_stage %>% str_replace(" ", "_")
 
   # at some point want to make this an RData file!
-  stage_translations <- load("stage_translations.RData")
+  # stage_translations <- load("stage_translations.RData")
   stage_translations <- filter(stage_translations, !is.na(stage_translations$diDyn_stage))
 
   Valdes_stage_age <- as.numeric()
