@@ -133,8 +133,25 @@ PBDB.matching.map <- function(HADCM3.map,
                              '#2c7da0',
                              '#a9d6e5')
 
-    rotd_coords <- as.data.frame(cbind(stage_occs_rotd$p_lng, stage_occs_rotd$p_lat, paste(stage_occs_rotd$REE_classification)))
+    rotd_coords <- as.data.frame(cbind(stage_occs_rotd$p_lng,
+                                       stage_occs_rotd$p_lat,
+                                       paste(stage_occs_rotd$REE_classification)))
 
+   REE_classification <- c('Archaeocyathids', #reds
+      'Glass _sponges', #reds
+      'Stromatoporoids', #reds
+      'Rudist_bivalves', #purples
+      'Hydrozoans', #oranges
+      'Tube_worms', #greens
+      'Rugose_corals',#blues
+      'Tabulate_corals', #blues
+      'Stony_corals')
+   p_lng <- rep(NA, length(REE_classification))
+   p_lat <- rep(NA, length(REE_classification))
+
+   placeholders <- cbind(p_lng, p_lat, REE_classification)
+
+   rotd_coords <- rbind(rotd_coords, placeholders)
     rotd_coords$V1 <- as.numeric(rotd_coords$V1)
     rotd_coords$V2 <- as.numeric(rotd_coords$V2)
 
