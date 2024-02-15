@@ -151,7 +151,9 @@ PBDB.matching.map <- function(HADCM3.map,
    placeholders <- as.data.frame(cbind(p_lng, p_lat, REE_classification))
 
    names(rotd_coords) <- names(placeholders)
+
    rotd_coords <- rbind(rotd_coords, placeholders)
+
     rotd_coords$p_lng <- as.numeric(rotd_coords$p_lng)
     rotd_coords$p_lat <- as.numeric(rotd_coords$p_lat)
 
@@ -187,7 +189,61 @@ PBDB.matching.map <- function(HADCM3.map,
       geom_sf(data = rotd_coords_spsf %>% st_transform(projection), aes(geometry = geometry, fill = REE_classification), colour='black', shape=21,  size = 4, alpha = 0.6) # WGS 84 / Equal Earth Greenwich
 
   }
+  if(var.present == "reefs2"){
+    stage_occs_rotd$REE_classification <- factor(stage_occs_rotd$REE_classification, levels=c('Archaeocyathids', #reds
+                                                                                              'Glass_sponges', #reds
+                                                                                              'Stromatoporoids', #reds
+                                                                                              'Rudist_bivalves', #purples
+                                                                                              'Hydrozoans', #oranges
+                                                                                              'Tube_worms', #greens
+                                                                                              'Rugose_corals',#blues
+                                                                                              'Tabulate_corals', #blues
+                                                                                              'Stony_corals')) #blues
+    stage_occs_rotd$reef_builder.color <- NA
 
+    stage_occs_rotd$reef_builder.color[stage_occs_rotd$REE_classification == 'Archaeocyathids'] <- '#6e1423'
+    stage_occs_rotd$reef_builder.color[stage_occs_rotd$REE_classification == 'Glass_sponges'] <- '#b21e35'
+    stage_occs_rotd$reef_builder.color[stage_occs_rotd$REE_classification == 'Stromatoporoids'] <- '#e01e37'
+    stage_occs_rotd$reef_builder.color[stage_occs_rotd$REE_classification == 'Rudist_bivalves'] <- '#b084cc'
+    stage_occs_rotd$reef_builder.color[stage_occs_rotd$REE_classification == 'Hydrozoans'] <- 'goldenrod2'
+    stage_occs_rotd$reef_builder.color[stage_occs_rotd$REE_classification == 'Tube_worms'] <- '#548c2f'
+    stage_occs_rotd$reef_builder.color[stage_occs_rotd$REE_classification == 'Rugose_corals'] <- '#01497c'
+    stage_occs_rotd$reef_builder.color[stage_occs_rotd$REE_classification == 'Tabulate_corals'] <- '#2c7da0'
+    stage_occs_rotd$reef_builder.color[stage_occs_rotd$REE_classification == 'Stony_corals'] <- '#a9d6e5'
+
+    rotd_coords <- as.data.frame(cbind(stage_occs_rotd$p_lng,
+                                       stage_occs_rotd$p_lat,
+                                       paste(stage_occs_rotd$reef_builder.color)))
+
+    names(rotd_coords) <- c('p_lng', 'p_lat', 'reef_builder.color')
+
+
+    rotd_coords$p_lng <- as.numeric(rotd_coords$p_lng)
+    rotd_coords$p_lat <- as.numeric(rotd_coords$p_lat)
+
+    rotd_coords <- na.omit(rotd_coords)
+    rotd_coords_sp <- SpatialPointsDataFrame(coords = rotd_coords[,1:2], data = as.data.frame(rotd_coords[,3]))
+    names(rotd_coords_sp) <- "reef_builder.color"
+    rotd_coords_spsf <- st_as_sf(rotd_coords_sp)
+    st_crs(rotd_coords_spsf) = '+proj=longlat +ellps=sphere'
+
+    colours <- rotd_coords %>%
+      group_by(reef_builder.color) %>%
+      tally() %>%
+      tally() %>%
+      as.numeric()
+
+
+    HADCM3.map.w.fossils <- HADCM3.map +
+      #geom_point(data = stage_occs_rotd, aes(x = p_lng, y = p_lat), shape = 21, size = 5, fill = "#D44D44")
+      new_scale_fill() +
+      scale_fill_identity() +
+      theme(legend.position="bottom")+
+      guides(fill = guide_legend(nrow = colours))+
+      labs(fill = "Reef Builder Colour")+
+      geom_sf(data = rotd_coords_spsf %>% st_transform(projection), aes(geometry = geometry, fill = reef_builder.color), colour='black', shape=21,  size = 4, alpha = 0.6) # WGS 84 / Equal Earth Greenwich
+
+  }
 
   HADCM3.map.w.fossils
 }
