@@ -171,7 +171,7 @@ PBDB.matching.map <- function(HADCM3.map,
     st_crs(rotd_coords_spsf) = '+proj=longlat +ellps=sphere'
 
     REE_classes <- rotd_coords %>%
-      group_by(V3) %>%
+      group_by(REE_classification) %>%
       tally() %>%
       tally() %>%
       as.numeric()
