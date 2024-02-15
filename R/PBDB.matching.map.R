@@ -112,7 +112,7 @@ PBDB.matching.map <- function(HADCM3.map,
     theme(legend.position="bottom")+
     labs(fill = "Fossil Occurrence Temperature (°C)")+
     geom_sf(data = rotd_coords_spsf %>% st_transform(projection), aes(geometry = geometry, fill = HADCM3.var), shape = 21, size = 4, alpha = 0.6) # WGS 84 / Equal Earth Greenwich
-
+}
   if(reef.fill == TRUE){
     stage_occs_rotd$REE_classification <- factor(stage_occs_rotd$REE_classification, levels=c('Archaeocyathids', #reds
                                                                               'Glass _sponges', #reds
@@ -171,7 +171,7 @@ PBDB.matching.map <- function(HADCM3.map,
       geom_sf(data = rotd_coords_spsf %>% st_transform(projection), aes(geometry = geometry, fill = REE_classification), colour='black', shape=21,  size = 4, alpha = 0.6) # WGS 84 / Equal Earth Greenwich
 
   }
-  }
+
 
   HADCM3.map.w.fossils
 }
