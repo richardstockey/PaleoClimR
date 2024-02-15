@@ -122,15 +122,6 @@ PBDB.matching.map <- function(HADCM3.map,
                                                                               'Tabulate_corals', #blues
                                                                               'Stony_corals')) #blues
 
-    reef_builder.colors <- c('#6e1423',
-                             '#b21e35',
-                             '#e01e37',
-                             '#b084cc',
-                             'goldenrod2',
-                             '#548c2f',
-                             '#01497c',
-                             '#2c7da0',
-                             '#a9d6e5')
 
     rotd_coords <- as.data.frame(cbind(stage_occs_rotd$p_lng,
                                        stage_occs_rotd$p_lat,
@@ -171,6 +162,24 @@ PBDB.matching.map <- function(HADCM3.map,
     names(rotd_coords_sp) <- "REE_classification"
     rotd_coords_spsf <- st_as_sf(rotd_coords_sp)
     st_crs(rotd_coords_spsf) = '+proj=longlat +ellps=sphere'
+
+    REE_sum <- rotd_coords %>%
+      group_by(REE_classification) %>%
+      tally()
+
+    REE_sum$reef_builder.color <- NA
+
+    REE_sum$reef_builder.color[REE_sum$REE_classification == 'Archaeocyathids'] <- '#6e1423'
+    REE_sum$reef_builder.color[REE_sum$REE_classification == 'Glass_sponges'] <- '#b21e35'
+    REE_sum$reef_builder.color[REE_sum$REE_classification == 'Stromatoporoids'] <- '#e01e37'
+    REE_sum$reef_builder.color[REE_sum$REE_classification == 'Rudist_bivalves'] <- '#b084cc'
+    REE_sum$reef_builder.color[REE_sum$REE_classification == 'Hydrozoans'] <- 'goldenrod2'
+    REE_sum$reef_builder.color[REE_sum$REE_classification == 'Tube_worms'] <- '#548c2f'
+    REE_sum$reef_builder.color[REE_sum$REE_classification == 'Rugose_corals'] <- '#01497c'
+    REE_sum$reef_builder.color[REE_sum$REE_classification == 'Tabulate_corals'] <- '#2c7da0'
+    REE_sum$reef_builder.color[REE_sum$REE_classification == 'Stony_corals'] <- '#a9d6e5'
+
+    reef_builder.colors <- REE_sum$reef_builder.color
 
     REE_classes <- rotd_coords %>%
       group_by(REE_classification) %>%
