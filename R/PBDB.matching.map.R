@@ -23,7 +23,8 @@ PBDB.matching.map <- function(HADCM3.map,
                        pbdb.data,
                        data.already = TRUE,
                        var.present = FALSE,
-                       var.name = "HADCM3.var"
+                       var.name = "HADCM3.var",
+                       reef.fill = FALSE
                        ){
 
   library(readr)
@@ -112,6 +113,64 @@ PBDB.matching.map <- function(HADCM3.map,
     labs(fill = "Fossil Occurrence Temperature (°C)")+
     geom_sf(data = rotd_coords_spsf %>% st_transform(projection), aes(geometry = geometry, fill = HADCM3.var), shape = 21, size = 4, alpha = 0.6) # WGS 84 / Equal Earth Greenwich
 
+  if(reef.fill == TRUE){
+    stage_occs_rotd$REE_classification <- factor(stage_occs_rotd$REE_classification, levels=c('Archaeocyathids', #reds
+                                                                              'Glass _sponges', #reds
+                                                                              'Stromatoporoids', #reds
+                                                                              'Rudist_bivalves', #purples
+                                                                              'Hydrozoans', #oranges
+                                                                              'Tube_worms', #greens
+                                                                              'Rugose_corals',#blues
+                                                                              'Tabulate_corals', #blues
+                                                                              'Stony_corals')) #blues
+
+    reef_builder.colors <- c('#6e1423',
+                             '#b21e35',
+                             '#e01e37',
+                             '#b084cc',
+                             'goldenrod2',
+                             '#548c2f',
+                             '#01497c',
+                             '#2c7da0',
+                             '#a9d6e5')
+
+    rotd_coords <- as.data.frame(cbind(stage_occs_rotd$p_lng, stage_occs_rotd$p_lat, paste(stage_occs_rotd$REE_classification)))
+
+    rotd_coords$V1 <- as.numeric(rotd_coords$V1)
+    rotd_coords$V2 <- as.numeric(rotd_coords$V2)
+
+    rotd_coords$V3 <- factor(rotd_coords$V3, levels=c('Archaeocyathids', #reds
+                                                                                              'Glass_sponges', #reds
+                                                                                              'Stromatoporoids', #reds
+                                                                                              'Rudist_bivalves', #purples
+                                                                                              'Hydrozoans', #oranges
+                                                                                              'Tube_worms', #greens
+                                                                                              'Rugose_corals',#blues
+                                                                                              'Tabulate_corals', #blues
+                                                                                              'Stony_corals')) #blues
+    rotd_coords <- na.omit(rotd_coords)
+    rotd_coords_sp <- SpatialPointsDataFrame(coords = rotd_coords[,1:2], data = as.data.frame(rotd_coords[,3]))
+    names(rotd_coords_sp) <- "REE_classification"
+    rotd_coords_spsf <- st_as_sf(rotd_coords_sp)
+    st_crs(rotd_coords_spsf) = '+proj=longlat +ellps=sphere'
+
+    REE_classes <- rotd_coords %>%
+      group_by(V3) %>%
+      tally() %>%
+      tally() %>%
+      as.numeric()
+
+
+    HADCM3.map.w.fossils <- HADCM3.map +
+      #geom_point(data = stage_occs_rotd, aes(x = p_lng, y = p_lat), shape = 21, size = 5, fill = "#D44D44")
+      new_scale_fill() +
+      scale_fill_manual(values=reef_builder.colors) +
+      theme(legend.position="bottom")+
+      guides(fill = guide_legend(nrow = REE_classes))+
+      labs(fill = "REE classification")+
+      geom_sf(data = rotd_coords_spsf %>% st_transform(projection), aes(geometry = geometry, fill = REE_classification), colour='black', shape=21,  size = 4, alpha = 0.6) # WGS 84 / Equal Earth Greenwich
+
+  }
   }
 
   HADCM3.map.w.fossils
