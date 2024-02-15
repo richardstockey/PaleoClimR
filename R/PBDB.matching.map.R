@@ -23,8 +23,7 @@ PBDB.matching.map <- function(HADCM3.map,
                        pbdb.data,
                        data.already = TRUE,
                        var.present = FALSE,
-                       var.name = "HADCM3.var",
-                       reef.fill = FALSE
+                       var.name = "HADCM3.var"
                        ){
 
   library(readr)
@@ -113,7 +112,7 @@ PBDB.matching.map <- function(HADCM3.map,
     labs(fill = "Fossil Occurrence Temperature (°C)")+
     geom_sf(data = rotd_coords_spsf %>% st_transform(projection), aes(geometry = geometry, fill = HADCM3.var), shape = 21, size = 4, alpha = 0.6) # WGS 84 / Equal Earth Greenwich
 }
-  if(reef.fill == TRUE){
+  if(var.present == "reefs"){
     stage_occs_rotd$REE_classification <- factor(stage_occs_rotd$REE_classification, levels=c('Archaeocyathids', #reds
                                                                               'Glass _sponges', #reds
                                                                               'Stromatoporoids', #reds
