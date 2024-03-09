@@ -5,7 +5,7 @@
 ###################################################
 # full comments to follow...
 
-cGENIE.map.shiny.test <- function(file, var,
+cGENIE.map.shiny.test.tar <- function(file, var, name,
                        depth.level = 1,
                        dims = 3,
                        year = "default",
@@ -31,8 +31,23 @@ cGENIE.map.shiny.test <- function(file, var,
   library(ggspatial)
   library(reshape2)
   library(ggplot2)
+  library(stringr)
+  # name <- "~/PETM.stuff/cgenie_archive/S22_056a_Tdep_remin_1PO4.tar.gz"
 
-  nc <- open.nc(paste0(file))
+  file.name.short <- name %>% str_replace(".tar.gz", "")
+
+  if(dims == 3){
+  nc <- open.nc(archive::archive_extract(file, files = c(paste0(file.name.short, "/biogem/fields_biogem_3d.nc"))))
+  }
+  if(dims == 2){
+    nc <- open.nc(archive::archive_extract(file, files = c(paste0(file.name.short, "/biogem/fields_biogem_2d.nc"))))
+  }
+  # tar <- archive_read(file, "biogem/fields_biogem_3d.nc")
+  #
+  # nc <- open.nc(archive_read(file, "S22_056a_Tdep_remin_1PO4/biogem/fields_biogem_3d.nc"))
+  #
+  #
+  # read.csv(archive_read(file, "S22_056a_Tdep_remin_1PO4/biogem/biogem_series_atm_temp.res"))
 
   # Extract general variables
   lat <- var.get.nc(nc, "lat") # units: degrees north
