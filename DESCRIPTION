@@ -1,11 +1,15 @@
 Package: PaleoClimR
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Visualise and analyse palaeoclimate model data in combination with empirical datasets
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Author: Richard G. Stockey
+Maintainer: Richard G. Stockey <r.g.stockey@soton.ac.uk>
+Description: 
+This package is designed to enable you to visualize palaeoclimate model data as maps, 
+to generate summaries of palaeoclimate models and to link empirical point data to palaeoclimate models. 
+The current version includes functions for cGENIE, digital elevation models from Scotese and Wright (2018) 
+[Scotese, C. R., & Wright, N. M. (2018). PALEOMAP Paleodigital Elevation Models (PaleoDEMS) for the Phanerozoic 
+[Data set]. Zenodo. https://doi.org/10.5281/zenodo.5460860] and from HADCM3.
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true
