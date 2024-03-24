@@ -18,7 +18,7 @@ temp.matching.benthic.coords <- function(var = "insitu_T_ym_dpth", # default ass
 
   grid.dat <- HADCM3.grid(file = file,
                           experiment = experiment,
-                          dims = dims)
+                          dims = 3)
 
 
   clim.dat <- NA
