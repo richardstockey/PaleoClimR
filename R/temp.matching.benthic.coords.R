@@ -9,8 +9,6 @@
 temp.matching.benthic.coords <- function(var = "insitu_T_ym_dpth", # default assumption is for marine
                                  file = "o.pgclann",
                                  experiment,
-                        depth.level = 1,
-                        dims = 3,
                         time.present = FALSE,
                         coord.dat, # is any data frame with the lat long column names assigned - HADCM3 data will be added to this and returned
                         lat.name = "p_lat",
@@ -27,8 +25,6 @@ temp.matching.benthic.coords <- function(var = "insitu_T_ym_dpth", # default ass
   clim.dat <- HADCM3.benthic.data(var = var,
                           file = file,
                           experiment = experiment,
-                          depth.level = 1,
-                          dims = dims,
                           na.rm = TRUE)
 
   # # omit NAs in the var value for climate data file
