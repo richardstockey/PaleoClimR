@@ -42,6 +42,6 @@ return(df)
 }
 
 # testing...
-ggplot(df.benth, aes(y = lat.mid, x = lon.mid, color = var)) + geom_point()+
-  scale_colour_viridis_c()
+# ggplot(df.benth, aes(y = lat.mid, x = lon.mid, color = var)) + geom_point()+
+#   scale_colour_viridis_c()+theme_bw()
 
