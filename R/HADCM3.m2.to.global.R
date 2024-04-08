@@ -168,7 +168,7 @@ HADCM3.m2.to.global <- function(var, file, experiment,
   # NOTE - an implicit check of this function is to check the area of the Earth calculated
   # For Sarkar 2022 experiments, sum(df$area_m2) gives 5.099432e+14, which is approximately the same as the 'real' [spherical] value of 5.100644719×10¹⁴ m²https://www.quora.com/What-is-the-exact-surface-area-of-earth-in-square-meters#:~:text=The%20earth's%20radius%20is%206.371,%C2%B2%20%3D%205.100644719%C3%9710%C2%B9%E2%81%B4%20m%C2%B2.
 
-  TotalVal <- sum(df$TotalCellVal, na.omit = TRUE)
+  TotalVal <- sum(df$TotalCellVal, na.rm = TRUE)
   return(TotalVal)
 }
 
