@@ -26,6 +26,7 @@ HADCM3.m2.to.global <- function(var, file, experiment,
   library(ggplot2)
   library(pals)
   library(viridis)
+  library(geosphere)
 
   #experiment <- "~/Valdes2021_HADCM3L/teXPl_444/teXPl_444"
   #file <- "o.pgclann"
