@@ -19,7 +19,8 @@ HADCM3.map <- function(var, file, experiment,
                        calcs = TRUE,
                        plot = TRUE,
                        palette_name = pals::parula(1000),
-                       polygons){
+                       polygons,
+                       na.colour = "grey80"){
 
   # other projection options include:
   # - 6933 - Lambert Cylindrical Equal Area (need only numbers no text and no quotes) [this is equal area rectangle]
@@ -214,6 +215,7 @@ HADCM3.map <- function(var, file, experiment,
                                              ticks.linewidth = 2/.pt),
                       breaks = seq(min.value, max.value, intervals),
                       limits=c(min.value, max.value),
+                      na.value = na.colour
                       #labels = c("0", "", "50", "", "100", "", "150", "", "200", "", "250")
     )+
     theme_minimal()+

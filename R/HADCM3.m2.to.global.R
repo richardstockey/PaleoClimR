@@ -1,5 +1,5 @@
 ###################################################
-# HADCM3.map.R
+# HADCM3.m2.to.global.R
 # Rich Stockey 20240408
 # designed to upscale per area estimates of things like triffid outputs to global values...
 ###################################################
