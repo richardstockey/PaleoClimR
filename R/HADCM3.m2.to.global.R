@@ -82,8 +82,8 @@ HADCM3.m2.to.global <- function(var, file, experiment,
       rep(lon.edges[1:(length(lon.edges)-1)], times = length(lat), each = 1),
       rep(lon.edges[2:(length(lon.edges))], times = length(lat), each = 1),
       rep(lat, times = 1, each = length(lon)),
+      rep(lat.edges[1:(length(lat.edges)-1)], times = 1, each = length(lon)),
       rep(lat.edges[2:(length(lat.edges))], times = 1, each = length(lon)),
-      rep(lat.edges[1:(length(lat.edges)-1)], times = 1, each = length(lon)), # testing change (to investigate...?)
       #as.data.frame(melt(var.arr[,, depth.level, time.step]))$value))
       as.data.frame(melt(var.arr[,, depth.level]))$value))
 
