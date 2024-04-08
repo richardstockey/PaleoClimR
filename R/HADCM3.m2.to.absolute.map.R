@@ -143,11 +143,11 @@ HADCM3.m2.to.absolute.map <- function(var, file, experiment,
   # Sit down with BRIDGE group at somepoint?
 
   # SCRAPPED THIS FOR TOTAL CALCULATIONS...
-  # # also eliminate cells that bridge left and right side of map (i.e. extreme -180ish and 180ish longitude)
-  # df$lon.range <- abs(df$lon.min-df$lon.max)
-  # df <- df %>%
-  #   filter(lon.range < 180 #could just be greater than 4, but this will work for all model grids
-  #   )
+  # also eliminate cells that bridge left and right side of map (i.e. extreme -180ish and 180ish longitude)
+  df$lon.range <- abs(df$lon.min-df$lon.max)
+  df <- df %>%
+    filter(lon.range < 180 #could just be greater than 4, but this will work for all model grids
+    )
 
 
 
