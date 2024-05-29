@@ -20,6 +20,7 @@ cGENIE.res.plot <- function(var, sub_var = "default", experiment){
       plot <- ggplot(data = res.frame, aes(x = `% time (yr)` , y = `_surT (ice-free) (C)`))+
         geom_line()+
         theme_bw()+
+        xlab("Time (yr)")+
         theme(panel.border = element_rect(fill=NA,color="black", linetype="solid"),
               axis.line = element_line(lineend = 'square'),
               axis.text = element_text(color="black"),
@@ -30,6 +31,7 @@ cGENIE.res.plot <- function(var, sub_var = "default", experiment){
         plot <- ggplot(data = res.frame, aes(x = `% time (yr)` , y = `global mean O2 (mol kg-1)`))+
           geom_line()+
           theme_bw()+
+          xlab("Time (yr)")+
           theme(panel.border = element_rect(fill=NA,color="black", linetype="solid"),
                 axis.line = element_line(lineend = 'square'),
                 axis.text = element_text(color="black"),
@@ -40,6 +42,7 @@ cGENIE.res.plot <- function(var, sub_var = "default", experiment){
       plot <- ggplot(data = res.frame, aes(x = `% time (yr)` , y = `global pO2 (atm)`))+
         geom_line()+
         theme_bw()+
+        xlab("Time (yr)")+
         theme(panel.border = element_rect(fill=NA,color="black", linetype="solid"),
               axis.line = element_line(lineend = 'square'),
               axis.text = element_text(color="black"),
@@ -50,6 +53,7 @@ cGENIE.res.plot <- function(var, sub_var = "default", experiment){
         plot <- ggplot(data = res.frame, aes(x = `% time (yr)` , y = `global pCO2 (atm)`))+
           geom_line()+
           theme_bw()+
+          xlab("Time (yr)")+
           theme(panel.border = element_rect(fill=NA,color="black", linetype="solid"),
                 axis.line = element_line(lineend = 'square'),
                 axis.text = element_text(color="black"),
@@ -62,6 +66,7 @@ cGENIE.res.plot <- function(var, sub_var = "default", experiment){
       plot <- ggplot(data = res.frame, aes(x = `% time (yr)` , y = get(names(res.frame)[col_no])))+
         geom_line()+
         ylab(y_name)+
+        xlab("Time (yr)")+
         theme_bw()+
         theme(panel.border = element_rect(fill=NA,color="black", linetype="solid"),
               axis.line = element_line(lineend = 'square'),
