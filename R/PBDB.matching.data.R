@@ -11,14 +11,15 @@
 # Valdes_stage corresponds to the all_dirs_short age of the stages used in Valdes 2021
 # think more about best way to do this. Perhaps can just do some rounding and then set a linear slider scale??
 
-
+# this works with cgenie, just gotta pass cgenie data to the function...
 PBDB.matching.data <- function(HADCM3.data,
                        Valdes_stage,
                        terrestrial.or.marine = "marine",
-                       phylum,
-                       order,
-                       family,
-                       genus,
+                       phylum = NA,
+                       class = NA,
+                       order = NA,
+                       family = NA,
+                       genus = NA,
                        add.body.sizes = TRUE
                        ){
 
@@ -33,6 +34,23 @@ PBDB.matching.data <- function(HADCM3.data,
   if(terrestrial.or.marine == "terrestrial"){
     load("/Users/rgs1e22/Phanero_niches/Phanerozoic_terrestrial_cleaned_binned.RData")
     occs <- terrestrial_cleaned_binned
+  }
+
+  if(is.na(phylum) == FALSE){
+    filter(occs, phylum == phylum)
+  }
+  if(is.na(class) == FALSE){
+    filter(occs, class == class)
+  }
+  if(is.na(order) == FALSE){
+    filter(occs, order == order)
+  }
+  if(is.na(family) == FALSE){
+    filter(occs, family == family)
+  }
+  if(is.na(genus) == FALSE){
+    filter(occs, genus == genus)
+
   }
 
   occs$stage_no_spaces <- occs$stage %>% str_replace(" ", "_")
