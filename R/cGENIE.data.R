@@ -48,6 +48,8 @@ cGENIE.data <- function(var, experiment,
 
   if(year == "default"){
     time.step <- length(time)
+  }else{
+    time.step <- year
   }
 
 

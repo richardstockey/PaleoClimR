@@ -28,6 +28,8 @@ cGENIE.omz.volume <- function(experiment, thresh = 4.8e-6, time.step = "default"
 
   if(time.step == "default"){
   time <- length(time)
+  }else{
+    time <- time.step
   }
   var.arr <- var.get.nc(nc, var)
 
