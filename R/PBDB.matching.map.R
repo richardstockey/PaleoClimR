@@ -107,7 +107,7 @@ PBDB.matching.map <- function(HADCM3.map,
   st_crs(rotd_coords_spsf) = '+proj=longlat +ellps=sphere'
   HADCM3.map.w.fossils <- HADCM3.map +
     #geom_point(data = stage_occs_rotd, aes(x = p_lng, y = p_lat), shape = 21, size = 5, fill = "#D44D44")
-    geom_sf(data = rotd_coords_spsf %>% st_transform(projection), aes(geometry = geometry), shape = 21, size = 6, alpha = 0.6, fill = "#D44D44") # WGS 84 / Equal Earth Greenwich
+    geom_sf(data = rotd_coords_spsf %>% st_transform(projection), aes(geometry = geometry), shape = 21, size = 6, stroke = 1.0, alpha = 0.6, fill = "#D44D44") # WGS 84 / Equal Earth Greenwich
 
   }
   if(var.present == TRUE){
@@ -148,7 +148,7 @@ PBDB.matching.map <- function(HADCM3.map,
     )+
     theme(legend.position="bottom")+
     labs(fill = "Fossil Occurrence Temperature (°C)")+
-    geom_sf(data = rotd_coords_spsf %>% st_transform(projection), aes(geometry = geometry, fill = HADCM3.var), shape = 21, size = 6, alpha = 0.6) # WGS 84 / Equal Earth Greenwich
+    geom_sf(data = rotd_coords_spsf %>% st_transform(projection), aes(geometry = geometry, fill = HADCM3.var), shape = 21, size = 6, stroke = 1.0, alpha = 0.6) # WGS 84 / Equal Earth Greenwich
     }
     if(var.name == "ocn_O2"){
       # rotd_coords <- cbind(stage_occs_rotd$p_lng, stage_occs_rotd$p_lat, get(paste0("stage_occs_rotd$", var.name)))
@@ -186,7 +186,7 @@ PBDB.matching.map <- function(HADCM3.map,
         )+
         theme(legend.position="bottom")+
         labs(fill = expression("Dissolved O"[2]*" ("*mu*"mol/kg)"))+
-        geom_sf(data = rotd_coords_spsf %>% st_transform(projection), aes(geometry = geometry, fill = ocn_O2), shape = 21, size = 6, alpha = 0.6) # WGS 84 / Equal Earth Greenwich
+        geom_sf(data = rotd_coords_spsf %>% st_transform(projection), aes(geometry = geometry, fill = ocn_O2), shape = 21, size = 6, stroke = 1.0, alpha = 0.6) # WGS 84 / Equal Earth Greenwich
     }
     if(var.name == "ocn_temp"){
       # rotd_coords <- cbind(stage_occs_rotd$p_lng, stage_occs_rotd$p_lat, get(paste0("stage_occs_rotd$", var.name)))
@@ -224,7 +224,7 @@ PBDB.matching.map <- function(HADCM3.map,
         )+
         theme(legend.position="bottom")+
         labs(fill = expression("Temperature (°C)"))+
-        geom_sf(data = rotd_coords_spsf %>% st_transform(projection), aes(geometry = geometry, fill = ocn_temp), shape = 21, size = 6, alpha = 0.6) # WGS 84 / Equal Earth Greenwich
+        geom_sf(data = rotd_coords_spsf %>% st_transform(projection), aes(geometry = geometry, fill = ocn_temp), shape = 21, size = 6, stroke = 1.0, alpha = 0.6) # WGS 84 / Equal Earth Greenwich
     }
     if(var.name == "misc_pH"){
       # rotd_coords <- cbind(stage_occs_rotd$p_lng, stage_occs_rotd$p_lat, get(paste0("stage_occs_rotd$", var.name)))
@@ -262,7 +262,7 @@ PBDB.matching.map <- function(HADCM3.map,
         )+
         theme(legend.position="bottom")+
         labs(fill = expression("pH"))+
-        geom_sf(data = rotd_coords_spsf %>% st_transform(projection), aes(geometry = geometry, fill = misc_ph), shape = 21, size = 6, alpha = 0.6) # WGS 84 / Equal Earth Greenwich
+        geom_sf(data = rotd_coords_spsf %>% st_transform(projection), aes(geometry = geometry, fill = misc_ph), shape = 21, size = 6, stroke = 1.0, alpha = 0.6) # WGS 84 / Equal Earth Greenwich
     }
   }
   if(var.present == "reefs"){
