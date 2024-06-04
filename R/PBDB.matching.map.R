@@ -266,8 +266,8 @@ PBDB.matching.map <- function(HADCM3.map,
     }
   }
   if(var.present == "reefs"){
-    stage_occs_rotd$REE_classification <- factor(stage_occs_rotd$REE_classification, levels=c('Archaeocyathids', #reds
-                                                                              'Glass _sponges', #reds
+    stage_occs_rotd$REE_classification <- factor(stage_occs_rotd$REE_classification, levels=c('Archaeocyaths', #reds
+                                                                              'Glass_sponges', #reds
                                                                               'Stromatoporoids', #reds
                                                                               'Rudist_bivalves', #purples
                                                                               'Hydrozoans', #oranges
@@ -281,8 +281,8 @@ PBDB.matching.map <- function(HADCM3.map,
                                        stage_occs_rotd$p_lat,
                                        paste(stage_occs_rotd$REE_classification)))
 
-   REE_classification <- c('Archaeocyathids', #reds
-      'Glass _sponges', #reds
+   REE_classification <- c('Archaeocyaths', #reds
+      'Glass_sponges', #reds
       'Stromatoporoids', #reds
       'Rudist_bivalves', #purples
       'Hydrozoans', #oranges
@@ -323,7 +323,7 @@ PBDB.matching.map <- function(HADCM3.map,
 
     REE_sum$reef_builder.color <- NA
 
-    REE_sum$reef_builder.color[REE_sum$REE_classification == 'Archaeocyathids'] <- '#6e1423'
+    REE_sum$reef_builder.color[REE_sum$REE_classification == 'Archaeocyaths'] <- '#6e1423'
     REE_sum$reef_builder.color[REE_sum$REE_classification == 'Glass_sponges'] <- '#b21e35'
     REE_sum$reef_builder.color[REE_sum$REE_classification == 'Stromatoporoids'] <- '#e01e37'
     REE_sum$reef_builder.color[REE_sum$REE_classification == 'Rudist_bivalves'] <- '#b084cc'
