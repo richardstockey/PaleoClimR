@@ -23,7 +23,8 @@ PBDB.matching.map <- function(HADCM3.map,
                        pbdb.data,
                        data.already = TRUE,
                        var.present = FALSE,
-                       var.name = "HADCM3.var"
+                       var.name = "HADCM3.var",
+                       for.app = FALSE
                        ){
 
   library(readr)
@@ -272,6 +273,7 @@ PBDB.matching.map <- function(HADCM3.map,
                                                                               'Rudist_bivalves', #purples
                                                                               'Hydrozoans', #oranges
                                                                               'Tube_worms', #greens
+                                                                              'Chaetetids',#blues
                                                                               'Rugose_corals',#blues
                                                                               'Tabulate_corals', #blues
                                                                               'Stony_corals')) #blues
@@ -287,6 +289,7 @@ PBDB.matching.map <- function(HADCM3.map,
       'Rudist_bivalves', #purples
       'Hydrozoans', #oranges
       'Tube_worms', #greens
+      'Chaetetids',#blues
       'Rugose_corals',#blues
       'Tabulate_corals', #blues
       'Stony_corals')
@@ -302,12 +305,13 @@ PBDB.matching.map <- function(HADCM3.map,
     rotd_coords$p_lng <- as.numeric(rotd_coords$p_lng)
     rotd_coords$p_lat <- as.numeric(rotd_coords$p_lat)
 
-    rotd_coords$REE_classification <- factor(rotd_coords$REE_classification, levels=c('Archaeocyathids', #reds
+    rotd_coords$REE_classification <- factor(rotd_coords$REE_classification, levels=c('Archaeocyaths', #reds
                                                                                               'Glass_sponges', #reds
                                                                                               'Stromatoporoids', #reds
                                                                                               'Rudist_bivalves', #purples
                                                                                               'Hydrozoans', #oranges
                                                                                               'Tube_worms', #greens
+                                                                                              'Chaetetids',#blues'
                                                                                               'Rugose_corals',#blues
                                                                                               'Tabulate_corals', #blues
                                                                                               'Stony_corals')) #blues
@@ -329,6 +333,7 @@ PBDB.matching.map <- function(HADCM3.map,
     REE_sum$reef_builder.color[REE_sum$REE_classification == 'Rudist_bivalves'] <- '#b084cc'
     REE_sum$reef_builder.color[REE_sum$REE_classification == 'Hydrozoans'] <- 'goldenrod2'
     REE_sum$reef_builder.color[REE_sum$REE_classification == 'Tube_worms'] <- '#548c2f'
+    REE_sum$reef_builder.color[REE_sum$REE_classification == 'Chaetetids'] <- '#b5838d'
     REE_sum$reef_builder.color[REE_sum$REE_classification == 'Rugose_corals'] <- '#01497c'
     REE_sum$reef_builder.color[REE_sum$REE_classification == 'Tabulate_corals'] <- '#2c7da0'
     REE_sum$reef_builder.color[REE_sum$REE_classification == 'Stony_corals'] <- '#a9d6e5'
@@ -341,7 +346,7 @@ PBDB.matching.map <- function(HADCM3.map,
       tally() %>%
       as.numeric()
 
-
+    if(for.app == FALSE){
     HADCM3.map.w.fossils <- HADCM3.map +
       #geom_point(data = stage_occs_rotd, aes(x = p_lng, y = p_lat), shape = 21, size = 5, fill = "#D44D44")
       new_scale_fill() +
@@ -350,26 +355,39 @@ PBDB.matching.map <- function(HADCM3.map,
       guides(fill = guide_legend(nrow = REE_classes))+
       labs(fill = "REE classification")+
       geom_sf(data = rotd_coords_spsf %>% st_transform(projection), aes(geometry = geometry, fill = REE_classification), colour='black', shape=21,  size = 4, alpha = 0.6) # WGS 84 / Equal Earth Greenwich
+}
+    if(for.app == TRUE){
+    HADCM3.map.w.fossils <- HADCM3.map +
+      #geom_point(data = stage_occs_rotd, aes(x = p_lng, y = p_lat), shape = 21, size = 5, fill = "#D44D44")
+      new_scale_fill() +
+      scale_fill_manual(values=reef_builder.colors) +
+      theme(legend.position="bottom")+
+      # guides(fill = guide_legend(nrow = REE_classes))+
+      # labs(fill = "REE classification")+
+      geom_sf(data = rotd_coords_spsf %>% st_transform(projection), aes(geometry = geometry, fill = REE_classification), colour='black', shape=21,  size = 4, alpha = 0.6, show.legend = FALSE) # WGS 84 / Equal Earth Greenwich
+    }
 
   }
   if(var.present == "reefs2"){
-    stage_occs_rotd$REE_classification <- factor(stage_occs_rotd$REE_classification, levels=c('Archaeocyathids', #reds
+    stage_occs_rotd$REE_classification <- factor(stage_occs_rotd$REE_classification, levels=c('Archaeocyaths', #reds
                                                                                               'Glass_sponges', #reds
                                                                                               'Stromatoporoids', #reds
                                                                                               'Rudist_bivalves', #purples
                                                                                               'Hydrozoans', #oranges
                                                                                               'Tube_worms', #greens
+                                                                                              'Chaetetids',#blues
                                                                                               'Rugose_corals',#blues
                                                                                               'Tabulate_corals', #blues
                                                                                               'Stony_corals')) #blues
     stage_occs_rotd$reef_builder.color <- NA
 
-    stage_occs_rotd$reef_builder.color[stage_occs_rotd$REE_classification == 'Archaeocyathids'] <- '#6e1423'
+    stage_occs_rotd$reef_builder.color[stage_occs_rotd$REE_classification == 'Archaeocyaths'] <- '#6e1423'
     stage_occs_rotd$reef_builder.color[stage_occs_rotd$REE_classification == 'Glass_sponges'] <- '#b21e35'
     stage_occs_rotd$reef_builder.color[stage_occs_rotd$REE_classification == 'Stromatoporoids'] <- '#e01e37'
     stage_occs_rotd$reef_builder.color[stage_occs_rotd$REE_classification == 'Rudist_bivalves'] <- '#b084cc'
     stage_occs_rotd$reef_builder.color[stage_occs_rotd$REE_classification == 'Hydrozoans'] <- 'goldenrod2'
     stage_occs_rotd$reef_builder.color[stage_occs_rotd$REE_classification == 'Tube_worms'] <- '#548c2f'
+    stage_occs_rotd$reef_builder.color[stage_occs_rotd$REE_classification == 'Chaetetids'] <- '#b5838d'
     stage_occs_rotd$reef_builder.color[stage_occs_rotd$REE_classification == 'Rugose_corals'] <- '#01497c'
     stage_occs_rotd$reef_builder.color[stage_occs_rotd$REE_classification == 'Tabulate_corals'] <- '#2c7da0'
     stage_occs_rotd$reef_builder.color[stage_occs_rotd$REE_classification == 'Stony_corals'] <- '#a9d6e5'
