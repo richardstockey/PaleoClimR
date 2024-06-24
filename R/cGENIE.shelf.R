@@ -15,7 +15,7 @@ cGENIE.shelf <- function(nc.sum, shelf.depth = 3, array.only = TRUE, surf = FALS
   # by default only returns array of variable we are generating shelf synthesis of (for taking means, etc.)
   # if wanting to plot shelf, set array.only = FALSE to get spatial NetCDF variables back
   # -------------------------------------------------------------------------------------------------------
-
+print("printing works")
     var <- nc.sum$var
     if(time.step == "default"){
     time <- length(nc.sum$time)

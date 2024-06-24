@@ -62,17 +62,11 @@ PBDB.matching.data <- function(HADCM3.data,
   stage_occs <- filter(occs, stage_no_spaces == diDyn_stage_no_spaces)
 
   if(add.body.sizes == TRUE){
-  sizeDataOld <- read_delim("~/Heim+_2020_data/sizeData.txt",
+  sizeData <- read_delim("~/Heim+_2020_data/sizeData.txt",
                          delim = "\t", escape_double = FALSE,
                          trim_ws = TRUE)
 
-  sizeData <- read_delim("~/Monarrez+_2024_Body_Size/Phanerozoic_body_size_data.txt",
-                         delim = "\t", escape_double = FALSE,
-                         trim_ws = TRUE)
-  sizeData <- sizeData %>%
-    filter(!is.na(phylum))
-
-  stage_occs <- merge(stage_occs, sizeData, by.x = "genus", by.y = "taxon_name")
+  stage_occs <- merge(stage_occs, sizeData, by.x = "genus", by.y = "taxon_genus")
   }
 
   library(stringr)
