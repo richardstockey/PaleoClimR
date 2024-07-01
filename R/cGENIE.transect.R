@@ -64,6 +64,8 @@ cGENIE.transect <- function(experiment, var,
 
   if(year == "default"){
     time.step <- length(time)
+  }else{
+    time.step <- year
   }
 
   # amend grid to project on 0 degs - note cGENIE differs from HADCM3

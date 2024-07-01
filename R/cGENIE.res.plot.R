@@ -19,7 +19,8 @@ cGENIE.res.plot <- function(var, sub_var = "default", experiment){
     if(var == "ocn_temp"){
       plot <- ggplot(data = res.frame, aes(x = `% time (yr)` , y = `_surT (ice-free) (C)`))+
         geom_line()+
-        theme_bw()+
+        theme_bw(24)+
+        xlab("Time (yr)")+
         theme(panel.border = element_rect(fill=NA,color="black", linetype="solid"),
               axis.line = element_line(lineend = 'square'),
               axis.text = element_text(color="black"),
@@ -29,7 +30,8 @@ cGENIE.res.plot <- function(var, sub_var = "default", experiment){
       }else if(var == "ocn_O2"){
         plot <- ggplot(data = res.frame, aes(x = `% time (yr)` , y = `global mean O2 (mol kg-1)`))+
           geom_line()+
-          theme_bw()+
+          theme_bw(24)+
+          xlab("Time (yr)")+
           theme(panel.border = element_rect(fill=NA,color="black", linetype="solid"),
                 axis.line = element_line(lineend = 'square'),
                 axis.text = element_text(color="black"),
@@ -39,7 +41,8 @@ cGENIE.res.plot <- function(var, sub_var = "default", experiment){
       }else if(var == "atm_pO2"){
       plot <- ggplot(data = res.frame, aes(x = `% time (yr)` , y = `global pO2 (atm)`))+
         geom_line()+
-        theme_bw()+
+        theme_bw(24)+
+        xlab("Time (yr)")+
         theme(panel.border = element_rect(fill=NA,color="black", linetype="solid"),
               axis.line = element_line(lineend = 'square'),
               axis.text = element_text(color="black"),
@@ -49,7 +52,8 @@ cGENIE.res.plot <- function(var, sub_var = "default", experiment){
       }else if(var == "atm_pCO2"){
         plot <- ggplot(data = res.frame, aes(x = `% time (yr)` , y = `global pCO2 (atm)`))+
           geom_line()+
-          theme_bw()+
+          theme_bw(24)+
+          xlab("Time (yr)")+
           theme(panel.border = element_rect(fill=NA,color="black", linetype="solid"),
                 axis.line = element_line(lineend = 'square'),
                 axis.text = element_text(color="black"),
@@ -62,7 +66,8 @@ cGENIE.res.plot <- function(var, sub_var = "default", experiment){
       plot <- ggplot(data = res.frame, aes(x = `% time (yr)` , y = get(names(res.frame)[col_no])))+
         geom_line()+
         ylab(y_name)+
-        theme_bw()+
+        xlab("Time (yr)")+
+        theme_bw(24)+
         theme(panel.border = element_rect(fill=NA,color="black", linetype="solid"),
               axis.line = element_line(lineend = 'square'),
               axis.text = element_text(color="black"),

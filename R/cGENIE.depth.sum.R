@@ -22,7 +22,7 @@ cGENIE.depth.sum <- function(var, experiment,
   library(viridis)
 
   var.3D.df <- cGENIE.data.3D(experiment = exp,
-                          var = var
+                          var = var, year = year
 
   )
 

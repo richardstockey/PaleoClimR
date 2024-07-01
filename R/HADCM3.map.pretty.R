@@ -21,6 +21,7 @@ HADCM3.map.pretty <- function(experiment,
                        projection = 'ESRI:54012',
                        calcs = TRUE,
                        plot = TRUE,
+                       for.app = FALSE,
                        polygons){
 
   # other projection options include:
@@ -253,6 +254,7 @@ HADCM3.map.pretty <- function(experiment,
   max.value_2 <- 3200
   intervals_2 <- 400
 
+  if(for.app == FALSE){
   map <- ggplot() +
    geom_sf(data = SpDfSf %>% st_transform(projection), aes(geometry = geometry, fill=var), color = NA, linewidth=10, linetype=0) + # WGS 84 / Equal Earth Greenwich
     #geom_sf(data = SpDfSf_2 %>% st_transform(projection), aes(geometry = geometry, fill=var), color = NA, linewidth=10, linetype=0) + # WGS 84 / Equal Earth Greenwich
@@ -298,6 +300,58 @@ HADCM3.map.pretty <- function(experiment,
     theme_minimal()+
     theme(legend.position="bottom")+
     labs(fill = "Topography (m)")
+  }
+
+  if(for.app == TRUE){
+  map <- ggplot() +
+    geom_sf(data = SpDfSf %>% st_transform(projection), aes(geometry = geometry, fill=var), color = NA, linewidth=10, linetype=0) + # WGS 84 / Equal Earth Greenwich
+    #geom_sf(data = SpDfSf_2 %>% st_transform(projection), aes(geometry = geometry, fill=var), color = NA, linewidth=10, linetype=0) + # WGS 84 / Equal Earth Greenwich
+    geom_sf(data = SLs1dfSf %>% st_transform(projection), aes(geometry = geometry), fill=NA, color = "grey50", linewidth=0.9) +
+    #coord_sf(crs = '+proj=eqearth +lon_0=0 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs +type=crs')+
+    #coord_sf(crs = "ESRI:102003")+
+    scale_fill_stepsn(colours = palette_name_ocean,
+                      #scale_fill_stepsn(colours = parula(1000),# seems like we can keep the n value (1000) just at something big?
+                      guide = guide_colorbar(title.position = "top",
+                                             barwidth = 12,
+                                             barheight = 1,
+                                             raster = FALSE,
+                                             frame.colour = "grey50",
+                                             frame.linewidth = 2/.pt,
+                                             frame.linetype = 1,
+                                             ticks = TRUE,
+                                             ticks.colour = "grey50",
+                                             ticks.linewidth = 2/.pt),
+                      breaks = seq(min.value_1, max.value_1, intervals_1),
+                      limits=c(min.value_1, max.value_1),
+                      #labels = c("0", "", "50", "", "100", "", "150", "", "200", "", "250")
+    )+
+    theme(legend.position="bottom")+
+    labs(fill = "Sea Surface Temperature (°C)")+
+    new_scale_fill() +
+    geom_sf(data = SpDfSf_2 %>% st_transform(projection), aes(geometry = geometry, fill=var), color = NA, linewidth=10, linetype=0) + # WGS 84 / Equal Earth Greenwich
+    scale_fill_stepsn(colours = palette_name_land,
+                      #scale_fill_stepsn(colours = parula(1000),# seems like we can keep the n value (1000) just at something big?
+                      guide = guide_colorbar(title.position = "top",
+                                             barwidth = 12,
+                                             barheight = 1,
+                                             raster = FALSE,
+                                             frame.colour = "grey50",
+                                             frame.linewidth = 2/.pt,
+                                             frame.linetype = 1,
+                                             ticks = TRUE,
+                                             ticks.colour = "grey50",
+                                             ticks.linewidth = 2/.pt),
+                      breaks = seq(min.value_2, max.value_2, intervals_2),
+                      limits=c(min.value_2, max.value_2),
+                      #labels = c("0", "", "50", "", "100", "", "150", "", "200", "", "250")
+    )+
+    theme_minimal()+
+    theme(legend.position="bottom",
+          line = element_line(colour = "white"),
+          plot.background = element_rect(fill = "black"),
+          text = element_text(colour = "white"))+
+    labs(fill = "Topography (m)")
+  }
 
   map
   }

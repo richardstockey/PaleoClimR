@@ -15,18 +15,21 @@ PBDB.matching.map <- function(HADCM3.map,
                        Valdes_stage,
                        projection = 'ESRI:54012',
                        terrestrial.or.marine = "marine",
-                       phylum,
-                       order,
-                       family,
-                       genus,
+                       phylum = NA,
+                       class = NA,
+                       order = NA,
+                       family = NA,
+                       genus = NA,
                        pbdb.data,
                        data.already = TRUE,
                        var.present = FALSE,
-                       var.name = "HADCM3.var"
+                       var.name = "HADCM3.var",
+                       for.app = FALSE
                        ){
 
   library(readr)
   library(stringr)
+  library(ggnewscale)
   #Valdes_stage <- "525_0_MaBP"
 
   if(data.already == FALSE){
@@ -38,6 +41,23 @@ PBDB.matching.map <- function(HADCM3.map,
     load("/Users/rgs1e22/Phanero_niches/Phanerozoic_terrestrial_cleaned_binned.RData")
     occs <- terrestrial_cleaned_binned
   }
+
+  if(is.na(phylum) == FALSE){
+    filter(occs, phylum == phylum)
+  }
+    if(is.na(class) == FALSE){
+      filter(occs, class == class)
+    }
+    if(is.na(order) == FALSE){
+      filter(occs, order == order)
+    }
+    if(is.na(family) == FALSE){
+      filter(occs, family == family)
+    }
+    if(is.na(genus) == FALSE){
+      filter(occs, genus == genus)
+
+    }
 
   occs$stage_no_spaces <- occs$stage %>% str_replace(" ", "_")
   stage_translations <- read_csv("~/Phanero_niches/stage_translations.csv")
@@ -61,6 +81,24 @@ PBDB.matching.map <- function(HADCM3.map,
   }
   if(data.already == TRUE){
     stage_occs_rotd <- pbdb.data
+
+    if(is.na(phylum) == FALSE){
+      filter(stage_occs_rotd, phylum == phylum)
+    }
+    if(is.na(class) == FALSE){
+      filter(stage_occs_rotd, class == class)
+    }
+    if(is.na(order) == FALSE){
+      filter(stage_occs_rotd, order == order)
+    }
+    if(is.na(family) == FALSE){
+      filter(stage_occs_rotd, family == family)
+    }
+    if(is.na(genus) == FALSE){
+      filter(stage_occs_rotd, genus == genus)
+
+    }
+
   }
   if(var.present == FALSE){
   rotd_coords <- cbind(stage_occs_rotd$p_lng, stage_occs_rotd$p_lat)
@@ -70,10 +108,12 @@ PBDB.matching.map <- function(HADCM3.map,
   st_crs(rotd_coords_spsf) = '+proj=longlat +ellps=sphere'
   HADCM3.map.w.fossils <- HADCM3.map +
     #geom_point(data = stage_occs_rotd, aes(x = p_lng, y = p_lat), shape = 21, size = 5, fill = "#D44D44")
-    geom_sf(data = rotd_coords_spsf %>% st_transform(projection), aes(geometry = geometry), shape = 21, size = 4, alpha = 0.6, fill = "#D44D44") # WGS 84 / Equal Earth Greenwich
+    geom_sf(data = rotd_coords_spsf %>% st_transform(projection), aes(geometry = geometry), shape = 21, size = 6, stroke = 1.0, alpha = 0.6, fill = "#D44D44") # WGS 84 / Equal Earth Greenwich
 
   }
   if(var.present == TRUE){
+
+    if(var.name == "HADCM3.var"){
   # rotd_coords <- cbind(stage_occs_rotd$p_lng, stage_occs_rotd$p_lat, get(paste0("stage_occs_rotd$", var.name)))
   rotd_coords <- cbind(stage_occs_rotd$p_lng, stage_occs_rotd$p_lat, stage_occs_rotd$HADCM3.var)
   rotd_coords <- na.omit(rotd_coords)
@@ -109,15 +149,131 @@ PBDB.matching.map <- function(HADCM3.map,
     )+
     theme(legend.position="bottom")+
     labs(fill = "Fossil Occurrence Temperature (°C)")+
-    geom_sf(data = rotd_coords_spsf %>% st_transform(projection), aes(geometry = geometry, fill = HADCM3.var), shape = 21, size = 4, alpha = 0.6) # WGS 84 / Equal Earth Greenwich
-}
+    geom_sf(data = rotd_coords_spsf %>% st_transform(projection), aes(geometry = geometry, fill = HADCM3.var), shape = 21, size = 6, stroke = 1.0, alpha = 0.6) # WGS 84 / Equal Earth Greenwich
+    }
+    if(var.name == "ocn_O2"){
+      # rotd_coords <- cbind(stage_occs_rotd$p_lng, stage_occs_rotd$p_lat, get(paste0("stage_occs_rotd$", var.name)))
+      rotd_coords <- cbind(stage_occs_rotd$p_lng, stage_occs_rotd$p_lat, stage_occs_rotd$HADCM3.var*10^6)
+      rotd_coords <- na.omit(rotd_coords)
+      rotd_coords_sp <- SpatialPointsDataFrame(coords = rotd_coords[,1:2], data = as.data.frame(rotd_coords[,3]))
+      names(rotd_coords_sp) <- "ocn_O2"
+
+      # gardcoding in palettes for now  - 20231127
+      palette_name_ocean <- pals::parula(1000)
+      min.value_1 <- 0
+      max.value_1 <- 250
+      intervals_1 <- 25
+
+      rotd_coords_spsf <- st_as_sf(rotd_coords_sp)
+      st_crs(rotd_coords_spsf) = '+proj=longlat +ellps=sphere'
+      HADCM3.map.w.fossils <- HADCM3.map +
+        #geom_point(data = stage_occs_rotd, aes(x = p_lng, y = p_lat), shape = 21, size = 5, fill = "#D44D44")
+        new_scale_fill() +
+        scale_fill_stepsn(colours = palette_name_ocean,
+                          #scale_fill_stepsn(colours = parula(1000),# seems like we can keep the n value (1000) just at something big?
+                          guide = guide_colorbar(title.position = "top",
+                                                 barwidth = 12,
+                                                 barheight = 1,
+                                                 raster = FALSE,
+                                                 frame.colour = "grey6",
+                                                 frame.linewidth = 2/.pt,
+                                                 frame.linetype = 1,
+                                                 ticks = TRUE,
+                                                 ticks.colour = "grey6",
+                                                 ticks.linewidth = 2/.pt),
+                          breaks = seq(min.value_1, max.value_1, intervals_1),
+                          limits=c(min.value_1, max.value_1),
+                          #labels = c("0", "", "50", "", "100", "", "150", "", "200", "", "250")
+        )+
+        theme(legend.position="bottom")+
+        labs(fill = expression("Dissolved O"[2]*" ("*mu*"mol/kg)"))+
+        geom_sf(data = rotd_coords_spsf %>% st_transform(projection), aes(geometry = geometry, fill = ocn_O2), shape = 21, size = 6, stroke = 1.0, alpha = 0.6) # WGS 84 / Equal Earth Greenwich
+    }
+    if(var.name == "ocn_temp"){
+      # rotd_coords <- cbind(stage_occs_rotd$p_lng, stage_occs_rotd$p_lat, get(paste0("stage_occs_rotd$", var.name)))
+      rotd_coords <- cbind(stage_occs_rotd$p_lng, stage_occs_rotd$p_lat, stage_occs_rotd$HADCM3.var)
+      rotd_coords <- na.omit(rotd_coords)
+      rotd_coords_sp <- SpatialPointsDataFrame(coords = rotd_coords[,1:2], data = as.data.frame(rotd_coords[,3]))
+      names(rotd_coords_sp) <- "ocn_temp"
+
+      # gardcoding in palettes for now  - 20231127
+      palette_name_ocean <- pals::parula(1000)
+      min.value_1 <- 0
+      max.value_1 <- 40
+      intervals_1 <- 5
+
+      rotd_coords_spsf <- st_as_sf(rotd_coords_sp)
+      st_crs(rotd_coords_spsf) = '+proj=longlat +ellps=sphere'
+      HADCM3.map.w.fossils <- HADCM3.map +
+        #geom_point(data = stage_occs_rotd, aes(x = p_lng, y = p_lat), shape = 21, size = 5, fill = "#D44D44")
+        new_scale_fill() +
+        scale_fill_stepsn(colours = palette_name_ocean,
+                          #scale_fill_stepsn(colours = parula(1000),# seems like we can keep the n value (1000) just at something big?
+                          guide = guide_colorbar(title.position = "top",
+                                                 barwidth = 12,
+                                                 barheight = 1,
+                                                 raster = FALSE,
+                                                 frame.colour = "grey6",
+                                                 frame.linewidth = 2/.pt,
+                                                 frame.linetype = 1,
+                                                 ticks = TRUE,
+                                                 ticks.colour = "grey6",
+                                                 ticks.linewidth = 2/.pt),
+                          breaks = seq(min.value_1, max.value_1, intervals_1),
+                          limits=c(min.value_1, max.value_1),
+                          #labels = c("0", "", "50", "", "100", "", "150", "", "200", "", "250")
+        )+
+        theme(legend.position="bottom")+
+        labs(fill = expression("Temperature (°C)"))+
+        geom_sf(data = rotd_coords_spsf %>% st_transform(projection), aes(geometry = geometry, fill = ocn_temp), shape = 21, size = 6, stroke = 1.0, alpha = 0.6) # WGS 84 / Equal Earth Greenwich
+    }
+    if(var.name == "misc_pH"){
+      # rotd_coords <- cbind(stage_occs_rotd$p_lng, stage_occs_rotd$p_lat, get(paste0("stage_occs_rotd$", var.name)))
+      rotd_coords <- cbind(stage_occs_rotd$p_lng, stage_occs_rotd$p_lat, stage_occs_rotd$HADCM3.var)
+      rotd_coords <- na.omit(rotd_coords)
+      rotd_coords_sp <- SpatialPointsDataFrame(coords = rotd_coords[,1:2], data = as.data.frame(rotd_coords[,3]))
+      names(rotd_coords_sp) <- "ocn_O2"
+
+      # gardcoding in palettes for now  - 20231127
+      palette_name_ocean <- pals::parula(1000)
+      min.value_1 <- 6
+      max.value_1 <- 8
+      intervals_1 <- .25
+
+      rotd_coords_spsf <- st_as_sf(rotd_coords_sp)
+      st_crs(rotd_coords_spsf) = '+proj=longlat +ellps=sphere'
+      HADCM3.map.w.fossils <- HADCM3.map +
+        #geom_point(data = stage_occs_rotd, aes(x = p_lng, y = p_lat), shape = 21, size = 5, fill = "#D44D44")
+        new_scale_fill() +
+        scale_fill_stepsn(colours = palette_name_ocean,
+                          #scale_fill_stepsn(colours = parula(1000),# seems like we can keep the n value (1000) just at something big?
+                          guide = guide_colorbar(title.position = "top",
+                                                 barwidth = 12,
+                                                 barheight = 1,
+                                                 raster = FALSE,
+                                                 frame.colour = "grey6",
+                                                 frame.linewidth = 2/.pt,
+                                                 frame.linetype = 1,
+                                                 ticks = TRUE,
+                                                 ticks.colour = "grey6",
+                                                 ticks.linewidth = 2/.pt),
+                          breaks = seq(min.value_1, max.value_1, intervals_1),
+                          limits=c(min.value_1, max.value_1),
+                          #labels = c("0", "", "50", "", "100", "", "150", "", "200", "", "250")
+        )+
+        theme(legend.position="bottom")+
+        labs(fill = expression("pH"))+
+        geom_sf(data = rotd_coords_spsf %>% st_transform(projection), aes(geometry = geometry, fill = misc_ph), shape = 21, size = 6, stroke = 1.0, alpha = 0.6) # WGS 84 / Equal Earth Greenwich
+    }
+  }
   if(var.present == "reefs"){
-    stage_occs_rotd$REE_classification <- factor(stage_occs_rotd$REE_classification, levels=c('Archaeocyathids', #reds
-                                                                              'Glass _sponges', #reds
+    stage_occs_rotd$REE_classification <- factor(stage_occs_rotd$REE_classification, levels=c('Archaeocyaths', #reds
+                                                                              'Glass_sponges', #reds
                                                                               'Stromatoporoids', #reds
                                                                               'Rudist_bivalves', #purples
                                                                               'Hydrozoans', #oranges
                                                                               'Tube_worms', #greens
+                                                                              'Chaetetids',#blues
                                                                               'Rugose_corals',#blues
                                                                               'Tabulate_corals', #blues
                                                                               'Stony_corals')) #blues
@@ -127,12 +283,13 @@ PBDB.matching.map <- function(HADCM3.map,
                                        stage_occs_rotd$p_lat,
                                        paste(stage_occs_rotd$REE_classification)))
 
-   REE_classification <- c('Archaeocyathids', #reds
-      'Glass _sponges', #reds
+   REE_classification <- c('Archaeocyaths', #reds
+      'Glass_sponges', #reds
       'Stromatoporoids', #reds
       'Rudist_bivalves', #purples
       'Hydrozoans', #oranges
       'Tube_worms', #greens
+      'Chaetetids',#blues
       'Rugose_corals',#blues
       'Tabulate_corals', #blues
       'Stony_corals')
@@ -148,12 +305,13 @@ PBDB.matching.map <- function(HADCM3.map,
     rotd_coords$p_lng <- as.numeric(rotd_coords$p_lng)
     rotd_coords$p_lat <- as.numeric(rotd_coords$p_lat)
 
-    rotd_coords$REE_classification <- factor(rotd_coords$REE_classification, levels=c('Archaeocyathids', #reds
+    rotd_coords$REE_classification <- factor(rotd_coords$REE_classification, levels=c('Archaeocyaths', #reds
                                                                                               'Glass_sponges', #reds
                                                                                               'Stromatoporoids', #reds
                                                                                               'Rudist_bivalves', #purples
                                                                                               'Hydrozoans', #oranges
                                                                                               'Tube_worms', #greens
+                                                                                              'Chaetetids',#blues'
                                                                                               'Rugose_corals',#blues
                                                                                               'Tabulate_corals', #blues
                                                                                               'Stony_corals')) #blues
@@ -169,12 +327,13 @@ PBDB.matching.map <- function(HADCM3.map,
 
     REE_sum$reef_builder.color <- NA
 
-    REE_sum$reef_builder.color[REE_sum$REE_classification == 'Archaeocyathids'] <- '#6e1423'
+    REE_sum$reef_builder.color[REE_sum$REE_classification == 'Archaeocyaths'] <- '#6e1423'
     REE_sum$reef_builder.color[REE_sum$REE_classification == 'Glass_sponges'] <- '#b21e35'
     REE_sum$reef_builder.color[REE_sum$REE_classification == 'Stromatoporoids'] <- '#e01e37'
     REE_sum$reef_builder.color[REE_sum$REE_classification == 'Rudist_bivalves'] <- '#b084cc'
     REE_sum$reef_builder.color[REE_sum$REE_classification == 'Hydrozoans'] <- 'goldenrod2'
     REE_sum$reef_builder.color[REE_sum$REE_classification == 'Tube_worms'] <- '#548c2f'
+    REE_sum$reef_builder.color[REE_sum$REE_classification == 'Chaetetids'] <- '#b5838d'
     REE_sum$reef_builder.color[REE_sum$REE_classification == 'Rugose_corals'] <- '#01497c'
     REE_sum$reef_builder.color[REE_sum$REE_classification == 'Tabulate_corals'] <- '#2c7da0'
     REE_sum$reef_builder.color[REE_sum$REE_classification == 'Stony_corals'] <- '#a9d6e5'
@@ -187,7 +346,7 @@ PBDB.matching.map <- function(HADCM3.map,
       tally() %>%
       as.numeric()
 
-
+    if(for.app == FALSE){
     HADCM3.map.w.fossils <- HADCM3.map +
       #geom_point(data = stage_occs_rotd, aes(x = p_lng, y = p_lat), shape = 21, size = 5, fill = "#D44D44")
       new_scale_fill() +
@@ -196,26 +355,39 @@ PBDB.matching.map <- function(HADCM3.map,
       guides(fill = guide_legend(nrow = REE_classes))+
       labs(fill = "REE classification")+
       geom_sf(data = rotd_coords_spsf %>% st_transform(projection), aes(geometry = geometry, fill = REE_classification), colour='black', shape=21,  size = 4, alpha = 0.6) # WGS 84 / Equal Earth Greenwich
+}
+    if(for.app == TRUE){
+    HADCM3.map.w.fossils <- HADCM3.map +
+      #geom_point(data = stage_occs_rotd, aes(x = p_lng, y = p_lat), shape = 21, size = 5, fill = "#D44D44")
+      new_scale_fill() +
+      scale_fill_manual(values=reef_builder.colors) +
+      theme(legend.position="bottom")+
+      # guides(fill = guide_legend(nrow = REE_classes))+
+      # labs(fill = "REE classification")+
+      geom_sf(data = rotd_coords_spsf %>% st_transform(projection), aes(geometry = geometry, fill = REE_classification), colour='black', shape=21,  size = 4, alpha = 0.6, show.legend = FALSE) # WGS 84 / Equal Earth Greenwich
+    }
 
   }
   if(var.present == "reefs2"){
-    stage_occs_rotd$REE_classification <- factor(stage_occs_rotd$REE_classification, levels=c('Archaeocyathids', #reds
+    stage_occs_rotd$REE_classification <- factor(stage_occs_rotd$REE_classification, levels=c('Archaeocyaths', #reds
                                                                                               'Glass_sponges', #reds
                                                                                               'Stromatoporoids', #reds
                                                                                               'Rudist_bivalves', #purples
                                                                                               'Hydrozoans', #oranges
                                                                                               'Tube_worms', #greens
+                                                                                              'Chaetetids',#blues
                                                                                               'Rugose_corals',#blues
                                                                                               'Tabulate_corals', #blues
                                                                                               'Stony_corals')) #blues
     stage_occs_rotd$reef_builder.color <- NA
 
-    stage_occs_rotd$reef_builder.color[stage_occs_rotd$REE_classification == 'Archaeocyathids'] <- '#6e1423'
+    stage_occs_rotd$reef_builder.color[stage_occs_rotd$REE_classification == 'Archaeocyaths'] <- '#6e1423'
     stage_occs_rotd$reef_builder.color[stage_occs_rotd$REE_classification == 'Glass_sponges'] <- '#b21e35'
     stage_occs_rotd$reef_builder.color[stage_occs_rotd$REE_classification == 'Stromatoporoids'] <- '#e01e37'
     stage_occs_rotd$reef_builder.color[stage_occs_rotd$REE_classification == 'Rudist_bivalves'] <- '#b084cc'
     stage_occs_rotd$reef_builder.color[stage_occs_rotd$REE_classification == 'Hydrozoans'] <- 'goldenrod2'
     stage_occs_rotd$reef_builder.color[stage_occs_rotd$REE_classification == 'Tube_worms'] <- '#548c2f'
+    stage_occs_rotd$reef_builder.color[stage_occs_rotd$REE_classification == 'Chaetetids'] <- '#b5838d'
     stage_occs_rotd$reef_builder.color[stage_occs_rotd$REE_classification == 'Rugose_corals'] <- '#01497c'
     stage_occs_rotd$reef_builder.color[stage_occs_rotd$REE_classification == 'Tabulate_corals'] <- '#2c7da0'
     stage_occs_rotd$reef_builder.color[stage_occs_rotd$REE_classification == 'Stony_corals'] <- '#a9d6e5'
