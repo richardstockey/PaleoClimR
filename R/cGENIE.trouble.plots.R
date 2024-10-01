@@ -81,7 +81,7 @@ sum <- ggarrange(temp.time,
 )
 
 if(save == TRUE){
-ggsave(file = paste0(directory, file.name, ".", format), sum, height=14.5, width=15, units = "cm")
+ggsave(file = paste0(directory, file.name, ".", format), sum, height=21, width=28, units = "cm")
 }
 
 return(sum)
