@@ -1,6 +1,6 @@
 ###################################################
 # cGENIE.map.R
-# Author: Rich Stockey, 20230922
+# Author: Rich Stockey, 20230922 onwards
 # Description: This function generates maps from imported .nc (NetCDF) files.
 # It is designed to handle data from cGENIE model outputs and can handle both 2D and 3D data.
 ###################################################
