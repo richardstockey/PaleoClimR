@@ -21,3 +21,13 @@ install.packages("devtools")
 
 # Install PaleoClimR from GitHub
 devtools::install_github("richardstockey/PaleoClimR")
+```
+
+## Usage
+```R
+
+library(PaleoClimR)
+
+# Example of extracting data
+data <- cGENIE.data.3D(var = "ocn_O2", experiment = "my_experiment", year = "default")
+```
