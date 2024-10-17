@@ -1,27 +1,42 @@
-###################################################
-# cGENIE.map.R
-# Author: Rich Stockey, 20230922 onwards
-# Description: This function generates maps from imported .nc (NetCDF) files.
-# It is designed to handle data from cGENIE model outputs and can handle both 2D and 3D data.
-###################################################
+#' Generate Maps from cGENIE Model Output
+#'
+#' This function generates maps from imported .nc (NetCDF) files containing data from the cGENIE model outputs.
+#' It can handle both 2D and 3D data, visualizing variables across specified depth levels and time steps.
+#'
+#' @param var (character) The variable from the NetCDF file to be visualized (e.g., "ocn_temp", "ocn_sal", "ocn_O2").
+#' @param experiment (character) The path or name of the experiment used to locate the NetCDF file.
+#' @param depth.level (numeric) Depth layer to visualize (default is 1 for the surface layer).
+#' @param dims (numeric) The dimensionality of the data (default is 3 for 3D; can be 2D or 3D).
+#' @param year (numeric or character) Time step to visualize (default uses the final time step if "default").
+#' @param unit.factor (numeric) A scaling factor for the variable values (default is 1).
+#' @param min.value (numeric) Minimum value for the color scale (used to set scale limits).
+#' @param max.value (numeric) Maximum value for the color scale.
+#' @param intervals (numeric) Step intervals for the color scale.
+#' @param continents.outlined (logical) Logical value to control whether to outline continents.
+#' @param scale.label (character) Label for the color bar.
+#' @param model (character) The model type (default is 'biogem'; can be extended for other models).
+#' @param palette_name (character) Color palette to be used for the plot (default is `pals::parula(1000)`).
+#' @param projection (character) Map projection to use (default is ESRI:54012 for Equal Earth).
+#'
+#' @return A ggplot object representing the generated map with the specified variable visualized across geographical coordinates.
+#'
+#' @details
+#' This function reads 2D or 3D data from cGENIE model output NetCDF files and produces a map visualization.
+#' Default settings are defined for several commonly used variables, and users can specify their own scaling and color settings.
+#'
+#' @examples
+#' map <- cGENIE.map(var = "ocn_temp", experiment = "my_experiment", depth.level = 1)
+#' print(map)
+#'
+#' @import RNetCDF
+#' @import dplyr
+#' @import sf
+#' @import sp
+#' @import ggspatial
+#' @import reshape2
+#' @import ggplot2
+#' @export
 
-# Function to generate maps from cGENIE model output
-# Arguments:
-#   var               : The variable from the NetCDF file to be visualized.
-#   experiment        : The path or name of the experiment (used to locate the NetCDF file).
-#   depth.level       : Depth layer to visualize (default is 1, for surface layer).
-#   dims              : The dimensionality of the data (default is 3D; can be 2D or 3D).
-#   year              : Time step to visualize (default uses the final time step).
-#   unit.factor       : A scaling factor for the variable values (default is 1).
-#   min.value         : Minimum value for the color scale (used to set scale limits).
-#   max.value         : Maximum value for the color scale.
-#   intervals         : Step intervals for the color scale.
-#   continents.outlined : Logical value to control whether to outline continents.
-#   scale.label       : Label for the color bar.
-#   model             : The model type (default is 'biogem'; can be extended for other models).
-#   palette_name      : Color palette to be used for the plot (default is `pals::parula`).
-#   projection        : Map projection to use (default is ESRI:54012 for Equal Earth).
-###################################################
 
 cGENIE.map <- function(var, experiment,
                        depth.level = 1,
