@@ -34,11 +34,11 @@ data <- cGENIE.data.3D(var = "ocn_O2", experiment = "my_experiment", year = "def
 
 ## Authors
 
-- **Richard G. Stockey** - *Conceptualisation, Maintainer, Primary contributor* - [richardstockey](https://github.com/richardstockey)
+- **Richard G. Stockey** - *Conceptualisation, Maintainer, Primary Contributor for Initial Release* - [richardstockey](https://github.com/richardstockey)
 - **Alison T. Cribb** - *Contributor* - [atcribb](https://github.com/atcribb)
 - **Przemyslaw Gruszka** - *Contributor* - [PrzemGruszka](https://github.com/PrzemGruszka)
 - **Aspen Sartin** - *Contributor* - [aspensartin](https://github.com/aspensartin)
 - **Pedro Monarrez** - *Contributor* - [pmmonarrez](https://github.com/pmmonarrez)
 
 
- Note that contributions involve elements of conceptualisation, beta testing and discussion that may not be reflected within standard github definitions of the term "Contributor". 
+ Note that contributions as defined here involve elements of conceptualisation, beta testing and discussion that may not be reflected within standard github definitions of the term "Contributor". 
