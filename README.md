@@ -14,6 +14,7 @@
 - [Contributing](#contributing)
 - [Code of Conduct](#code-of-conduct)
 
+## Authors
 - **Richard G. Stockey** - *Conceptualisation, Maintainer, Primary Contributor for Initial Release* - [richardstockey](https://github.com/richardstockey)
 - **Alison T. Cribb** - *Contributor* - [atcribb](https://github.com/atcribb)
 - **Przemyslaw Gruszka** - *Contributor* - [PrzemGruszka](https://github.com/PrzemGruszka)
