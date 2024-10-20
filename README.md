@@ -11,6 +11,17 @@
 - [Contributing](#contributing)
 - [License](#license)
 
+## Authors
+
+- **Richard G. Stockey** - *Conceptualisation, Maintainer, Primary Contributor for Initial Release* - [richardstockey](https://github.com/richardstockey)
+- **Alison T. Cribb** - *Contributor* - [atcribb](https://github.com/atcribb)
+- **Przemyslaw Gruszka** - *Contributor* - [PrzemGruszka](https://github.com/PrzemGruszka)
+- **Aspen Sartin** - *Contributor* - [aspensartin](https://github.com/aspensartin)
+- **Pedro Monarrez** - *Contributor* - [pmmonarrez](https://github.com/pmmonarrez)
+
+
+ Note that contributions as defined here involve elements of conceptualisation, beta testing and discussion, as well as primary code contribution, that may not be reflected within standard GitHub definitions of the term ***Contributor***. 
+
 ## Installation
 
 You can install the latest version of **PaleoClimR** from GitHub:
@@ -32,13 +43,69 @@ library(PaleoClimR)
 data <- cGENIE.data.3D(var = "ocn_O2", experiment = "my_experiment", year = "default")
 ```
 
-## Authors
 
-- **Richard G. Stockey** - *Conceptualisation, Maintainer, Primary Contributor for Initial Release* - [richardstockey](https://github.com/richardstockey)
-- **Alison T. Cribb** - *Contributor* - [atcribb](https://github.com/atcribb)
-- **Przemyslaw Gruszka** - *Contributor* - [PrzemGruszka](https://github.com/PrzemGruszka)
-- **Aspen Sartin** - *Contributor* - [aspensartin](https://github.com/aspensartin)
-- **Pedro Monarrez** - *Contributor* - [pmmonarrez](https://github.com/pmmonarrez)
+ ## Contributing
 
+Contributions are welcome! Here are some ways you can contribute to the PaleoClimR project:
 
- Note that contributions as defined here involve elements of conceptualisation, beta testing and discussion that may not be reflected within standard github definitions of the term "Contributor". 
+1. **Report Bugs**:
+   - If you find a bug, please report it by opening an issue on the [GitHub Issues](https://github.com/richardstockey/PaleoClimR/issues) page.
+
+2. **Suggest Features**:
+   - If you have an idea for a new feature or an improvement, please suggest it by opening an issue on the [GitHub Issues](https://github.com/richardstockey/PaleoClimR/issues) page.
+
+3. **Submit Pull Requests**:
+   - If you want to contribute code, follow these steps:
+     1. Fork the repository on GitHub.
+     2. Clone your forked repository to your local machine.
+     3. Create a new branch for your feature or bug fix.
+     4. Make your changes and commit them with clear and descriptive commit messages.
+     5. Push your changes to your forked repository.
+     6. Open a pull request on the original repository, describing your changes and the problem they solve.
+
+4. **Improve Documentation**:
+   - If you find any issues with the documentation or think it can be improved, feel free to make changes and submit a pull request.
+
+5. **Code Reviews**:
+   - Review open pull requests and provide feedback to help improve the code quality.
+
+### Getting Started
+
+1. **Fork the Repository**:
+   - Go to the [PaleoClimR repository](https://github.com/richardstockey/PaleoClimR) and click the "Fork" button in the top right corner.
+
+2. **Clone the Repository**:
+   - Clone your forked repository to your local machine using the following command:
+     ```sh
+     git clone https://github.com/your-username/PaleoClimR.git
+     ```
+
+3. **Create a Branch**:
+   - Create a new branch for your feature or bug fix:
+     ```sh
+     git checkout -b feature-or-bugfix-name
+     ```
+
+4. **Make Changes**:
+   - Make your changes to the codebase.
+
+5. **Commit Changes**:
+   - Commit your changes with a clear and descriptive commit message:
+     ```sh
+     git commit -m "Description of the changes"
+     ```
+
+6. **Push Changes**:
+   - Push your changes to your forked repository:
+     ```sh
+     git push origin feature-or-bugfix-name
+     ```
+
+7. **Open a Pull Request**:
+   - Go to the original repository and open a pull request, describing your changes and the problem they solve.
+
+### Code of Conduct
+
+Please note that this project is released with a [Contributor Code of Conduct](CODE_OF_CONDUCT.md). By participating in this project, you agree to abide by its terms.
+
+Thank you for your interest in contributing to PaleoClimR! Your contributions are greatly appreciated.
