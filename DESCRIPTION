@@ -1,12 +1,30 @@
 Package: PaleoClimR
 Type: Package
-Title: Visualise and analyse palaeoclimate model data in combination with empirical datasets
-Version: 0.1.0
-Author: Richard G. Stockey
-Maintainer: Richard G. Stockey <r.g.stockey@soton.ac.uk>
-Description: This package is designed to enable you to visualize palaeoclimate model data as maps, to generate summaries of palaeoclimate models and to link empirical point data to palaeoclimate models. The current version includes functions for cGENIE, digital elevation models from Scotese and Wright (2018) [Scotese, C. R., & Wright, N. M. (2018). PALEOMAP Paleodigital Elevation Models (PaleoDEMS) for the Phanerozoic [Data set]. Zenodo. https://doi.org/10.5281/zenodo.5460860] and from HADCM3.
-License: What license is it under?
-Encoding: UTF-8
-LazyData: true
-URL: https://github.com/richardstockey/PaleoClimR
-BugReports: https://github.com/richardstockey/PaleoClimR/issues
+Title: Extracting, Processing, and Visualizing Paleoclimate Data
+Version: 1.0.0
+Authors@R: c(
+    person("Richard G.", "Stockey", email = "richard.stockey@example.com", role = c("aut", "cre")),
+    person("Alison T.", "Cribb", role = "ctb"),
+    person("Przemyslaw", "Gruszka", role = "ctb"),
+    person("Aspen", "Sartin", role = "ctb"),
+    person("Pedro", "Monarrez", role = "ctb")
+)
+Maintainer: Richard G. Stockey <richard.stockey@example.com>
+Description: An R package designed for extracting, processing, and visualizing paleoclimate data from cGENIE model outputs.
+License: MIT + file LICENSE
+Imports:
+    RNetCDF,
+    dplyr,
+    reshape2,
+    ggplot2,
+    pals,
+    tidyr,
+    lubridate,
+    stringr,
+    purrr,
+    readr
+Suggests:
+    testthat,
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
