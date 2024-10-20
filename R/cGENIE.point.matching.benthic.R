@@ -22,8 +22,7 @@
 #' @import dplyr
 #' @import reshape2
 #' @export
-#' ###################################################
-cGENIE.point.matching.benthic <- function(var = NULL, 
+cGENIE.point.matching.benthic <- function(var = NULL,
                                   experiment = NULL,
                                   dims = 3,
                                   time.present = FALSE,
@@ -31,7 +30,7 @@ cGENIE.point.matching.benthic <- function(var = NULL,
                                   lat.name = "p_lat", # name IF generated from rotated paleoverse coordinates...
                                   lng.name = "p_lng") # name IF generated from rotated paleoverse coordinates...
 {
-  
+
 # Load necessary libraries
 library(RNetCDF)  # For handling NetCDF files
 library(dplyr)    # For data manipulation
@@ -59,32 +58,32 @@ coord.dat <- filter(coord.dat, !is.na(!!sym(lng.name)) & !is.na(!!sym(lat.name))
 # This step adds a new column to the coordinate data frame to store the matched climate data.
 # Initially, all values in this column are set to NA.
 coord.dat$matched_climate <- NA
-  
+
 # Iterate over each row in the coordinate data frame
 # This loop processes each coordinate point to find the matching climate data.
 for(row in 1:nrow(coord.dat)){
-    
+
     # Find the mid-point of the nearest latitudinal grid cell for each occurrence
     # This step identifies the closest latitude grid point in the cGENIE model to the current coordinate's latitude.
     coord.dat$lat.bin.mid[row] <- grid.dat$lat[which.min(abs(coord.dat[[lat.name]][row] - grid.dat$lat))]
-    
+
     # Identify all the cells in the climate model that have the same latitude as the data point
     # This step filters the climate data to include only the rows where the latitude matches the closest latitude grid point.
     lat.mid.opts <- clim.dat %>%
         filter(lat.mid == coord.dat$lat.bin.mid[row])
-    
+
     # Check if there are any matching latitude options and if the closest longitudinal bin is within 10 degrees
     # This condition ensures that there are valid latitude matches and that the closest longitude grid point is within a reasonable distance.
     if(nrow(lat.mid.opts) > 0 & min(abs(coord.dat[[lng.name]][row] - lat.mid.opts$lon.mid)) < 10){
-        
+
         # Find the mid-point of the nearest longitudinal grid cell
         # This step identifies the closest longitude grid point in the cGENIE model to the current coordinate's longitude.
         coord.dat$lon.bin.mid[row] <- lat.mid.opts$lon.mid[which.min(abs(coord.dat[[lng.name]][row] - lat.mid.opts$lon.mid))]
-        
+
         # Assign the matched climate data based on the assigned latitudinal and longitudinal bins
         # This step retrieves the climate data value for the closest latitude and longitude grid points and assigns it to the matched_climate column.
         coord.dat$matched_climate[row] <- clim.dat$var[clim.dat$lat.mid == coord.dat$lat.bin.mid[row] & clim.dat$lon.mid == coord.dat$lon.bin.mid[row]]
-        
+
     } else {
         # If there are no valid latitude matches or the nearest longitude grid cell is more than 10 degrees away, assign NA
         # This step handles cases where the coordinate point is too far from any valid climate data points.
@@ -96,9 +95,9 @@ for(row in 1:nrow(coord.dat)){
 # Filter out rows where the matched climate data is NA
 # This step removes any coordinate points that did not have valid climate data matches.
 coord.dat <- filter(coord.dat, is.na(matched_climate) == FALSE)
-  
+
 names(coord.dat)[1:2] <- c("lat", "lng")
-    
+
 return(coord.dat)
-  
+
 }

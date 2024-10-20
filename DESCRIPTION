@@ -22,7 +22,15 @@ Imports:
     lubridate,
     stringr,
     purrr,
-    readr
+    readr, 
+    egg, 
+    geosphere,
+    ggnewscale, 
+    ggspatial, 
+    gridExtra, 
+    sf, 
+    sp, 
+    viridis
 Suggests:
     testthat,
     knitr,
