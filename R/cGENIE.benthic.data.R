@@ -10,15 +10,15 @@
 #' \item{dataframe}{A dataframe containing the extracted bottom-water data, including longitude, latitude, and variable values.}
 #' \item{array}{A 2D array of the extracted bottom-water variable values if `array` is TRUE.}
 #' @examples
-#' result_df <- cGENIE.bw("O2", "path/to/experiment", dataframe = TRUE)
-#' result_array <- cGENIE.bw("O2", "path/to/experiment", array = TRUE)
+#' result_df <- cGENIE.benthic.data("O2", "path/to/experiment", dataframe = TRUE)
+#' result_array <- cGENIE.benthic.data("O2", "path/to/experiment", array = TRUE)
 #' @import RNetCDF
 #' @import dplyr
 #' @export
 #'
 #'
 #'
-cGENIE.bw <- function(var, experiment, dataframe = TRUE, array = FALSE){
+cGENIE.benthic.data <- function(var, experiment, dataframe = TRUE, array = FALSE){
   # -------------------------------------------------------------------------------------------------------
   # Parameters:
   # var        : A character string specifying the variable to extract (e.g., "ocn_O2" for oxygen).

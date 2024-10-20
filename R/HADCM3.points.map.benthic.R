@@ -1,6 +1,7 @@
-#' HADCM3.map
+#' HADCM3.map with Points Matching (match points to benthic conditions but plot a sliced depth layer)
 #'
 #' This function generates maps from imported .nc files, such as those from Valdes et al. 2021. It can handle both 2D and 3D netCDF files and provides options for various customizations including projections, color palettes, and more.
+#' Additionally, it matches and plots specific points from a provided data frame.
 #'
 #' @param var Character. The variable to be extracted from the netCDF file.
 #' @param file Character. The name of the netCDF file (without extension).
@@ -34,9 +35,11 @@
 #'
 #' @import RNetCDF dplyr sf sp ggspatial reshape2 ggplot2 pals viridis
 #' @export
-HADCM3.map <- function(var, file, experiment,
-            depth.level = 1,
-            dims = 3,
+HADCM3.points.map <- function(var,
+             file,
+             experiment,
+             depth.level = 1,
+             dims = 3,
              min.value,
              max.value,
              intervals,
@@ -48,12 +51,14 @@ HADCM3.map <- function(var, file, experiment,
              calcs = TRUE,
              plot = TRUE,
              palette_name = pals::parula(1000),
-             polygons,
-             na.colour = "grey80"){
+             na.colour = "grey80",
+             coord.dat = NULL, # is any data frame with the lat long column names assigned - cGENIE data will be added to this and returned
+             lat.name = "p_lat", # name IF generated from rotated paleoverse coordinates...
+             lng.name = "p_lng"){ # name IF generated from rotated paleoverse coordinates...
 
   # palette_name currently has to be followed by (1000) or some other number
   # other options than parula would include - viridis and the many other options here https://r-charts.com/color-palettes/
-  
+
   # Load necessary libraries
   library(RNetCDF)  # For handling netCDF files
   library(dplyr)    # For data manipulation
@@ -62,7 +67,17 @@ HADCM3.map <- function(var, file, experiment,
   library(reshape2) # For reshaping data
   library(ggplot2)  # For plotting
   library(pals)     # For color palettes
-  if(calcs == TRUE){
+
+  matched_points <- HADCM3.point.matching.benthic(var = var,
+                                          file = NULL,
+                                          experiment = experiment,
+                                          dims = dims,
+                                          coord.dat = coord.dat,
+                                          lat.name = lat.name,
+                                          lng.name = lng.name
+  )
+
+
     # Open the netCDF file
     nc <- open.nc(paste0(experiment, file, ".nc"))
 
@@ -71,27 +86,27 @@ HADCM3.map <- function(var, file, experiment,
     # fudged slightly for ease of plotting from the xxx and xxx_1 variables.
     # worth checking with HADCM3 users to be doubly sure
     # this should be kept separate from variable matching scripts with point data such as PBDB and therefore be functionally fine
-    
+
     # Extract latitude values and calculate edges
     lat <- var.get.nc(nc, "latitude") # units: degrees north
     lat.edges <- c(lat - mean(diff(lat)/2), lat[length(lat)] + mean(diff(lat)/2)) # should work for any evenly spaced grid (although note we have values outside reality! removed later...)
-    
+
     # Extract longitude values and calculate edges
     lon <- var.get.nc(nc, "longitude") # units: degrees east
     lon.edges <- c(lon - mean(diff(lon)/2), lon[length(lon)] + mean(diff(lon)/2)) # should work for any evenly spaced grid (although note we have values outside reality! removed later...)
-    
+
     # If the netCDF file has 3 dimensions, extract depth values and calculate edges
     if(dims == 3){
       depth <- var.get.nc(nc, "depth_1") # units: metres
       depth.edges <- c(0, var.get.nc(nc, "depth"), (depth[length(depth)]+307.5)) # units: metres # NOTE - the bounding of the bottom box is fudged but seems to be reasonably fudged. All deep ocean cells ~307.5*2m deep
     }
-    
+
     # If the netCDF file includes a time dimension, extract time values
     if(time.present == TRUE){
       time <- var.get.nc(nc, "t") # units: year mid-point - NOTE, if want to use this then would need to update time name.
       # note that not all of these general variables will be available for fields_biogem_2d (address later)
     }
-    
+
     # Extract the specified variable from the netCDF file
     var.arr <- var.get.nc(nc, var)
 
@@ -135,7 +150,7 @@ HADCM3.map <- function(var, file, experiment,
                      "var"
       )
     }
-  }
+
   if(dims == 2){
     # Generate dataframe of 2D slice from 2D array
     df <- as.data.frame(cbind(
@@ -211,15 +226,6 @@ HADCM3.map <- function(var, file, experiment,
   SpDfSf <- st_as_sf(SpDf)
   st_crs(SpDfSf) = '+proj=longlat +ellps=sphere'
 
-  # Return the SpatialPolygonsDataFrame if plot is FALSE
-  if(plot == FALSE){
-    return(SpDfSf)
-  }
-  }
-  if(plot == TRUE){
-    if(calcs == FALSE){
-      SpDfSf <- polygons
-    }
 
     ## Outline of map using a framing line
     l1 <- cbind(c(-180, 180, rep(180, 1801), 180, -180, rep(-180, 1801), -180), c(-90, -90, seq(-90,90,0.1),  90, 90, seq(90,-90,-0.1), -90))
@@ -232,6 +238,23 @@ HADCM3.map <- function(var, file, experiment,
     SLs1df = SpatialPolygonsDataFrame(SLs1, data = df1)
     SLs1dfSf <- st_as_sf(SLs1df)
     st_crs(SLs1dfSf) = '+proj=longlat +ellps=sphere'
+
+    # Create spatial object with the chosen points from start of script
+    points <- as.data.frame(cbind(matched_points$lng, matched_points$lat, matched_points$matched_climate*unit.factor))
+    points <- na.omit(points)
+    points_sp <- SpatialPointsDataFrame(coords = points[,1:2], data = as.data.frame(points[,3]))
+    names(points_sp) <- "matched_climate"
+
+    # code in colour scale for matched points
+    palette_name_points <- palette_name
+    min.value_1 <- min.value
+    max.value_1 <- max.value
+    intervals_1 <- intervals
+
+    # make plottable object
+    points_spsf <- st_as_sf(points_sp)
+    st_crs(points_spsf) = '+proj=longlat +ellps=sphere'
+
     # Create the ggplot object for the map
     map <- ggplot() +
       # Add the main spatial data layer, transforming the projection and setting the fill aesthetic
@@ -261,6 +284,9 @@ HADCM3.map <- function(var, file, experiment,
       # Set the label for the fill aesthetic
       labs(fill = scale.label)
 
+    map.points <- map +
+    geom_sf(data = points_spsf %>% st_transform(projection), aes(geometry = geometry, fill = matched_climate), shape = 21, size = 6, stroke = 1.0, alpha = 0.6) # WGS 84 / Equal Earth Greenwich
+
     # Return the ggplot object
-    map
+    return(map.points)
     }

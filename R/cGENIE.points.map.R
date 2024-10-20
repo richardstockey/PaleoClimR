@@ -1,7 +1,8 @@
-#' Generate Maps from cGENIE Model Output
+#' Generate Maps from cGENIE Model Output with Points Matching
 #'
 #' This function generates maps from imported .nc (NetCDF) files containing data from the cGENIE model outputs.
 #' It can handle both 2D and 3D data, visualizing variables across specified depth levels and time steps.
+#' Additionally, it matches and plots specific points from a provided data frame.
 #'
 #' @param var (character) The variable from the NetCDF file to be visualized (e.g., "ocn_temp", "ocn_sal", "ocn_O2").
 #' @param experiment (character) The path or name of the experiment used to locate the NetCDF file.
@@ -17,15 +18,19 @@
 #' @param model (character) The model type (default is 'biogem'; can be extended for other models).
 #' @param palette_name (character) Color palette to be used for the plot (default is `pals::parula(1000)`).
 #' @param projection (character) Map projection to use (default is ESRI:54012 for Equal Earth).
+#' @param coord.dat (data.frame) Data frame with latitude and longitude columns to which cGENIE data will be added and returned.
+#' @param lat.name (character) Name of the latitude column in `coord.dat` (default is "p_lat").
+#' @param lng.name (character) Name of the longitude column in `coord.dat` (default is "p_lng").
 #'
 #' @return A ggplot object representing the generated map with the specified variable visualized across geographical coordinates.
 #'
 #' @details
 #' This function reads 2D or 3D data from cGENIE model output NetCDF files and produces a map visualization.
 #' Default settings are defined for several commonly used variables, and users can specify their own scaling and color settings.
+#' The function also matches specific points from a provided data frame and plots them on the map.
 #'
 #' @examples
-#' map <- cGENIE.map(var = "ocn_temp", experiment = "my_experiment", depth.level = 1)
+#' map <- cGENIE.points.map(var = "ocn_temp", experiment = "my_experiment", coord.dat = coord.dat, depth.level = 1)
 #' print(map)
 #'
 #' @import RNetCDF
@@ -37,21 +42,25 @@
 #' @import ggplot2
 #' @export
 
-
-cGENIE.map <- function(var, experiment,
-                       depth.level = 1,
-                       dims = 3,
-                       year = "default",
-                       unit.factor = NULL,
-                       min.value = NULL,
-                       max.value = NULL,
-                       intervals = NULL,
-                       continents.outlined = NULL,
-                       scale.label = NULL,
-                       model = "biogem",
-                       palette_name = pals::parula(1000),
-                       projection = 'ESRI:54012') {
-
+cGENIE.points.map <- function(var, 
+                              experiment,
+                              depth.level = 1,
+                              dims = 3,
+                              year = "default",
+                              unit.factor = NULL,
+                              min.value = NULL,
+                              max.value = NULL,
+                              intervals = NULL,
+                              continents.outlined = NULL,
+                              scale.label = NULL,
+                              model = "biogem",
+                              palette_name = pals::parula(1000),
+                              projection = 'ESRI:54012', 
+                              coord.dat = NULL, # is any data frame with the lat long column names assigned - cGENIE data will be added to this and returned
+                              lat.name = "p_lat", # name IF generated from rotated paleoverse coordinates...
+                              lng.name = "p_lng") # name IF generated from rotated paleoverse coordinates...
+{
+  
   # Load necessary libraries
   library(RNetCDF)   # For reading NetCDF files
   library(dplyr)     # For data manipulation
@@ -60,7 +69,16 @@ cGENIE.map <- function(var, experiment,
   library(ggspatial) # For adding spatial components in ggplot
   library(reshape2)  # For reshaping data
   library(ggplot2)   # For plotting
-
+  
+  matched_points <- cGENIE.point.matching(var = var, 
+                                          experiment = experiment,
+                                          depth.level = depth.level,
+                                          dims = dims,
+                                          coord.dat = coord.dat,
+                                          lat.name = lat.name, 
+                                          lng.name = lng.name
+  )
+  
   # Define default values for different "var" variables
   if (var == "ocn_temp") {
     unit.factor <- 1          # no conversion
@@ -112,15 +130,15 @@ cGENIE.map <- function(var, experiment,
     intervals <- ifelse(is.null(intervals), 10, intervals)
     scale.label <- ifelse(is.null(scale.label), "Variable", scale.label)
   }
-
+  
   # Set model-specific file prefix
   if (model == "biogem") {
     prefix <- "/biogem/fields_biogem_"
   }
-
+  
   # Open the NetCDF file
   nc <- open.nc(paste0(experiment, prefix, dims, "d", ".nc"))
-
+  
   # Extract general variables (e.g., latitude, longitude, depth, time)
   lat <- var.get.nc(nc, "lat") # Latitude
   lat.edges <- var.get.nc(nc, "lat_edges")
@@ -129,23 +147,23 @@ cGENIE.map <- function(var, experiment,
   depth <- var.get.nc(nc, "zt") # Depth in meters
   depth.edges <- var.get.nc(nc, "zt_edges")
   time <- var.get.nc(nc, "time") # Time in years
-
+  
   # Extract the specific variable from the NetCDF file
   var.arr <- var.get.nc(nc, var)
-
+  
   # Set the time step to the final value if year is "default"
   if (year == "default") {
     time.step <- length(time)
   } else {
     time.step <- year
   }
-
+  
   # Adjust longitude to be within 0 to 360 degrees (cGENIE model-specific)
   if (mean(between(lon, -180, 180)) < 1) {
     lon.edges[lon.edges <= -180] <- lon.edges[lon.edges <= -180] + 360
     lon[lon <= -180] <- lon[lon <= -180] + 360
   }
-
+  
   # Generate data frame for 3D data (if dims == 3)
   if (dims == 3) {
     df <- as.data.frame(cbind(
@@ -158,7 +176,7 @@ cGENIE.map <- function(var, experiment,
       as.data.frame(melt(var.arr[,, depth.level, time.step]))$value))
     names(df) <- c("lon.mid", "lon.min", "lon.max", "lat.mid", "lat.min", "lat.max", "var")
   }
-
+  
   # Generate data frame for 2D data (if dims == 2)
   if (dims == 2) {
     df <- as.data.frame(cbind(
@@ -171,16 +189,16 @@ cGENIE.map <- function(var, experiment,
       as.data.frame(melt(var.arr[,, time.step]))$value))
     names(df) <- c("lon.mid", "lon.min", "lon.max", "lat.mid", "lat.min", "lat.max", "var")
   }
-
+  
   # Filter out invalid or extreme coordinate ranges
   df <- df %>%
     filter(lon.max <= 180, lon.min >= -180, lat.max <= 90, lat.min >= -90)
-
+  
   # Handle longitudes near -180 and 180 degrees
   df$lon.range <- abs(df$lon.min - df$lon.max)
   df$lon.min[df$lon.range > 180 & abs(df$lon.min) == 180] <- -df$lon.min[df$lon.range > 180 & abs(df$lon.min) == 180]
   df$lon.max[df$lon.range > 180 & abs(df$lon.max) == 180] <- -df$lon.max[df$lon.range > 180 & abs(df$lon.max) == 180]
-
+  
   # Create polygons for plotting
   poly.list <- list()
   poly.names.list <- list()
@@ -192,14 +210,14 @@ cGENIE.map <- function(var, experiment,
     poly.list <- append(poly.list, polygons.code)
     poly.names.list <- append(poly.names.list, paste0("p", poly))
   }
-
+  
   # Create spatial polygons data frame
   SpP <- SpatialPolygons(poly.list)
   attr <- data.frame(var = df$var, row.names = poly.names.list)
   SpDf <- SpatialPolygonsDataFrame(SpP, attr)
   SpDfSf <- st_as_sf(SpDf)
   st_crs(SpDfSf) = '+proj=longlat +ellps=sphere'
-
+  
   # Add frame to the map
   l1 <- cbind(c(-180, 180, rep(180, 1801), 180, -180, rep(-180, 1801), -180),
               c(-90, -90, seq(-90, 90, 0.1), 90, 90, seq(90, -90, -0.1), -90))
@@ -208,7 +226,23 @@ cGENIE.map <- function(var, experiment,
   SLs1df = SpatialPolygonsDataFrame(SLs1, data = data.frame(var = 2, row.names = "a"))
   SLs1dfSf <- st_as_sf(SLs1df)
   st_crs(SLs1dfSf) = '+proj=longlat +ellps=sphere'
-
+  
+  # Create spatial object with the chosen points from start of script
+  points <- as.data.frame(cbind(matched_points$lng, matched_points$lat, matched_points$matched_climate*unit.factor))
+  points <- na.omit(points)
+  points_sp <- SpatialPointsDataFrame(coords = points[,1:2], data = as.data.frame(points[,3]))
+  names(points_sp) <- "matched_climate"
+  
+  # code in colour scale for matched points
+  palette_name_points <- palette_name
+  min.value_1 <- min.value
+  max.value_1 <- max.value
+  intervals_1 <- intervals
+  
+  # make plottable object
+  points_spsf <- st_as_sf(points_sp)
+  st_crs(points_spsf) = '+proj=longlat +ellps=sphere'
+  
   # Create the map using ggplot
   map <- ggplot() +
     geom_sf(data = SpDfSf %>% st_transform(projection), aes(fill = var * unit.factor), color = NA) +
@@ -220,6 +254,9 @@ cGENIE.map <- function(var, experiment,
     theme_minimal() +
     theme(legend.position = "bottom") +
     labs(fill = scale.label)
-
-  return(map)
+  
+    map.points <- map +
+    geom_sf(data = points_spsf %>% st_transform(projection), aes(geometry = geometry, fill = matched_climate), shape = 21, size = 6, stroke = 1.0, alpha = 0.6) # WGS 84 / Equal Earth Greenwich
+  
+  return(map.points)
 }
