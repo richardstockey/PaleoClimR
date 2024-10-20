@@ -58,24 +58,23 @@ HADCM3.whole.ocean.data <- function(var, file, experiment,
   # Extract latitude values from the NetCDF file
   lat <- var.get.nc(nc, "latitude") # units: degrees north
   # Calculate latitude edges for plotting purposes
-  lat.edges <- c(lat - mean(diff(lat)/2), lat[length(lat)] + mean(diff(lat)/2)) 
+  lat.edges <- c(lat - mean(diff(lat)/2), lat[length(lat)] + mean(diff(lat)/2))
 
   # Extract longitude values from the NetCDF file
   lon <- var.get.nc(nc, "longitude") # units: degrees east
   # Calculate longitude edges for plotting purposes
-  lon.edges <- c(lon - mean(diff(lon)/2), lon[length(lon)] + mean(diff(lon)/2)) 
+  lon.edges <- c(lon - mean(diff(lon)/2), lon[length(lon)] + mean(diff(lon)/2))
 
   # Extract depth values from the NetCDF file
   depth <- var.get.nc(nc, "depth_1") # units: metres
   # Calculate depth edges for plotting purposes
-  depth.edges <- c(0, var.get.nc(nc, "depth"), (depth[length(depth)]+307.5)) 
+  depth.edges <- c(0, var.get.nc(nc, "depth"), (depth[length(depth)]+307.5))
 
   # Extract time values if time.present is TRUE
   if(time.present == TRUE){
   time <- var.get.nc(nc, "t") # units: year mid-point
   }
-}
-}
+
   # Extract named variable from the NetCDF file
   var.arr <- var.get.nc(nc, var)
 
@@ -89,7 +88,7 @@ HADCM3.whole.ocean.data <- function(var, file, experiment,
 
   # Initialize an empty dataframe to store the results
   df.sum <- c()
-  
+
   # Loop through each depth level
   for(depth.level in 1:length(depth)){
     # Generate a dataframe of 2D slices from the 3D array for the current depth level
@@ -134,3 +133,4 @@ HADCM3.whole.ocean.data <- function(var, file, experiment,
 
   # Return the final results dataframe
   return(df.sum)
+}

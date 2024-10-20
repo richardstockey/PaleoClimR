@@ -8,7 +8,7 @@ Authors@R: c(
     person("Przemyslaw", "Gruszka", role = "ctb"),
     person("Aspen", "Sartin", role = "ctb"),
     person("Pedro", "Monarrez", role = "ctb")
-)
+  )
 Maintainer: Richard G. Stockey <richard.stockey@example.com>
 Description: An R package designed for extracting, processing, and visualizing paleoclimate data from cGENIE model outputs.
 License: MIT + file LICENSE
@@ -28,3 +28,6 @@ Suggests:
     knitr,
     rmarkdown
 VignetteBuilder: knitr
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
+Encoding: UTF-8

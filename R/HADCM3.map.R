@@ -53,7 +53,7 @@ HADCM3.map <- function(var, file, experiment,
 
   # palette_name currently has to be followed by (1000) or some other number
   # other options than parula would include - viridis and the many other options here https://r-charts.com/color-palettes/
-  
+
   # Load necessary libraries
   library(RNetCDF)  # For handling netCDF files
   library(dplyr)    # For data manipulation
@@ -62,7 +62,7 @@ HADCM3.map <- function(var, file, experiment,
   library(reshape2) # For reshaping data
   library(ggplot2)  # For plotting
   library(pals)     # For color palettes
-  if(calcs == TRUE){
+
     # Open the netCDF file
     nc <- open.nc(paste0(experiment, file, ".nc"))
 
@@ -71,27 +71,27 @@ HADCM3.map <- function(var, file, experiment,
     # fudged slightly for ease of plotting from the xxx and xxx_1 variables.
     # worth checking with HADCM3 users to be doubly sure
     # this should be kept separate from variable matching scripts with point data such as PBDB and therefore be functionally fine
-    
+
     # Extract latitude values and calculate edges
     lat <- var.get.nc(nc, "latitude") # units: degrees north
     lat.edges <- c(lat - mean(diff(lat)/2), lat[length(lat)] + mean(diff(lat)/2)) # should work for any evenly spaced grid (although note we have values outside reality! removed later...)
-    
+
     # Extract longitude values and calculate edges
     lon <- var.get.nc(nc, "longitude") # units: degrees east
     lon.edges <- c(lon - mean(diff(lon)/2), lon[length(lon)] + mean(diff(lon)/2)) # should work for any evenly spaced grid (although note we have values outside reality! removed later...)
-    
+
     # If the netCDF file has 3 dimensions, extract depth values and calculate edges
     if(dims == 3){
       depth <- var.get.nc(nc, "depth_1") # units: metres
       depth.edges <- c(0, var.get.nc(nc, "depth"), (depth[length(depth)]+307.5)) # units: metres # NOTE - the bounding of the bottom box is fudged but seems to be reasonably fudged. All deep ocean cells ~307.5*2m deep
     }
-    
+
     # If the netCDF file includes a time dimension, extract time values
     if(time.present == TRUE){
       time <- var.get.nc(nc, "t") # units: year mid-point - NOTE, if want to use this then would need to update time name.
       # note that not all of these general variables will be available for fields_biogem_2d (address later)
     }
-    
+
     # Extract the specified variable from the netCDF file
     var.arr <- var.get.nc(nc, var)
 
@@ -135,7 +135,7 @@ HADCM3.map <- function(var, file, experiment,
                      "var"
       )
     }
-  }
+
   if(dims == 2){
     # Generate dataframe of 2D slice from 2D array
     df <- as.data.frame(cbind(
@@ -211,15 +211,7 @@ HADCM3.map <- function(var, file, experiment,
   SpDfSf <- st_as_sf(SpDf)
   st_crs(SpDfSf) = '+proj=longlat +ellps=sphere'
 
-  # Return the SpatialPolygonsDataFrame if plot is FALSE
-  if(plot == FALSE){
-    return(SpDfSf)
-  }
-  }
-  if(plot == TRUE){
-    if(calcs == FALSE){
-      SpDfSf <- polygons
-    }
+
 
     ## Outline of map using a framing line
     l1 <- cbind(c(-180, 180, rep(180, 1801), 180, -180, rep(-180, 1801), -180), c(-90, -90, seq(-90,90,0.1),  90, 90, seq(90,-90,-0.1), -90))

@@ -82,7 +82,7 @@ cGENIE.overlay.map <- function(var, experiment,
   # note that not all of these general variables will be available for fields_biogem_2d (address later)
   # Extract named variable
   var.arr <- var.get.nc(nc, var)
-  
+
   # Extract oxygen variable arbitrarily to get land mask
   oxy.arr <- var.get.nc(nc, "ocn_sur_O2")
 
@@ -121,7 +121,7 @@ cGENIE.overlay.map <- function(var, experiment,
            "var"
   )
   }
-  
+
   if(dims == 2){
   # Generate a dataframe for a 2D array
   df <- as.data.frame(cbind(
@@ -165,7 +165,7 @@ cGENIE.overlay.map <- function(var, experiment,
           "lat.max",
           "oxy"
   )
-  }
+
 
   # Eliminate cells outside of the reasonable range for the main variable dataframe
   df <- df %>%
@@ -225,7 +225,7 @@ cGENIE.overlay.map <- function(var, experiment,
   # Convert the SpatialPolygonsDataFrame to an sf object
   SpDfSf <- st_as_sf(SpDf)
   st_crs(SpDfSf) <- '+proj=longlat +ellps=sphere'
-  
+
   # Create polygons for NA cells (land mask)
   poly2.list <- list()
   poly2.names.list <- list()

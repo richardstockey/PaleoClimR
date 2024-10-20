@@ -36,7 +36,6 @@
 #'
 #' @example
 #' data <- cGENIE.data.3D(var = "ocn_O2", experiment = "my_experiment", year = "default")
-#' This extracts dissolved oxygen data from the "my_experiment" NetCDF file for the final model year.
 #'
 #' @import RNetCDF
 #' @import dplyr

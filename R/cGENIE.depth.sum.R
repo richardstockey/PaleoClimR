@@ -10,8 +10,8 @@
 #' @param model A character string indicating the model type (default is "biogem").
 #' @return A dataframe with summarized mean and standard deviation of the variable grouped by depth ranges.
 #' @details The function reads the specified 3D variable from the NetCDF file, groups the data by depth, and calculates summary statistics (mean and standard deviation). The depth is grouped by minimum and maximum depth edges.
-#' @importFrom dplyr group_by summarise na.omit
-#' @importFrom RNetCDF open.nc var.get.nc
+#' @import dplyr
+#' @import RNetCDF
 #' @export
 #' @examples
 #' # Example usage:

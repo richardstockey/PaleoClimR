@@ -279,7 +279,7 @@ HADCM3.map.pretty <- function(experiment,
       }
 
       ## Outline of map using a framing line
-      l1 <- cbind(c(-180, 180, rep(180, 1801), 180, -180, rep(-180, 1801), -180), 
+      l1 <- cbind(c(-180, 180, rep(180, 1801), 180, -180, rep(-180, 1801), -180),
                   c(-90, -90, seq(-90,90,0.1),  90, 90, seq(90,-90,-0.1), -90))
       L1 <- Polygon(l1)
       Ls1 <- Polygons(list(L1), ID="a")
@@ -320,7 +320,7 @@ HADCM3.map.pretty <- function(experiment,
                             breaks = seq(min.value_1, max.value_1, intervals_1),
                             limits=c(min.value_1, max.value_1)) +
           theme(legend.position="bottom") +
-          labs(fill = "Sea Surface Temperature (°C)") +
+          labs(fill = 'Sea Surface Temperature (°C)') +
           new_scale_fill() +
           geom_sf(data = SpDfSf_2 %>% st_transform(projection), aes(geometry = geometry, fill=var), color = NA, linewidth=10, linetype=0) + # Plot land data
           scale_fill_stepsn(colours = palette_name_land,
@@ -338,7 +338,7 @@ HADCM3.map.pretty <- function(experiment,
                             limits=c(min.value_2, max.value_2)) +
           theme_minimal() +
           theme(legend.position="bottom") +
-          labs(fill = "Topography (m)")
+          labs(fill = 'Topography (m)')
       }
 
       # If the map is for an app, create the plot with app-specific settings
@@ -360,7 +360,7 @@ HADCM3.map.pretty <- function(experiment,
                             breaks = seq(min.value_1, max.value_1, intervals_1),
                             limits=c(min.value_1, max.value_1)) +
           theme(legend.position="bottom") +
-          labs(fill = "Sea Surface Temperature (°C)") +
+          labs(fill = 'Sea Surface Temperature (°C)') +
           new_scale_fill() +
           geom_sf(data = SpDfSf_2 %>% st_transform(projection), aes(geometry = geometry, fill=var), color = NA, linewidth=10, linetype=0) + # Plot land data
           scale_fill_stepsn(colours = palette_name_land,
@@ -381,9 +381,10 @@ HADCM3.map.pretty <- function(experiment,
                 line = element_line(colour = "white"),
                 plot.background = element_rect(fill = "black"),
                 text = element_text(colour = "white")) +
-          labs(fill = "Topography (m)")
+          labs(fill = 'Topography (m)')
       }
 
       # Return the generated map
       map
     }
+}

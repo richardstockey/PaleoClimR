@@ -1,6 +1,6 @@
 #' Generate Key Summary Plots for cGENIE Models
 #'
-#' This function generates a set of key summary plots for cGENIE models, 
+#' This function generates a set of key summary plots for cGENIE models,
 #' designed to fit on one A4-ish sheet of paper. The plots include:
 #' - Sea surface temperature through time
 #' - Sea surface temperature map
@@ -8,7 +8,7 @@
 #' - Global marine O2 through time
 #' - Second level marine O2 map
 #' - Bottom water O2 map
-#' 
+#'
 #' The function produces a 3x2 landscape paneled plot.
 #'
 #' @param experiment A character string specifying the experiment name.
@@ -16,12 +16,12 @@
 #' @param file.name A character string specifying the name of the output file. Default is "cGENIE.sum.plots".
 #' @param format A character string specifying the format of the output file. Default is "pdf".
 #' @param save A logical value indicating whether to save the plot. Default is FALSE.
-#' 
+#'
 #' @return A ggplot object containing the arranged summary plots.
 #' @import egg
 #' @import ggplot2
 #' @export
-#' 
+#'
 #' @examples
 #' \dontrun{
 #' cGENIE.sum.plots(experiment = "experiment_name", save = TRUE)
@@ -36,7 +36,7 @@ cGENIE.sum.plots <- function(experiment = NULL, directory="default", file.name =
   temp.time <- cGENIE.res.plot(var = "ocn_temp",
                                experiment = experiment
   )
-  
+
   # Generate a map for sea surface temperature at the surface level
   temp.map.surf <- cGENIE.map(var = "ocn_temp",
                               experiment = experiment,
@@ -47,7 +47,7 @@ cGENIE.sum.plots <- function(experiment = NULL, directory="default", file.name =
                               intervals = 5,
                               continents.outlined = FALSE,
                               scale.label = expression("Seawater Temperature (°C)"))
-}
+
 # Generate a map for bottom water temperature
 temp.map.benth <- cGENIE.map(var = "ocn_ben_temp",
                experiment = experiment,

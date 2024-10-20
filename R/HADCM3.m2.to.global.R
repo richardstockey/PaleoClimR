@@ -23,12 +23,12 @@
 #' @examples
 #' \dontrun{
 #' # Example usage:
-#' result <- HADCM3.m2.to.global(var = "insitu_T_ym_dpth", 
-#'                               file = "o.pgclann", 
-#'                               experiment = "~/Valdes2021_HADCM3L/teXPl_444/teXPl_444", 
-#'                               depth.level = 1, 
-#'                               dims = 3, 
-#'                               unit.factor = 1, 
+#' result <- HADCM3.m2.to.global(var = "insitu_T_ym_dpth",
+#'                               file = "o.pgclann",
+#'                               experiment = "~/Valdes2021_HADCM3L/teXPl_444/teXPl_444",
+#'                               depth.level = 1,
+#'                               dims = 3,
+#'                               unit.factor = 1,
 #'                               time.present = FALSE)
 #' print(result)
 #' }
@@ -191,13 +191,9 @@ HADCM3.m2.to.global <- function(var, file, experiment,
   # Calculate the total value for each grid cell by multiplying the variable value by the area
   df$TotalCellVal <- df$var * df$area_m2
 
-  # NOTE - an implicit check of this function is to check the area of the Earth calculated
-  # For Sarkar 2022 experiments, sum(df$area_m2) gives 5.099432e+14, which is approximately the same as the 'real' [spherical] value of 5.100644719×10¹⁴ m²
-  # Reference: https://www.quora.com/What-is-the-exact-surface-area-of-earth-in-square-meters#:~:text=The%20earth's%20radius%20is%206.371,%C2%B2%20%3D%205.100644719%C3%9710%C2%B9%E2%81%B4%20m%C2%B2.
-
   # Sum the total values of all grid cells to get the global value
   TotalVal <- sum(df$TotalCellVal, na.rm = TRUE)
-  
+
   # Return the total global value
   return(TotalVal)
 }
