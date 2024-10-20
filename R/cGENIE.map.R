@@ -98,7 +98,7 @@ cGENIE.map <- function(var, experiment,
     intervals <- ifelse(is.null(intervals), 500, intervals)
     scale.label <- ifelse(is.null(scale.label), expression("Ocean Depth (m)"), scale.label)
   } else if (var == "phys_psi") {
-    unit.factor <- -1          # no conversion
+    unit.factor <- 1          # no conversion
     dims = 2
     min.value <- ifelse(is.null(min.value), -75, min.value)
     max.value <- ifelse(is.null(max.value), 75, max.value)

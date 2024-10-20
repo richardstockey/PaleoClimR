@@ -1,23 +1,22 @@
-###################################################
-# cGENIE.data.R
-# Rich Stockey 20231105
-# Function designed to extract 2D lat-lon data fields from imported 2D or 3D .nc files
-###################################################
-
-# cGENIE.data
-# Extracts 2D data fields from 3D or 2D netCDF (.nc) files.
-#
-# Arguments:
-# var            - The variable name to extract from the .nc file.
-# experiment     - Directory containing the experiment's netCDF files.
-# depth.level    - Depth level to extract the data from. Set to NULL by default.
-# dims           - Number of dimensions in the netCDF file. Defaults to 3.
-# year           - Year to extract data for (default is "default", meaning the last time point).
-# model          - The model type; defaults to "biogem".
-#
-# Returns:
-# A data frame containing the extracted 2D lat-lon data field with corresponding grid information.
-###################################################
+#' Extract 2D Data Fields from 3D or 2D netCDF Files
+#'
+#' This function extracts 2D latitude-longitude data fields from 3D or 2D netCDF (.nc) files.
+#'
+#' @param var The variable name to extract from the .nc file.
+#' @param experiment Directory containing the experiment's netCDF files.
+#' @param depth.level Depth level to extract the data from. Set to NULL by default.
+#' @param dims Number of dimensions in the netCDF file. Defaults to 3.
+#' @param year Year to extract data for (default is "default", meaning the last time point).
+#' @param model The model type; defaults to "biogem".
+#' @return A data frame containing the extracted 2D lat-lon data field with corresponding grid information.
+#' @importFrom RNetCDF open.nc var.get.nc
+#' @importFrom dplyr %>%
+#' @importFrom reshape2 melt
+#' @export
+#' @examples
+#' \dontrun{
+#' data <- cGENIE.data(var = "temperature", experiment = "experiment1")
+#' }
 
 cGENIE.data <- function(var, experiment,
                         depth.level = NULL,
@@ -25,6 +24,7 @@ cGENIE.data <- function(var, experiment,
                         year = "default",
                         model = "biogem"){
 
+  # Load necessary libraries
   library(RNetCDF)
   library(dplyr)
   library(reshape2)
@@ -42,34 +42,23 @@ cGENIE.data <- function(var, experiment,
   lat.edges <- var.get.nc(nc, "lat_edges")
   lon <- var.get.nc(nc, "lon")            # Longitude (degrees east)
   lon.edges <- var.get.nc(nc, "lon_edges")
-  depth <- var.get.nc(nc, "zt")           # Depth (meters)
-  depth.edges <- var.get.nc(nc, "zt_edges")
-  time <- var.get.nc(nc, "time")          # Time (year mid-point)
 
-  # Extract the target variable
-  var.arr <- var.get.nc(nc, var)
-
-  # Set time step based on the year argument
+  # Determine the time step to extract
   if (year == "default") {
-    time.step <- length(time)  # Last time point
+    time.step <- dim(var.get.nc(nc, "time"))[1]  # Last time point
   } else {
-    time.step <- year
+    time.step <- which(var.get.nc(nc, "time") == year)
   }
 
-  # Set depth.level to 1 if dims == 3 and depth.level is NULL
-  if (dims == 3 && is.null(depth.level)) {
-    depth.level <- 1
-  }
-
-  # Handle longitude adjustments (to avoid values outside -180 to 180 range)
-  if (mean(between(lon, -180, 180)) < 1) {
-    lon.edges[lon.edges <= -180] <- lon.edges[lon.edges <= -180] + 360
-    lon[lon <= -180] <- lon[lon <= -180] + 360
-  }
-
-  # Extract data based on dimensionality (dims)
+  # Extract the variable array
   if (dims == 3) {
-    # Create data frame for 2D slice from 3D array
+    var.arr <- var.get.nc(nc, var)
+  } else if (dims == 2) {
+    var.arr <- var.get.nc(nc, var)
+  }
+
+  # Create data frame for 3D array
+  if (dims == 3) {
     df <- as.data.frame(cbind(
       rep(lon, times = length(lat), each = 1),
       rep(lon.edges[1:(length(lon.edges)-1)], times = length(lat), each = 1),
@@ -82,8 +71,8 @@ cGENIE.data <- function(var, experiment,
     names(df) <- c("lon.mid", "lon.min", "lon.max", "lat.mid", "lat.min", "lat.max", "var")
   }
 
+  # Create data frame for 2D array
   if (dims == 2) {
-    # Create data frame for 2D array
     df <- as.data.frame(cbind(
       rep(lon, times = length(lat), each = 1),
       rep(lon.edges[1:(length(lon.edges)-1)], times = length(lat), each = 1),

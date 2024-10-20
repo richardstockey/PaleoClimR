@@ -1,9 +1,40 @@
-###################################################
-# HADCM3.m2.to.global.R
-# Rich Stockey 20240408
-# designed to upscale per area estimates of things like triffid outputs to global values...
-###################################################
-# full comments to follow...
+#' HADCM3.m2.to.global
+#'
+#' This function upscales per area estimates of variables (e.g., triffid outputs) to global values using data from HADCM3 model outputs.
+#'
+#' @param var A character string specifying the variable to be extracted from the NetCDF file.
+#' @param file A character string specifying the file name (without extension) to be read from the experiment directory.
+#' @param experiment A character string specifying the path to the experiment directory.
+#' @param depth.level An integer specifying the depth level to be used for 3D data. Default is 1.
+#' @param dims An integer specifying the dimensions of the NetCDF data (2 or 3). Default is 2.
+#' @param unit.factor A numeric value to scale the variable. Default is 1.
+#' @param time.present A logical value indicating if time data is present in the NetCDF file. Default is FALSE.
+#'
+#' @return A numeric value representing the total global value of the specified variable.
+#'
+#' @details
+#' The function reads NetCDF files using the RNetCDF package and extracts latitude, longitude, and optionally depth and time data. It then processes the data to create a dataframe with the specified variable and its corresponding spatial coordinates. The function calculates the area of each grid cell and multiplies it by the variable value to obtain the total global value.
+#'
+#' @note
+#' - The function assumes that the NetCDF files follow a specific structure and naming convention.
+#' - The function includes several checks and adjustments for the HADCM3 grid geometry.
+#' - The function uses various R packages for data manipulation and spatial calculations, including dplyr, sf, sp, ggspatial, reshape2, ggplot2, pals, viridis, and geosphere.
+#'
+#' @examples
+#' \dontrun{
+#' # Example usage:
+#' result <- HADCM3.m2.to.global(var = "insitu_T_ym_dpth", 
+#'                               file = "o.pgclann", 
+#'                               experiment = "~/Valdes2021_HADCM3L/teXPl_444/teXPl_444", 
+#'                               depth.level = 1, 
+#'                               dims = 3, 
+#'                               unit.factor = 1, 
+#'                               time.present = FALSE)
+#' print(result)
+#' }
+#'
+#' @import RNetCDF dplyr sp reshape2 geosphere
+#' @export
 
 HADCM3.m2.to.global <- function(var, file, experiment,
                         depth.level = 1,
@@ -11,27 +42,12 @@ HADCM3.m2.to.global <- function(var, file, experiment,
                        unit.factor = 1,
                        time.present = FALSE){
 
-  # other projection options include:
-  # - 6933 - Lambert Cylindrical Equal Area (need only numbers no text and no quotes) [this is equal area rectangle]
-  # still need to come up with a good option for a sphere...
-  # dims is dimensions of netcdf being read in - this is set to 3d by default
-  # palette_name currently has to be followed by (1000) or some other number
-  # other options than parula would include - viridis and the many other options here https://r-charts.com/color-palettes/
-  library(RNetCDF)
-  library(dplyr)
-  library(sf)
-  library(sp)
-  library(ggspatial)
-  library(reshape2)
-  library(ggplot2)
-  library(pals)
-  library(viridis)
-  library(geosphere)
-
-  #experiment <- "~/Valdes2021_HADCM3L/teXPl_444/teXPl_444"
-  #file <- "o.pgclann"
-  #var <- "insitu_T_ym_dpth"
-  # can set things up so that "if var == xxx, then file <- yyy"
+  # Load necessary libraries for the function
+  library(RNetCDF)  # For reading NetCDF files
+  library(dplyr)    # For data manipulation
+  library(sp)       # For spatial data handling
+  library(reshape2) # For reshaping data
+  library(geosphere) # For geospatial calculations
 
   nc <- open.nc(paste0(experiment, file, ".nc"))
 
@@ -139,36 +155,50 @@ HADCM3.m2.to.global <- function(var, file, experiment,
   #   )
 
 
-
+  # Initialize lists to store polygon objects and their names
   poly.list <- list()
   poly.names.list <- list()
-  for(poly in 1:(nrow(df))){
 
+  # Loop through each row of the dataframe to create polygons
+  for(poly in 1:(nrow(df))){
+    # Create a polygon for each grid cell using the min and max lat/lon values
     polygon.code <- Polygon(cbind(
       c(df$lon.min[poly], df$lon.max[poly], df$lon.max[poly], df$lon.min[poly]),
       c(df$lat.min[poly], df$lat.min[poly], df$lat.max[poly], df$lat.max[poly])))
+    # Assign the polygon to a variable with a unique name
     assign(paste0("Polygon_", poly), polygon.code)
 
+    # Create a Polygons object (a collection of Polygon objects) for each grid cell
     polygons.code <- Polygons(list(polygon.code), paste0("p",poly))
+    # Assign the Polygons object to a variable with a unique name
     assign(paste0("Polygons_", poly), polygons.code)
 
+    # Append the Polygons object to the list of polygons
     poly.list <- append(poly.list, polygons.code)
+    # Append the name of the Polygons object to the list of names
     poly.names.list <- append(poly.names.list, paste0("p",poly))
   }
 
+  # Create a SpatialPolygons object from the list of Polygons objects
   SpP <- SpatialPolygons(poly.list)
 
+  # Calculate the area of each polygon in square meters
   area_m2 <- areaPolygon(SpP)
 
+  # Add the calculated area as a new column to the dataframe
   df <- cbind(df, area_m2)
 
-
-  df$TotalCellVal <- df$var*df$area_m2
+  # Calculate the total value for each grid cell by multiplying the variable value by the area
+  df$TotalCellVal <- df$var * df$area_m2
 
   # NOTE - an implicit check of this function is to check the area of the Earth calculated
-  # For Sarkar 2022 experiments, sum(df$area_m2) gives 5.099432e+14, which is approximately the same as the 'real' [spherical] value of 5.100644719×10¹⁴ m²https://www.quora.com/What-is-the-exact-surface-area-of-earth-in-square-meters#:~:text=The%20earth's%20radius%20is%206.371,%C2%B2%20%3D%205.100644719%C3%9710%C2%B9%E2%81%B4%20m%C2%B2.
+  # For Sarkar 2022 experiments, sum(df$area_m2) gives 5.099432e+14, which is approximately the same as the 'real' [spherical] value of 5.100644719×10¹⁴ m²
+  # Reference: https://www.quora.com/What-is-the-exact-surface-area-of-earth-in-square-meters#:~:text=The%20earth's%20radius%20is%206.371,%C2%B2%20%3D%205.100644719%C3%9710%C2%B9%E2%81%B4%20m%C2%B2.
 
+  # Sum the total values of all grid cells to get the global value
   TotalVal <- sum(df$TotalCellVal, na.rm = TRUE)
+  
+  # Return the total global value
   return(TotalVal)
 }
 

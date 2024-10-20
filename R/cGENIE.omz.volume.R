@@ -1,20 +1,38 @@
-###################################################
-# cGENIE.omz.volume.R
-# Rich Stockey 20230922
-# designed to summarise the volume of OMZs
-# this is done from raw experiments
-###################################################
-# full comments to follow...
-
-cGENIE.omz.volume <- function(experiment, thresh = 4.8e-6, time.step = "default"){
-  # -------------------------------------------------------------------------------------------------------
-  # anox.thresh = 0 umol/kg (i.e. no oxygen) is set as default.
-  # subox.thresh = 4.8 umol/kg from Sperling et al. 2015) is set as default.
-  # -------------------------------------------------------------------------------------------------------
+#' Summarize the Volume of Oxygen Minimum Zones (OMZs)
+#'
+#' This function calculates the proportion of the ocean volume that is classified as oxygen minimum zones (OMZs)
+#' based on the given threshold of oxygen concentration. The calculation is performed using data from
+#' a specified experiment in NetCDF format.
+#'
+#' @param experiment A string representing the path to the experiment's directory containing the NetCDF files.
+#' @param thresh A numeric value specifying the threshold oxygen concentration (in umol/kg) below which
+#'                the volume is considered part of the OMZ. Default is 4.8e-6.
+#' @param time.step Either "default" to use the last time step or a numeric index to specify a particular time step.
+#'
+#' @return A numeric value representing the proportion of the ocean volume that is classified as an OMZ.
+#'
+#' @details
+#' The function extracts relevant variables from the NetCDF file, calculates the thickness of each depth layer,
+#' and sums the volumes classified as OMZs and non-OMZs based on the provided threshold. The final output is
+#' the proportion of the total volume that constitutes OMZs.
+#'
+#' @import RNetCDF
+#' @import dplyr
+#'
+#' @examples
+#' # Calculate the OMZ volume proportion for a specific experiment
+#' omz_volume <- cGENIE.omz.volume("path/to/experiment", thresh = 4.8e-6)
+#'
+#' @export
+cGENIE.omz.volume <- function(experiment, thresh = 4.8e-6, time.step = "default") {
+  # Load necessary libraries
   library(RNetCDF)
-  library(dplyr)
+
+  # Set dimensions
   dims <- 3
   var <- "ocn_O2"
+
+  # Open NetCDF file
   nc <- open.nc(paste0(experiment, "/biogem/fields_biogem_", dims, "d", ".nc"))
 
   # Extract general variables
@@ -26,50 +44,42 @@ cGENIE.omz.volume <- function(experiment, thresh = 4.8e-6, time.step = "default"
   depth.edges <- var.get.nc(nc, "zt_edges") # units: metres
   time <- var.get.nc(nc, "time") # units: year mid-point
 
-  if(time.step == "default"){
-  time <- length(time)
-  }else{
-    time <- time.step
-  }
+  # Determine the time step
+  time <- if (time.step == "default") length(time) else time.step
+
+  # Extract variable array
   var.arr <- var.get.nc(nc, var)
 
-  depth.thicknesses <- depth.edges[2:(length(depth.edges))] - depth.edges[1:(length(depth.edges)-1)]
+  # Calculate depth thicknesses
+  depth.thicknesses <- diff(depth.edges)
 
-  lon.length <- length(lon)
-  lat.length <- length(lat)
-  depth.length <- length(depth)
-
+  # Initialize volume counters
   omz.vol <- 0
   non.omz.vol <- 0
   total.vol <- 0
 
-  for(lon in 1:lon.length){
-    for(lat in 1:lat.length){
-      for(depth in 1:depth.length){
+  # Loop through grid cells to calculate volumes
+  for (lon_idx in seq_along(lon)) {
+    for (lat_idx in seq_along(lat)) {
+      for (depth_idx in seq_along(depth)) {
+        oxygen_level <- var.arr[lon_idx, lat_idx, depth_idx, time]
 
+        if (!is.na(oxygen_level)) { # Skip land
+          thickness <- depth.thicknesses[depth_idx]
+          total.vol <- total.vol + thickness
 
-        if(is.na(var.arr[lon, lat, depth, time]) == TRUE){ #if we're on land
-          # do nothing!
-          #print("we're on land")
-        }else{
-          #print(var.arr[lon, lat, depth, time])
-
-          if(var.arr[lon, lat, depth, time] <= thresh){
-            omz.vol <- omz.vol + (1 * depth.thicknesses[depth])
-
+          if (oxygen_level <= thresh) {
+            omz.vol <- omz.vol + thickness
+          } else {
+            non.omz.vol <- non.omz.vol + thickness
           }
-          if(var.arr[lon, lat, depth, time] > thresh){
-            non.omz.vol <- non.omz.vol + (1 * depth.thicknesses[depth])
-
-          }
-        total.vol <- total.vol + (1 * depth.thicknesses[depth])
-
         }
+      }
+    }
+  }
 
-      }}}
-
-  #print(paste("omz vol is", omz.vol, "non omz vol is", non.omz.vol, "total (rel) ocean vol is", total.vol))
-  prop.omz.vol <- omz.vol/total.vol
+  # Calculate the proportion of OMZ volume
+  prop.omz.vol <- omz.vol / total.vol
 
   return(prop.omz.vol)
 }
