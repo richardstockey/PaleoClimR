@@ -101,7 +101,7 @@ cGENIE.trouble.plots <- function(experiment, directory="default", file.name = "c
 
   # Save the plot to a file if save is TRUE
   if(save == TRUE){
-    ggsave(file = paste0(directory, "/", file.name, ".", format), sum, height = 29.7, width = 21, units = "cm")
+    ggsave(file = paste0(directory, "/", file.name, ".", format), sum, height = 21, width = 29.7, units = "cm")
   }
 
   # Return the arranged plot
