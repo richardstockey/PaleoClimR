@@ -73,16 +73,27 @@ cGENIE.data <- function(var, experiment,
 
   # Create data frame for 2D array
   if (dims == 2) {
-    df <- as.data.frame(cbind(
-      rep(lon, times = length(lat), each = 1),
-      rep(lon.edges[1:(length(lon.edges)-1)], times = length(lat), each = 1),
-      rep(lon.edges[2:length(lon.edges)], times = length(lat), each = 1),
-      rep(lat, times = 1, each = length(lon)),
-      rep(lat.edges[1:(length(lat.edges)-1)], times = 1, each = length(lon)),
-      rep(lat.edges[2:length(lat.edges)], times = 1, each = length(lon)),
-      as.data.frame(melt(var.arr[,, time.step]))$value))
-
-    names(df) <- c("lon.mid", "lon.min", "lon.max", "lat.mid", "lat.min", "lat.max", "var")
+    if(var == "grid_topo"){
+      df <- as.data.frame(cbind(
+        rep(lon, times = length(lat)),
+        rep(lon.edges[1:(length(lon.edges)-1)], times = length(lat)),
+        rep(lon.edges[2:length(lon.edges)], times = length(lat)),
+        rep(lat, each = length(lon)),
+        rep(lat.edges[1:(length(lat.edges)-1)], each = length(lon)),
+        rep(lat.edges[2:length(lat.edges)], each = length(lon)),
+        as.data.frame(melt(var.arr))$value))
+      names(df) <- c("lon.mid", "lon.min", "lon.max", "lat.mid", "lat.min", "lat.max", "var")
+    }else{
+      df <- as.data.frame(cbind(
+        rep(lon, times = length(lat)),
+        rep(lon.edges[1:(length(lon.edges)-1)], times = length(lat)),
+        rep(lon.edges[2:length(lon.edges)], times = length(lat)),
+        rep(lat, each = length(lon)),
+        rep(lat.edges[1:(length(lat.edges)-1)], each = length(lon)),
+        rep(lat.edges[2:length(lat.edges)], each = length(lon)),
+        as.data.frame(melt(var.arr[,, time.step]))$value))
+      names(df) <- c("lon.mid", "lon.min", "lon.max", "lat.mid", "lat.min", "lat.max", "var")
+    }
   }
 
   # Filter the data to ensure valid lat-lon ranges
