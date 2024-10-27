@@ -39,10 +39,3 @@ A data frame with the matched climate data added.
 This function matches palaeocoordinates to cGENIE models by extracting grid and climate data from cGENIE netCDF files and matching them to the provided coordinates.
 This version of the function is specifically designed for benthic data.
 }
-\examples{
-\dontrun{
-coord.dat <- data.frame(p_lat = c(10, 20), p_lng = c(30, 40))
-result <- HADCM3.point.matching.benthic(var = "insitu_T_ym_dpth", file = "o.pgclann", experiment = "experiment1", coord.dat = coord.dat)
-}
-
-}

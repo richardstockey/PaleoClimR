@@ -13,9 +13,6 @@
 #' @import dplyr
 #' @import RNetCDF
 #' @export
-#' @examples
-#' # Example usage:
-#' cGENIE.depth.sum("ocn_O2", "experiment_directory")
 
 cGENIE.depth.sum <- function(var, experiment, year = "default", model = "biogem") {
 

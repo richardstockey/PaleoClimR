@@ -26,7 +26,3 @@ grouped by depth ranges.
 \details{
 The function reads the specified 3D variable from the NetCDF file, groups the data by depth, and calculates summary statistics (mean and standard deviation). The depth is grouped by minimum and maximum depth edges.
 }
-\examples{
-# Example usage:
-cGENIE.depth.sum("ocn_O2", "experiment_directory")
-}

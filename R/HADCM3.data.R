@@ -17,11 +17,6 @@
 #' @note
 #' The function assumes that the NetCDF file follows a specific structure, with variables named "latitude", "longitude", "depth_1", and "t" for time. Adjustments may be needed for different file structures.
 #'
-#' @examples
-#' \dontrun{
-#' # Example usage:
-#' df <- HADCM3.data(var = "insitu_T_ym_dpth", file = "o.pgclann", experiment = "~/Valdes2021_HADCM3L/teXPl_444/teXPl_444")
-#' }
 #'
 #' @import RNetCDF
 #' @import dplyr

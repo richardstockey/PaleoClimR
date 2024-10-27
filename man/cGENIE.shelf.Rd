@@ -32,9 +32,3 @@ The default shelf is the same as that used in Stockey et al. 2021 PNAS and Pohl 
 i.e., the top 3 layers of cells directly adjacent to land. The function can be customized to alter
 the vertical number of cells and the horizontal distance from land.
 }
-\examples{
-\dontrun{
-nc.sum <- list(var = array(data = NA, dim = c(10, 10, 10, 10)), time = 1:10, lon = 1:10, lat = 1:10, depth = 1:10)
-result <- cGENIE.shelf(nc.sum)
-}
-}

@@ -41,9 +41,3 @@ designed to fit on one A4-ish sheet of paper. The plots include:
 \details{
 The function produces a 3x2 landscape paneled plot.
 }
-\examples{
-\dontrun{
-cGENIE.sum.plots(experiment = "experiment_name", save = TRUE)
-}
-
-}

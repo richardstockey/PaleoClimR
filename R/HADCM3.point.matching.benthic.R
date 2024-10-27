@@ -14,11 +14,6 @@
 #'
 #' @return A data frame with the matched climate data added.
 #'
-#' @examples
-#' \dontrun{
-#' coord.dat <- data.frame(p_lat = c(10, 20), p_lng = c(30, 40))
-#' result <- HADCM3.point.matching.benthic(var = "insitu_T_ym_dpth", file = "o.pgclann", experiment = "experiment1", coord.dat = coord.dat)
-#' }
 #'
 #' @import RNetCDF
 #' @import dplyr

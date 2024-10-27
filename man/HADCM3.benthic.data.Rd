@@ -31,13 +31,3 @@ The function first calls \code{HADCM3.whole.ocean.data} to get the full dataset,
 \note{
 Other projection options include Lambert Cylindrical Equal Area (EPSG: 6933). The \code{palette_name} parameter currently requires a numeric value (e.g., \code{parula(1000)}). Other color palette options include \code{viridis} and others available at \url{https://r-charts.com/color-palettes/}.
 }
-\examples{
-\dontrun{
-df.benth <- HADCM3.benthic.data(var = "temperature", file = "path/to/netcdf.nc", experiment = "experiment1")
-ggplot(df.benth, aes(y = lat.mid, x = lon.mid, color = var)) + 
-  geom_point() +
-  scale_colour_viridis_c() +
-  theme_bw()
-}
-
-}

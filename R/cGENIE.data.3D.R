@@ -34,9 +34,6 @@
 #'    0 degrees.
 #' 3. The data is reshaped from a 3D array into a 2D dataframe for easier analysis.
 #'
-#' @example
-#' data <- cGENIE.data.3D(var = "ocn_O2", experiment = "my_experiment", year = "default")
-#'
 #' @import RNetCDF
 #' @import dplyr
 #' @import reshape2

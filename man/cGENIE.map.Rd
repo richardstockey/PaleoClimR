@@ -61,8 +61,3 @@ It can handle both 2D and 3D data, visualizing variables across specified depth 
 This function reads 2D or 3D data from cGENIE model output NetCDF files and produces a map visualization.
 Default settings are defined for several commonly used variables, and users can specify their own scaling and color settings.
 }
-\examples{
-map <- cGENIE.map(var = "ocn_temp", experiment = "my_experiment", depth.level = 1)
-print(map)
-
-}

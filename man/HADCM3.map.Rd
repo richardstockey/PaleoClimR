@@ -68,13 +68,3 @@ If \code{plot} is TRUE, returns a ggplot object. If \code{plot} is FALSE and \co
 \description{
 This function generates maps from imported .nc files, such as those from Valdes et al. 2021. It can handle both 2D and 3D netCDF files and provides options for various customizations including projections, color palettes, and more.
 }
-\examples{
-\dontrun{
-HADCM3.map(var = "insitu_T_ym_dpth", file = "o.pgclann", experiment = "~/Valdes2021_HADCM3L/teXPl_444/teXPl_444",
-           depth.level = 1, dims = 3, min.value = 0, max.value = 100, intervals = 10,
-           continents.outlined = TRUE, scale.label = "Temperature (°C)", unit.factor = 1,
-           time.present = FALSE, projection = 'ESRI:54012', calcs = TRUE, plot = TRUE,
-           palette_name = pals::parula(1000), polygons = NULL, na.colour = "grey80")
-}
-
-}

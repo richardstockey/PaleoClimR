@@ -59,8 +59,3 @@ A ggplot object representing the transect plot.
 \description{
 This function creates transect plots from cGENIE model output .nc files.
 }
-\examples{
-\dontrun{
-transect_plot <- cGENIE.transect(experiment = "experiment1", var = "temperature")
-}
-}

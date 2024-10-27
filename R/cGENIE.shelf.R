@@ -11,11 +11,6 @@
 #' @param surf A logical value indicating whether to include the surface layer in the shelf. Default is FALSE.
 #' @param time.step A character or integer specifying the time step to use. Default is "default", which uses the length of `nc.sum$time`.
 #' @return An array summarizing the shelf environments.
-#' @examples
-#' \dontrun{
-#' nc.sum <- list(var = array(data = NA, dim = c(10, 10, 10, 10)), time = 1:10, lon = 1:10, lat = 1:10, depth = 1:10)
-#' result <- cGENIE.shelf(nc.sum)
-#' }
 #' @export
 cGENIE.shelf <- function(nc.sum, shelf.depth = 3, array.only = TRUE, surf = FALSE, time.step = "default") {
   # -------------------------------------------------------------------------------------------------------

@@ -38,10 +38,3 @@ A ggplot object representing the map.
 \description{
 This function creates a map visualization from a given NetCDF file. The map can be customized with various parameters including value ranges, intervals, and projection types.
 }
-\examples{
-\dontrun{
-map <- "path/to/netcdf/file.nc"
-scotese.map(map, min.value = -5000, max.value = 5000, intervals = 1000, scale.label = "Elevation (m)")
-}
-
-}

@@ -42,8 +42,3 @@ A ggplot object representing the overlay map.
 \description{
 This function creates an overlay map for cGENIE data using various projections and dimensions.
 }
-\examples{
-\dontrun{
-overlay_map <- cGENIE.overlay.map(var = "temperature", experiment = "experiment1")
-}
-}

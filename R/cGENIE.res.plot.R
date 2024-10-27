@@ -8,12 +8,6 @@
 #' @param experiment A character string specifying the experiment name.
 #'
 #' @return A ggplot object representing the time series plot of the specified variable.
-#'
-#' @examples
-#' \dontrun{
-#' plot <- cGENIE.res.plot(var = "ocn_temp", experiment = "experiment1")
-#' print(plot)
-#' }
 #' 
 #' @import ggplot2
 #' @export

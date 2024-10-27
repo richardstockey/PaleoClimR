@@ -9,9 +9,6 @@
 #' @return Depending on the `dataframe` and `array` parameters:
 #' \item{dataframe}{A dataframe containing the extracted bottom-water data, including longitude, latitude, and variable values.}
 #' \item{array}{A 2D array of the extracted bottom-water variable values if `array` is TRUE.}
-#' @examples
-#' result_df <- cGENIE.benthic.data("O2", "path/to/experiment", dataframe = TRUE)
-#' result_array <- cGENIE.benthic.data("O2", "path/to/experiment", array = TRUE)
 #' @import RNetCDF
 #' @import dplyr
 #' @export

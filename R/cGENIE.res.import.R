@@ -10,11 +10,6 @@
 #'
 #' @details The function reads the .res file, removes columns that contain only NAs, and assigns appropriate column names based on the file's content.
 #'
-#' @examples
-#' \dontrun{
-#' # Import a .res file for variable "CO2" from experiment "exp1"
-#' df <- cGENIE.res.import(var = "CO2", experiment = "exp1")
-#' }
 #'
 #' @import readr
 #' @import dplyr

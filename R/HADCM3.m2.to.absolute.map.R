@@ -24,14 +24,7 @@
 #' @return A ggplot object representing the map.
 #' @import RNetCDF dplyr sf sp reshape2 ggplot2 pals geosphere
 #' @export
-#'
-#' @examples
-#' \dontrun{
-#' HADCM3.m2.to.absolute.map(var = "insitu_T_ym_dpth", file = "o.pgclann", experiment = "~/Valdes2021_HADCM3L/teXPl_444/teXPl_444",
-#'                           min.value = 0, max.value = 100, intervals = 10, continents.outlined = TRUE, scale.label = "Temperature",
-#'                           unit.factor = 1, time.present = FALSE, projection = 'ESRI:54012', calcs = TRUE, plot = TRUE,
-#'                           palette_name = pals::parula(1000), polygons = NULL, na.colour = "grey80")
-#' }
+
 HADCM3.m2.to.absolute.map <- function(var, file, experiment,
       depth.level = 1,
       dims = 2,

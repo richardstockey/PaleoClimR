@@ -18,14 +18,6 @@
 #' @note
 #' Other projection options include Lambert Cylindrical Equal Area (EPSG: 6933). The `palette_name` parameter currently requires a numeric value (e.g., `parula(1000)`). Other color palette options include `viridis` and others available at \url{https://r-charts.com/color-palettes/}.
 #'
-#' @examples
-#' \dontrun{
-#' df.benth <- HADCM3.benthic.data(var = "temperature", file = "path/to/netcdf.nc", experiment = "experiment1")
-#' ggplot(df.benth, aes(y = lat.mid, x = lon.mid, color = var)) + 
-#'   geom_point() +
-#'   scale_colour_viridis_c() +
-#'   theme_bw()
-#' }
 #'
 #' @import RNetCDF dplyr sf sp ggspatial reshape2 ggplot2 pals viridis
 #' @export

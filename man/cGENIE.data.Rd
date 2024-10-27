@@ -32,8 +32,3 @@ A data frame containing the extracted 2D lat-lon data field with corresponding g
 \description{
 This function extracts 2D latitude-longitude data fields from 3D or 2D netCDF (.nc) files.
 }
-\examples{
-\dontrun{
-data <- cGENIE.data(var = "temperature", experiment = "experiment1")
-}
-}

@@ -50,10 +50,3 @@ extract the time variable if \code{time.present} is set to TRUE.
 The function assumes that the NetCDF file follows the HADCM3 grid conventions. It may require adjustments
 for other grid configurations.
 }
-\examples{
-\dontrun{
-# Example usage:
-df <- HADCM3.whole.ocean.data(var = "insitu_T_ym_dpth", file = "o.pgclann", experiment = "~/Valdes2021_HADCM3L/teXPl_444/teXPl_444")
-}
-
-}

@@ -24,10 +24,6 @@
 #' @importFrom ggplot2 ggplot geom_tile scale_fill_gradientn
 #' @importFrom pals parula
 #' @export
-#' @examples
-#' \dontrun{
-#' transect_plot <- cGENIE.transect(experiment = "experiment1", var = "temperature")
-#' }
 
 cGENIE.transect <- function(experiment, var,
         slice = 1,

@@ -41,10 +41,3 @@ A data frame with the matched climate data added.
 \description{
 This function matches palaeocoordinates to cGENIE models by extracting grid and climate data from cGENIE netCDF files and matching them to the provided coordinates.
 }
-\examples{
-\dontrun{
-coord.dat <- data.frame(p_lat = c(10, 20), p_lng = c(30, 40))
-result <- HADCM3.point.matching(var = "insitu_T_ym_dpth", file = "o.pgclann", experiment = "experiment1", coord.dat = coord.dat)
-}
-
-}

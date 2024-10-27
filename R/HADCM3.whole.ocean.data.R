@@ -35,11 +35,6 @@
 #' @import dplyr
 #' @import reshape2
 #'
-#' @examples
-#' \dontrun{
-#' # Example usage:
-#' df <- HADCM3.whole.ocean.data(var = "insitu_T_ym_dpth", file = "o.pgclann", experiment = "~/Valdes2021_HADCM3L/teXPl_444/teXPl_444")
-#' }
 #'
 #' @export
 HADCM3.whole.ocean.data <- function(var, file, experiment,

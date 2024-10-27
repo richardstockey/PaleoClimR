@@ -24,15 +24,6 @@
 #'
 #' @return If `plot` is TRUE, returns a ggplot object. If `plot` is FALSE and `calcs` is TRUE, returns a SpatialPolygonsDataFrame. If `plot` is FALSE and `calcs` is FALSE, returns the input `polygons`.
 #'
-#' @examples
-#' \dontrun{
-#' HADCM3.map(var = "insitu_T_ym_dpth", file = "o.pgclann", experiment = "~/Valdes2021_HADCM3L/teXPl_444/teXPl_444",
-#'            depth.level = 1, dims = 3, min.value = 0, max.value = 100, intervals = 10,
-#'            continents.outlined = TRUE, scale.label = "Temperature (°C)", unit.factor = 1,
-#'            time.present = FALSE, projection = 'ESRI:54012', calcs = TRUE, plot = TRUE,
-#'            palette_name = pals::parula(1000), polygons = NULL, na.colour = "grey80")
-#' }
-#'
 #' @import RNetCDF dplyr sf sp ggspatial reshape2 ggplot2 pals viridis
 #' @export
 HADCM3.points.map <- function(var,

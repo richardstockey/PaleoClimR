@@ -38,9 +38,3 @@ The grid data is returned as a list with named elements for easy access.
 The latitude and longitude values are adjusted to remove any values outside the realistic range (-90 to 90 for latitude and -180 to 180 for longitude).
 Depth values are only included if \code{dims} is set to 3.
 }
-\examples{
-\dontrun{
-grid_data <- HADCM3.grid(var = "insitu_T_ym_dpth", file = "o.pgclann", experiment = "~/Valdes2021_HADCM3L/teXPl_444/teXPl_444", dims = 3)
-}
-
-}

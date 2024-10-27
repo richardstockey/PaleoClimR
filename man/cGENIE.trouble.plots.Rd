@@ -40,10 +40,3 @@ Generates key summary plots for cGENIE models on one A4-ish sheet of paper. The 
 \details{
 This function produces a 3x2 landscape paneled plot.
 }
-\examples{
-\dontrun{
-experiment_data <- load_experiment_data("experiment_name")
-plot <- cGENIE.trouble.plots(experiment_data, save = TRUE)
-}
-
-}

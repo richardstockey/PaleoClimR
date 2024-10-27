@@ -27,8 +27,3 @@ The function extracts relevant variables from the NetCDF file, calculates the th
 and sums the volumes classified as OMZs and non-OMZs based on the provided threshold. The final output is
 the proportion of the total volume that constitutes OMZs.
 }
-\examples{
-# Calculate the OMZ volume proportion for a specific experiment
-omz_volume <- cGENIE.omz.volume("path/to/experiment", thresh = 4.8e-6)
-
-}

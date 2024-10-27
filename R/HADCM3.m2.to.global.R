@@ -20,18 +20,6 @@
 #' - The function includes several checks and adjustments for the HADCM3 grid geometry.
 #' - The function uses various R packages for data manipulation and spatial calculations, including dplyr, sf, sp, ggspatial, reshape2, ggplot2, pals, viridis, and geosphere.
 #'
-#' @examples
-#' \dontrun{
-#' # Example usage:
-#' result <- HADCM3.m2.to.global(var = "insitu_T_ym_dpth",
-#'                               file = "o.pgclann",
-#'                               experiment = "~/Valdes2021_HADCM3L/teXPl_444/teXPl_444",
-#'                               depth.level = 1,
-#'                               dims = 3,
-#'                               unit.factor = 1,
-#'                               time.present = FALSE)
-#' print(result)
-#' }
 #'
 #' @import RNetCDF dplyr sp reshape2 geosphere
 #' @export

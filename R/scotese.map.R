@@ -21,11 +21,6 @@
 #' @import reshape2
 #' @import ggplot2
 #'
-#' @examples
-#' \dontrun{
-#' map <- "path/to/netcdf/file.nc"
-#' scotese.map(map, min.value = -5000, max.value = 5000, intervals = 1000, scale.label = "Elevation (m)")
-#' }
 #'
 #' @export
 scotese.map <- function(map, # netcdf file

@@ -46,19 +46,3 @@ This function supports different projections and resolutions for the NetCDF file
 values and computes edges for these values. The main variable extracted from the NetCDF file is "z", which represents
 elevation in meters.
 }
-\examples{
-\dontrun{
-  z_matrix <- scotese.matrix(
-    map = "path/to/netcdf/file.nc",
-    min.value = -6000,
-    max.value = 6000,
-    intervals = 2000,
-    continents.outlined = TRUE,
-    scale.label = "Elevation",
-    res = "deg",
-    scale = "viridis",
-    projection = 'ESRI:54012'
-  )
-}
-
-}

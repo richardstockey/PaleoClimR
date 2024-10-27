@@ -23,7 +23,3 @@ Depending on the \code{dataframe} and \code{array} parameters:
 \description{
 This function extracts and summarizes the bottom-water redox state from 3D cGENIE NetCDF files. It retrieves specified variables, computes the corresponding bottom-water depths, and optionally returns the data as either an array or a dataframe.
 }
-\examples{
-result_df <- cGENIE.benthic.data("O2", "path/to/experiment", dataframe = TRUE)
-result_array <- cGENIE.benthic.data("O2", "path/to/experiment", array = TRUE)
-}

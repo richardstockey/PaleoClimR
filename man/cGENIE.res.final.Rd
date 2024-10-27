@@ -24,10 +24,3 @@ The function first imports the .res file corresponding to the specified variable
 It then extracts the final data point of the specified variable. If \code{sub_var} is set to "default", the function uses predefined sub-variables
 for "ocn_temp" and "ocn_O2". For other variables, it extracts the value from the second column of the final row.
 }
-\examples{
-\dontrun{
-final_temp <- cGENIE.res.final(var = "ocn_temp", experiment = "experiment1")
-final_O2 <- cGENIE.res.final(var = "ocn_O2", experiment = "experiment2")
-}
-
-}

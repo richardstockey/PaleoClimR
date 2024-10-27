@@ -19,10 +19,6 @@
 #' @import RNetCDF
 #' @import dplyr
 #'
-#' @examples
-#' # Calculate the OMZ volume proportion for a specific experiment
-#' omz_volume <- cGENIE.omz.volume("path/to/experiment", thresh = 4.8e-6)
-#'
 #' @export
 cGENIE.omz.volume <- function(experiment, thresh = 4.8e-6, time.step = "default") {
   # Load necessary libraries

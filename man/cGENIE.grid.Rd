@@ -24,7 +24,3 @@ It can handle both 2D and 3D grid data based on the specified dimensions.
 The function handles the adjustment of longitude values to ensure they are within the range of \link{-180, 180}.
 It returns a list containing the relevant grid data based on the specified dimensions (2D or 3D).
 }
-\examples{
-# Example usage:
-grid_data <- cGENIE.grid("experiment_directory", dims = 3)
-}

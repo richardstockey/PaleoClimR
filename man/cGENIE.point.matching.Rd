@@ -37,10 +37,3 @@ A data frame with the original coordinates and matched climate data from the cGE
 \description{
 This function matches palaeocoordinates to cGENIE model data.
 }
-\examples{
-\dontrun{
-coord.dat <- data.frame(p_lat = c(-30, 45), p_lng = c(120, -75))
-result <- cGENIE.point.matching(var = "temperature", experiment = "experiment1", coord.dat = coord.dat)
-}
-
-}

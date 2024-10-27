@@ -18,11 +18,6 @@
 #' @importFrom reshape2 melt
 #' @importFrom ggplot2 ggplot geom_tile scale_fill_gradientn
 #' @export
-#' @examples
-#' \dontrun{
-#' overlay_map <- cGENIE.overlay.map(var = "temperature", experiment = "experiment1")
-#' }
-
 cGENIE.overlay.map <- function(var, experiment,
              depth.level = 1,
              dims = 3,

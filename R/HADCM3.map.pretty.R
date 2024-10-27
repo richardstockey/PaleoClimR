@@ -24,10 +24,6 @@
 #' @import RNetCDF dplyr sf sp ggspatial reshape2 ggplot2 ggnewscale
 #' @export
 #'
-#' @examples
-#' \dontrun{
-#' HADCM3.map.pretty(experiment = "~/Valdes2021_HADCM3L/teXPl_444/teXPl_444")
-#' }
 
 HADCM3.map.pretty <- function(experiment,
                         depth.level = 1,

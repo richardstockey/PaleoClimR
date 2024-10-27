@@ -22,10 +22,6 @@
 #' @import ggplot2
 #' @export
 #'
-#' @examples
-#' \dontrun{
-#' cGENIE.sum.plots(experiment = "experiment_name", save = TRUE)
-#' }
 #'
 cGENIE.sum.plots <- function(experiment = NULL, directory="default", file.name = "cGENIE.sum.plots", format = "pdf", save = FALSE){
   # Load necessary library

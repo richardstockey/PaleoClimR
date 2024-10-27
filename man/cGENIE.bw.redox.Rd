@@ -44,16 +44,6 @@ The redox classification thresholds are based on oxygen concentration values, wi
 \item Oxic: oxygen concentration \eqn{>} subox.thresh
 }
 }
-\examples{
-\dontrun{
-# Example usage:
-result <- cGENIE.bw.redox("path_to_experiment")
-print(result$f.anox)
-print(result$f.subox)
-print(result$f.ox)
-}
-
-}
 \references{
 Sperling, E. A., et al. 2015 The Ecological Physiology of Earth's Second Oxygen Revolution.
 }

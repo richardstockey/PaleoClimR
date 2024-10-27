@@ -13,10 +13,7 @@
 #' @importFrom RNetCDF open.nc var.get.nc
 #' @importFrom dplyr %>%
 #' @export
-#' @examples
-#' # Example usage:
-#' nc_data <- cGENIE.nc.import("temperature", "experiment_directory", dims = 3)
-
+#' 
 cGENIE.nc.import <- function(var, experiment, dims = 3, model = "biogem") {
 
   # Load required libraries

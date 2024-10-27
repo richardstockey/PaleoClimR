@@ -65,8 +65,3 @@ If plot is FALSE, returns a spatial polygons data frame. If plot is TRUE, return
 \description{
 This function generates visually appealing maps from imported .nc files, such as those from Valdes et al. 2021. It aims to include key information to visualize as much of the earth system as possible at one time.
 }
-\examples{
-\dontrun{
-HADCM3.map.pretty(experiment = "~/Valdes2021_HADCM3L/teXPl_444/teXPl_444")
-}
-}

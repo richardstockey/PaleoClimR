@@ -13,9 +13,6 @@
 #' @importFrom RNetCDF open.nc var.get.nc
 #' @importFrom dplyr between
 #' @export
-#' @examples
-#' # Example usage:
-#' grid_data <- cGENIE.grid("experiment_directory", dims = 3)
 
 cGENIE.grid <- function(experiment, dims, model = "biogem") {
 

@@ -20,10 +20,3 @@ A ggplot object representing the time series plot of the specified variable.
 This function imports .res files and converts them into data frames, then plots them as time series.
 It builds on the \code{cGENIE.res.import} function.
 }
-\examples{
-\dontrun{
-plot <- cGENIE.res.plot(var = "ocn_temp", experiment = "experiment1")
-print(plot)
-}
-
-}

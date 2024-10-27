@@ -13,10 +13,6 @@
 #' @importFrom dplyr %>%
 #' @importFrom reshape2 melt
 #' @export
-#' @examples
-#' \dontrun{
-#' data <- cGENIE.data(var = "temperature", experiment = "experiment1")
-#' }
 
 cGENIE.data <- function(var, experiment,
                         depth.level = NULL,

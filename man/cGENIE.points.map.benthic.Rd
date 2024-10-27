@@ -72,8 +72,3 @@ This function reads 2D or 3D data from cGENIE model output NetCDF files and prod
 Default settings are defined for several commonly used variables, and users can specify their own scaling and color settings.
 The function also matches specific points from a provided data frame and plots them on the map.
 }
-\examples{
-map <- cGENIE.points.map.benthic(var = "ocn_temp", experiment = "my_experiment", coord.dat = coord.dat, depth.level = 1)
-print(map)
-
-}

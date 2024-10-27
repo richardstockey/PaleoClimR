@@ -18,13 +18,6 @@
 #'
 #' @return A ggplot object containing the arranged summary plots.
 #' @export
-#'
-#' @examples
-#' \dontrun{
-#' experiment_data <- load_experiment_data("experiment_name")
-#' plot <- cGENIE.trouble.plots(experiment_data, save = TRUE)
-#' }
-#'
 #' @import ggplot2
 #' @import gridExtra
 

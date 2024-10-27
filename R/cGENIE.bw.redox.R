@@ -24,18 +24,7 @@
 #'   \item{f.ox}{Fraction of bottom-water grid cells classified as oxic.}
 #'   \item{bw.array}{A matrix of bottom-water oxygen concentrations for each grid cell.}
 #' }
-#'
 #' @references Sperling, E. A., et al. 2015 The Ecological Physiology of Earth's Second Oxygen Revolution.
-#'
-#' @examples
-#' \dontrun{
-#' # Example usage:
-#' result <- cGENIE.bw.redox("path_to_experiment")
-#' print(result$f.anox)
-#' print(result$f.subox)
-#' print(result$f.ox)
-#' }
-#'
 #' @import RNetCDF
 #' @import dplyr
 #' @export

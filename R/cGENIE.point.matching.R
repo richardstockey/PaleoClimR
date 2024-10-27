@@ -13,12 +13,6 @@
 #'
 #' @return A data frame with the original coordinates and matched climate data from the cGENIE model.
 #'
-#' @examples
-#' \dontrun{
-#' coord.dat <- data.frame(p_lat = c(-30, 45), p_lng = c(120, -75))
-#' result <- cGENIE.point.matching(var = "temperature", experiment = "experiment1", coord.dat = coord.dat)
-#' }
-#'
 #' @import RNetCDF
 #' @import dplyr
 #' @import reshape2

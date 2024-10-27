@@ -25,7 +25,3 @@ This function imports specified variables from cGENIE NetCDF files and extracts 
 The function reads a NetCDF file based on the specified experiment and model, extracting latitude, longitude,
 depth, time, and the requested variable. It supports both 2D and 3D datasets.
 }
-\examples{
-# Example usage:
-nc_data <- cGENIE.nc.import("temperature", "experiment_directory", dims = 3)
-}
