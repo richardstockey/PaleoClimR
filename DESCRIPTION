@@ -30,7 +30,9 @@ Imports:
     gridExtra, 
     sf, 
     sp, 
-    viridis
+    viridis, 
+    AquaEnv, 
+    ncdf4
 Suggests:
     testthat,
     knitr,
