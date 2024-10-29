@@ -29,11 +29,11 @@ cGENIE.MI.array <- function(
     format = "habitat_viability"
 ) {
 
-library(AquaEnv)
-library(dplyr)
-library(ncdf4)
-library(reshape2)
-library(RNetCDF)
+# library(AquaEnv)
+# library(dplyr)
+# library(ncdf4)
+# library(reshape2)
+# library(RNetCDF)
 
 # Set the time step to the final value if year is "default"
 if (year == "default") {
