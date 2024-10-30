@@ -78,10 +78,21 @@ clim.dat <- cGENIE.data(var = var, experiment = experiment, depth.level = depth.
     var.arr <- input
     # Extract general variables
     lat <- grid.dat$lat            # Latitude (degrees north)
-    lat.edges <- grid.dat$lat.edges
+    lat.edges <- c(
+  -90.000000, -70.811864, -62.733956, -56.442690, -51.057559, -46.238257,
+  -41.810315, -37.669887, -33.748989, -30.000000, -26.387800, -22.885380,
+  -19.471221, -16.127620, -12.839588,  -9.594068,  -6.379370,  -3.184739,
+    0.000000,   3.184739,   6.379370,   9.594068,  12.839588,  16.127620,
+   19.471221,  22.885380,  26.387800,  30.000000,  33.748989,  37.669887,
+   41.810315,  46.238257,  51.057559,  56.442690,  62.733956,  70.811864,
+   90.000000
+)
     lon <- grid.dat$lon            # Longitude (degrees east)
-    lon.edges <- grid.dat$lon.edges
-
+lon.edges <- c(
+  -180, -170, -160, -150, -140, -130, -120, -110, -100, -90, -80, -70, -60, -50, -40,
+  -30, -20, -10, 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110,
+  120, 130, 140, 150, 160, 170, 180
+)
     df <- as.data.frame(cbind(
         rep(lon, times = length(lat), each = 1),
         rep(lon.edges[1:(length(lon.edges)-1)], times = length(lat), each = 1),
