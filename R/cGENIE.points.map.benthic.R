@@ -38,7 +38,7 @@
 #' @import ggplot2
 #' @export
 
-cGENIE.points.map.benthic <- function(var, 
+cGENIE.points.map.benthic <- function(var,
                               experiment,
                               dims = 3,
                               depth.level = 1,
@@ -51,12 +51,12 @@ cGENIE.points.map.benthic <- function(var,
                               scale.label = NULL,
                               model = "biogem",
                               palette_name = pals::parula(1000),
-                              projection = 'ESRI:54012', 
+                              projection = 'ESRI:54012',
                               coord.dat = NULL, # is any data frame with the lat long column names assigned - cGENIE data will be added to this and returned
                               lat.name = "p_lat", # name IF generated from rotated paleoverse coordinates...
                               lng.name = "p_lng") # name IF generated from rotated paleoverse coordinates...
 {
-  
+
   # Load necessary libraries
   library(RNetCDF)   # For reading NetCDF files
   library(dplyr)     # For data manipulation
@@ -65,16 +65,16 @@ cGENIE.points.map.benthic <- function(var,
   library(ggspatial) # For adding spatial components in ggplot
   library(reshape2)  # For reshaping data
   library(ggplot2)   # For plotting
-  
-  matched_points <- cGENIE.point.matching.benthic(var = var, 
+
+  matched_points <- cGENIE.point.matching.benthic(var = var,
                                           experiment = experiment,
                                           depth.level = depth.level,
                                           dims = dims,
                                           coord.dat = coord.dat,
-                                          lat.name = lat.name, 
+                                          lat.name = lat.name,
                                           lng.name = lng.name
   )
-  
+
   # Define default values for different "var" variables
   if (var == "ocn_temp") {
     unit.factor <- 1          # no conversion
@@ -126,15 +126,15 @@ cGENIE.points.map.benthic <- function(var,
     intervals <- ifelse(is.null(intervals), 10, intervals)
     scale.label <- ifelse(is.null(scale.label), "Variable", scale.label)
   }
-  
+
   # Set model-specific file prefix
   if (model == "biogem") {
     prefix <- "/biogem/fields_biogem_"
   }
-  
+
   # Open the NetCDF file
   nc <- open.nc(paste0(experiment, prefix, dims, "d", ".nc"))
-  
+
   # Extract general variables (e.g., latitude, longitude, depth, time)
   lat <- var.get.nc(nc, "lat") # Latitude
   lat.edges <- var.get.nc(nc, "lat_edges")
@@ -143,23 +143,23 @@ cGENIE.points.map.benthic <- function(var,
   depth <- var.get.nc(nc, "zt") # Depth in meters
   depth.edges <- var.get.nc(nc, "zt_edges")
   time <- var.get.nc(nc, "time") # Time in years
-  
+
   # Extract the specific variable from the NetCDF file
   var.arr <- var.get.nc(nc, var)
-  
+
   # Set the time step to the final value if year is "default"
   if (year == "default") {
     time.step <- length(time)
   } else {
     time.step <- year
   }
-  
+
   # Adjust longitude to be within 0 to 360 degrees (cGENIE model-specific)
   if (mean(between(lon, -180, 180)) < 1) {
     lon.edges[lon.edges <= -180] <- lon.edges[lon.edges <= -180] + 360
     lon[lon <= -180] <- lon[lon <= -180] + 360
   }
-  
+
   # Generate data frame for 3D data (if dims == 3)
   if (dims == 3) {
     df <- as.data.frame(cbind(
@@ -172,7 +172,7 @@ cGENIE.points.map.benthic <- function(var,
       as.data.frame(melt(var.arr[,, depth.level, time.step]))$value))
     names(df) <- c("lon.mid", "lon.min", "lon.max", "lat.mid", "lat.min", "lat.max", "var")
   }
-  
+
   # Generate data frame for 2D data (if dims == 2)
   if (dims == 2) {
     df <- as.data.frame(cbind(
@@ -185,16 +185,16 @@ cGENIE.points.map.benthic <- function(var,
       as.data.frame(melt(var.arr[,, time.step]))$value))
     names(df) <- c("lon.mid", "lon.min", "lon.max", "lat.mid", "lat.min", "lat.max", "var")
   }
-  
+
   # Filter out invalid or extreme coordinate ranges
   df <- df %>%
     filter(lon.max <= 180, lon.min >= -180, lat.max <= 90, lat.min >= -90)
-  
+
   # Handle longitudes near -180 and 180 degrees
   df$lon.range <- abs(df$lon.min - df$lon.max)
   df$lon.min[df$lon.range > 180 & abs(df$lon.min) == 180] <- -df$lon.min[df$lon.range > 180 & abs(df$lon.min) == 180]
   df$lon.max[df$lon.range > 180 & abs(df$lon.max) == 180] <- -df$lon.max[df$lon.range > 180 & abs(df$lon.max) == 180]
-  
+
   # Create polygons for plotting
   poly.list <- list()
   poly.names.list <- list()
@@ -206,14 +206,14 @@ cGENIE.points.map.benthic <- function(var,
     poly.list <- append(poly.list, polygons.code)
     poly.names.list <- append(poly.names.list, paste0("p", poly))
   }
-  
+
   # Create spatial polygons data frame
   SpP <- SpatialPolygons(poly.list)
   attr <- data.frame(var = df$var, row.names = poly.names.list)
   SpDf <- SpatialPolygonsDataFrame(SpP, attr)
   SpDfSf <- st_as_sf(SpDf)
   st_crs(SpDfSf) = '+proj=longlat +ellps=sphere'
-  
+
   # Add frame to the map
   l1 <- cbind(c(-180, 180, rep(180, 1801), 180, -180, rep(-180, 1801), -180),
               c(-90, -90, seq(-90, 90, 0.1), 90, 90, seq(90, -90, -0.1), -90))
@@ -222,23 +222,27 @@ cGENIE.points.map.benthic <- function(var,
   SLs1df = SpatialPolygonsDataFrame(SLs1, data = data.frame(var = 2, row.names = "a"))
   SLs1dfSf <- st_as_sf(SLs1df)
   st_crs(SLs1dfSf) = '+proj=longlat +ellps=sphere'
-  
+
+
+  matched_points$lat <- matched_points$p_lat
+  matched_points$lng <- matched_points$p_lng
+
   # Create spatial object with the chosen points from start of script
   points <- as.data.frame(cbind(matched_points$lng, matched_points$lat, matched_points$matched_climate*unit.factor))
   points <- na.omit(points)
   points_sp <- SpatialPointsDataFrame(coords = points[,1:2], data = as.data.frame(points[,3]))
   names(points_sp) <- "matched_climate"
-  
+
   # code in colour scale for matched points
   palette_name_points <- palette_name
   min.value_1 <- min.value
   max.value_1 <- max.value
   intervals_1 <- intervals
-  
+
   # make plottable object
   points_spsf <- st_as_sf(points_sp)
   st_crs(points_spsf) = '+proj=longlat +ellps=sphere'
-  
+
   # Create the map using ggplot
   map <- ggplot() +
     geom_sf(data = SpDfSf %>% st_transform(projection), aes(fill = var * unit.factor), color = NA) +
@@ -250,9 +254,9 @@ cGENIE.points.map.benthic <- function(var,
     theme_minimal() +
     theme(legend.position = "bottom") +
     labs(fill = scale.label)
-  
+
     map.points <- map +
     geom_sf(data = points_spsf %>% st_transform(projection), aes(geometry = geometry, fill = matched_climate), shape = 21, size = 6, stroke = 1.0, alpha = 0.6) # WGS 84 / Equal Earth Greenwich
-  
+
   return(map.points)
 }
