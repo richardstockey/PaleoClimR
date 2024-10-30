@@ -45,10 +45,10 @@ cGENIE.grid <- function(experiment, dims, model = "biogem") {
 
   # Filter latitude and longitude within valid ranges
   # is this necessary here? Do more testing
-  lat <- lat[lat <= 90 & lat => -90]
-  lat.edges <- lat.edges[lat.edges <= 90 & lat.edges => -90]
-  lon <- lon[lon <= 180 & lon => -180]
-  lon.edges <- lon.edges[lon.edges <= 180 & lon.edges => -180]
+  lat <- lat[lat <= 90 & lat >= -90]
+  lat.edges <- lat.edges[lat.edges <= 90 & lat.edges >= -90]
+  lon <- lon[lon <= 180 & lon >= -180]
+  lon.edges <- lon.edges[lon.edges <= 180 & lon.edges >= -180]
 
   # Create a list to store grid data based on dimensions
   if (dims == 3) {
