@@ -20,13 +20,16 @@
 
 cGENIE.point.matching <- function(var = NULL, 
                                   experiment = NULL,
+                                  input = NULL, 
+                                  format = "nc", 
                                   depth.level = 1,
                                   dims = 3,
                                   coord.dat = NULL, # is any data frame with the lat long column names assigned - cGENIE data will be added to this and returned
                                   lat.name = "p_lat", # name IF generated from rotated paleoverse coordinates...
                                   lng.name = "p_lng") # name IF generated from rotated paleoverse coordinates...
 {
-  
+
+if(format == "nc"){
 # Load necessary libraries
 library(RNetCDF)  # For handling NetCDF files
 library(dplyr)    # For data manipulation
@@ -40,6 +43,67 @@ grid.dat <- cGENIE.grid(experiment = experiment, dims = dims)
 # This function call retrieves the climate data for the specified variable, experiment, depth level, and dimensions.
 # The 'year' parameter is set to "default" to use the default time slice.
 clim.dat <- cGENIE.data(var = var, experiment = experiment, depth.level = depth.level, dims = dims, year = "default")
+
+} else if(format == "array"){
+    # if using an array – use default cGENIE dims
+    grid.dat <- list(
+        lat = c(-76.463797, -66.443536, -59.441568, -53.663942, -48.590378, -43.982963,
+                        -39.709017, -35.685335, -31.855431, -28.178643, -24.624318, -21.168449,
+                        -17.791591, -14.477512, -11.212271,  -7.983556,  -4.780192,  -1.591754,
+                            1.591754,   4.780192,   7.983556,  11.212271,  14.477512,  17.791591,
+                         21.168449,  24.624318,  28.178643,  31.855431,  35.685335,  39.709017,
+                         43.982963,  48.590378,  53.663942,  59.441568,  66.443536,  76.463797),
+        lat.edges = c(-70.811864, -62.733956, -56.442690, -51.057559, -46.238257, -41.810315,
+                                    -37.669887, -33.748989, -30.000000, -26.387800, -22.885380, -19.471221,
+                                    -16.127620, -12.839588,  -9.594068,  -6.379370,  -3.184739,   0.000000,
+                                     3.184739,   6.379370,   9.594068,  12.839588,  16.127620,  19.471221,
+                                    22.885380,  26.387800,  30.000000,  33.748989,  37.669887,  41.810315,
+                                    46.238257,  51.057559,  56.442690,  62.733956,  70.811864),
+        lon = c(-175, -165, -155, -145, -135, -125, -115, -105,  -95,  -85,  -75,  -65,  -55,  -45,  -35,
+                        -25,  -15,   -5,    5,   15,   25,   35,   45,   55,   65,   75,   85,   95,  105,  115,
+                        125,  135,  145,  155,  165,  175),
+        lon.edges = c(-170, -160, -150, -140, -130, -120, -110, -100,  -90,  -80,  -70,  -60,  -50,  -40,  -30,
+                                    -20,  -10,    0,   10,   20,   30,   40,   50,   60,   70,   80,   90,  100,  110,  120,
+                                    130,  140,  150,  160,  170),
+        depth = c(  40.42035,  127.55154,  228.77023,  346.35409,  482.94908,  641.62894,
+                             825.96438, 1040.10344, 1288.86481, 1577.84627, 1913.55066, 2303.53222,
+                            2756.56654, 3282.84810, 3894.21960, 4604.43852),
+        depth.edges = c(   0.00000,   80.84071,  174.75186,  283.84670,  410.58014,  557.80403,
+                                            728.83129,  927.51048, 1158.31240, 1426.43070, 1737.89874, 2099.72539,
+                                         2520.05268, 3008.33908, 3575.57232, 4234.51663, 5000.00000)
+    )
+
+    # then, use key elements of cGENIE.data to extract the same data format from the array
+    var.arr <- input
+    # Extract general variables
+    lat <- grid.dat$lat            # Latitude (degrees north)
+    lat.edges <- grid.dat$lat.edges
+    lon <- grid.dat$lon            # Longitude (degrees east)
+    lon.edges <- grid.dat$lon.edges
+
+    df <- as.data.frame(cbind(
+        rep(lon, times = length(lat), each = 1),
+        rep(lon.edges[1:(length(lon.edges)-1)], times = length(lat), each = 1),
+        rep(lon.edges[2:length(lon.edges)], times = length(lat), each = 1),
+        rep(lat, times = 1, each = length(lon)),
+        rep(lat.edges[1:(length(lat.edges)-1)], times = 1, each = length(lon)),
+        rep(lat.edges[2:length(lat.edges)], times = 1, each = length(lon)),
+        as.data.frame(melt(var.arr[,, depth.level]))$value
+    ))
+
+    names(df) <- c("lon.mid", "lon.min", "lon.max", "lat.mid", "lat.min", "lat.max", "var")
+
+    # Filter the data to ensure valid lat-lon ranges
+    df <- df %>%
+        filter(lon.max <= 180, lon.min >= -180, lat.max <= 90, lat.min >= -90)
+
+    # Handle cells at the extremes (-180 and 180 longitude)
+    df$lon.range <- abs(df$lon.min - df$lon.max)
+    df$lon.min[df$lon.range > 180 & abs(df$lon.min) == 180] <- -df$lon.min[df$lon.range > 180 & abs(df$lon.min) == 180]
+    df$lon.max[df$lon.range > 180 & abs(df$lon.max) == 180] <- -df$lon.max[df$lon.range > 180 & abs(df$lon.max) == 180]
+
+    clim.dat <- df
+}
 
 # Omit NAs in the var value for climate data file
 # This step filters out any rows in the climate data where the specified variable has NA values.
