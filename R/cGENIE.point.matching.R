@@ -29,7 +29,6 @@ cGENIE.point.matching <- function(var = NULL,
                                   lng.name = "p_lng") # name IF generated from rotated paleoverse coordinates...
 {
 
-if(format == "nc"){
 # Load necessary libraries
 library(RNetCDF)  # For handling NetCDF files
 library(dplyr)    # For data manipulation
@@ -37,6 +36,8 @@ library(reshape2) # For reshaping data
 # Extract grid data from cGENIE netCDF file
 # This function call retrieves the grid data for the specified experiment and dimensions.
 # The grid data contains information about the spatial layout of the cGENIE model.
+
+if(format == "nc"){
 grid.dat <- cGENIE.grid(experiment = experiment, dims = dims)
 
 # Extract climate data from cGENIE netCDF file
@@ -44,7 +45,7 @@ grid.dat <- cGENIE.grid(experiment = experiment, dims = dims)
 # The 'year' parameter is set to "default" to use the default time slice.
 clim.dat <- cGENIE.data(var = var, experiment = experiment, depth.level = depth.level, dims = dims, year = "default")
 
-} else if(format == "array"){
+}else if(format == "array"){
     # if using an array – use default cGENIE dims
     grid.dat <- list(
         lat = c(-76.463797, -66.443536, -59.441568, -53.663942, -48.590378, -43.982963,
@@ -107,7 +108,7 @@ clim.dat <- cGENIE.data(var = var, experiment = experiment, depth.level = depth.
 
 # Omit NAs in the var value for climate data file
 # This step filters out any rows in the climate data where the specified variable has NA values.
-# This ensures that only valid data points are used in the matching process.
+# This ensures that only valid data points are used i§n the matching process.
 clim.dat <- filter(clim.dat, !is.na(var))
 # Remove any NA paleocoordinates
 # This step filters out any rows in the coordinate data where the latitude or longitude values are NA.
