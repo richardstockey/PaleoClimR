@@ -172,6 +172,8 @@ for(x in 1:xdim){
         # populating ecoptype viability array
         ix = which(phi.xxx >= phi_crit.xxx)
         ecotype_viability[x,y,z_counter,ix] = 1
+        nx = which(phi.xxx < phi_crit.xxx)
+        ecotype_viability[x,y,z_counter,nx] = 0
 
         # Add habitat viability (percentage of total ecotypes that are viable in a given cell) to summary array (for building NetCDFs if so inclined)
         habitat_viability[x,y,z_counter] <- nrow(phi.crit.xxx)/init.ecotypes*100
