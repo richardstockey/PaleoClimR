@@ -79,7 +79,7 @@ cGENIE.overlay.map <- function(var, experiment,
   var.arr <- var.get.nc(nc, var)
 
   # Extract oxygen variable arbitrarily to get land mask
-  oxy.arr <- var.get.nc(nc, "ocn_sur_O2")
+  oxy.arr <- var.get.nc(nc, "ocn_sur_temp")
 
   # Determine the time step to use
   if(year == "default"){

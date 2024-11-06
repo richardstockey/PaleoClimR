@@ -1,6 +1,6 @@
-#' cGENIE Point Matching
+#' cGENIE Points Matching Benthic
 #'
-#' This function matches palaeocoordinates to cGENIE model data.
+#' This function matches palaeocoordinates to cGENIE model data for benthic points.
 #'
 #' @param var Character. The variable to extract from the cGENIE model.
 #' @param experiment Character. The experiment identifier for the cGENIE model.
@@ -19,16 +19,16 @@
 #' @import reshape2
 #' @export
 
-cGENIE.point.matching <- function(var = NULL,
-                                  experiment = NULL,
-                                  input = NULL,
-                                  format = "nc",
-                                  depth.level = 1,
-                                  dims = 3,
-                                  coord.dat = NULL, # is any data frame with the lat long column names assigned - cGENIE data will be added to this and returned
-                                  lat.name = "p_lat", # name IF generated from rotated paleoverse coordinates...
-                                  lng.name = "p_lng", # name IF generated from rotated paleoverse coordinates...
-                                  output = "dataframe") # new argument
+cGENIE.points.matching.benthic <- function(var = NULL,
+                                           experiment = NULL,
+                                           input = NULL,
+                                           format = "nc",
+                                           depth.level = 1,
+                                           dims = 3,
+                                           coord.dat = NULL, # is any data frame with the lat long column names assigned - cGENIE data will be added to this and returned
+                                           lat.name = "p_lat", # name IF generated from rotated paleoverse coordinates...
+                                           lng.name = "p_lng", # name IF generated from rotated paleoverse coordinates...
+                                           output = "dataframe") # new argument
 {
 
 # Load necessary libraries
