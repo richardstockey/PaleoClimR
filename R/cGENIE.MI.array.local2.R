@@ -21,7 +21,7 @@
 #' @export
 # Note – If you want to only use shelf environments in this script, need to generate array here, then run array through cGENIE.shelf
 #
-cGENIE.MI.array.local <- function(
+cGENIE.MI.array.local2 <- function(
   experiment,
   year = "default",
   n_ecotypes = 1000,
