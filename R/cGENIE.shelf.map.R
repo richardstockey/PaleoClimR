@@ -1,12 +1,11 @@
-#' Generate Maps from cGENIE Model Output with Points Matching (for bottom water conditions)
+#' Generate Maps from cGENIE Model Output
 #'
 #' This function generates maps from imported .nc (NetCDF) files containing data from the cGENIE model outputs.
 #' It can handle both 2D and 3D data, visualizing variables across specified depth levels and time steps.
-#' Additionally, it matches and plots specific points from a provided data frame.
 #'
 #' @param var (character) The variable from the NetCDF file to be visualized (e.g., "ocn_temp", "ocn_sal", "ocn_O2").
 #' @param experiment (character) The path or name of the experiment used to locate the NetCDF file.
-#' @param depth.level (numeric) Depth layer to visualize (default is 1 for the surface layer). Note this is only for the map visualization, not for the points.
+#' @param depth.level (numeric) Depth layer to visualize (default is 1 for the surface layer).
 #' @param dims (numeric) The dimensionality of the data (default is 3 for 3D; can be 2D or 3D).
 #' @param year (numeric or character) Time step to visualize (default uses the final time step if "default").
 #' @param unit.factor (numeric) A scaling factor for the variable values (default is 1).
@@ -18,16 +17,12 @@
 #' @param model (character) The model type (default is 'biogem'; can be extended for other models).
 #' @param palette_name (character) Color palette to be used for the plot (default is `pals::parula(1000)`).
 #' @param projection (character) Map projection to use (default is ESRI:54012 for Equal Earth).
-#' @param coord.dat (data.frame) Data frame with latitude and longitude columns to which cGENIE data will be added and returned.
-#' @param lat.name (character) Name of the latitude column in `coord.dat` (default is "p_lat").
-#' @param lng.name (character) Name of the longitude column in `coord.dat` (default is "p_lng").
 #'
 #' @return A ggplot object representing the generated map with the specified variable visualized across geographical coordinates.
 #'
 #' @details
 #' This function reads 2D or 3D data from cGENIE model output NetCDF files and produces a map visualization.
 #' Default settings are defined for several commonly used variables, and users can specify their own scaling and color settings.
-#' The function also matches specific points from a provided data frame and plots them on the map.
 #'
 #' @import RNetCDF
 #' @import dplyr
@@ -38,25 +33,22 @@
 #' @import ggplot2
 #' @export
 
-cGENIE.points.map.benthic <- function(var,
-                              experiment,
-                              dims = 3,
-                              depth.level = 1,
-                              year = "default",
-                              unit.factor = NULL,
-                              min.value = NULL,
-                              max.value = NULL,
-                              intervals = NULL,
-                              continents.outlined = TRUE,
-                              scale.label = NULL,
-                              model = "biogem",
-                              palette_name = pals::parula(1000),
-                              projection = 'ESRI:54012',
-                              line.thickness = 1,
-                              coord.dat = NULL, # is any data frame with the lat long column names assigned - cGENIE data will be added to this and returned
-                              lat.name = "p_lat", # name IF generated from rotated paleoverse coordinates...
-                              lng.name = "p_lng") # name IF generated from rotated paleoverse coordinates...
-{
+
+cGENIE.shelf.map <- function(var, experiment,
+                       depth.level = 1,
+                       dims = 3,
+                       ocean.alpha = 0.4,
+                       year = "default",
+                       unit.factor = NULL,
+                       min.value = NULL,
+                       max.value = NULL,
+                       intervals = NULL,
+                       continents.outlined = TRUE,
+                       scale.label = NULL,
+                       model = "biogem",
+                       line.thickness = 1,
+                       palette_name = pals::parula(1000),
+                       projection = 'ESRI:54012') {
 
   # Load necessary libraries
   library(RNetCDF)   # For reading NetCDF files
@@ -66,15 +58,6 @@ cGENIE.points.map.benthic <- function(var,
   library(ggspatial) # For adding spatial components in ggplot
   library(reshape2)  # For reshaping data
   library(ggplot2)   # For plotting
-
-  matched_points <- cGENIE.point.matching.benthic(var = var,
-                                          experiment = experiment,
-                                          depth.level = depth.level,
-                                          dims = dims,
-                                          coord.dat = coord.dat,
-                                          lat.name = lat.name,
-                                          lng.name = lng.name
-  )
 
   # Define default values for different "var" variables
   if (var == "ocn_temp") {
@@ -176,6 +159,17 @@ cGENIE.points.map.benthic <- function(var,
 
   # Generate data frame for 2D data (if dims == 2)
   if (dims == 2) {
+    if(var == "grid_topo"){
+      df <- as.data.frame(cbind(
+        rep(lon, times = length(lat)),
+        rep(lon.edges[1:(length(lon.edges)-1)], times = length(lat)),
+        rep(lon.edges[2:length(lon.edges)], times = length(lat)),
+        rep(lat, each = length(lon)),
+        rep(lat.edges[1:(length(lat.edges)-1)], each = length(lon)),
+        rep(lat.edges[2:length(lat.edges)], each = length(lon)),
+        as.data.frame(melt(var.arr))$value))
+      names(df) <- c("lon.mid", "lon.min", "lon.max", "lat.mid", "lat.min", "lat.max", "var")
+    }else{
     df <- as.data.frame(cbind(
       rep(lon, times = length(lat)),
       rep(lon.edges[1:(length(lon.edges)-1)], times = length(lat)),
@@ -185,6 +179,7 @@ cGENIE.points.map.benthic <- function(var,
       rep(lat.edges[2:length(lat.edges)], each = length(lon)),
       as.data.frame(melt(var.arr[,, time.step]))$value))
     names(df) <- c("lon.mid", "lon.min", "lon.max", "lat.mid", "lat.min", "lat.max", "var")
+    }
   }
 
   # Filter out invalid or extreme coordinate ranges
@@ -215,6 +210,86 @@ cGENIE.points.map.benthic <- function(var,
   SpDfSf <- st_as_sf(SpDf)
   st_crs(SpDfSf) = '+proj=longlat +ellps=sphere'
 
+  # Create spatial polygons for NA values (land)
+  land.df <- df %>% filter(is.na(var))
+  land.poly.list <- list()
+  land.poly.names.list <- list()
+  for (poly in 1:nrow(land.df)) {
+    polygon.code <- Polygon(cbind(
+      c(land.df$lon.min[poly], land.df$lon.max[poly], land.df$lon.max[poly], land.df$lon.min[poly]),
+      c(land.df$lat.min[poly], land.df$lat.min[poly], land.df$lat.max[poly], land.df$lat.max[poly])))
+    polygons.code <- Polygons(list(polygon.code), paste0("p", poly))
+    land.poly.list <- append(land.poly.list, polygons.code)
+    land.poly.names.list <- append(land.poly.names.list, paste0("p", poly))
+  }
+
+  # Create spatial polygons data frame for land data
+  land.SpP <- SpatialPolygons(land.poly.list)
+  land.attr <- data.frame(var = land.df$var, row.names = land.poly.names.list)
+  land.SpDf <- SpatialPolygonsDataFrame(land.SpP, land.attr)
+  land.SpDfSf <- st_as_sf(land.SpDf)
+  st_crs(land.SpDfSf) = '+proj=longlat +ellps=sphere'
+
+  # Run the var.arr through cGENIE.shelf to get the shelf array
+  shelf.arr <- cGENIE.shelf(input = var.arr[,,, time.step], format = "array")
+
+  # Generate data frame for shelf data (if dims == 3)
+  if (dims == 3) {
+    shelf.df <- as.data.frame(cbind(
+      rep(lon, times = length(lat)),
+      rep(lon.edges[1:(length(lon.edges)-1)], times = length(lat)),
+      rep(lon.edges[2:length(lon.edges)], times = length(lat)),
+      rep(lat, each = length(lon)),
+      rep(lat.edges[1:(length(lat.edges)-1)], each = length(lon)),
+      rep(lat.edges[2:length(lat.edges)], each = length(lon)),
+      as.data.frame(melt(shelf.arr[,, depth.level]))$value))
+    names(shelf.df) <- c("lon.mid", "lon.min", "lon.max", "lat.mid", "lat.min", "lat.max", "var")
+  }
+
+  # Generate data frame for shelf data (if dims == 2)
+  if (dims == 2) {
+    shelf.df <- as.data.frame(cbind(
+      rep(lon, times = length(lat)),
+      rep(lon.edges[1:(length(lon.edges)-1)], times = length(lat)),
+      rep(lon.edges[2:length(lon.edges)], times = length(lat)),
+      rep(lat, each = length(lon)),
+      rep(lat.edges[1:(length(lat.edges)-1)], each = length(lon)),
+      rep(lat.edges[2:length(lat.edges)], each = length(lon)),
+      as.data.frame(melt(shelf.arr[,, time.step]))$value))
+    names(shelf.df) <- c("lon.mid", "lon.min", "lon.max", "lat.mid", "lat.min", "lat.max", "var")
+  }
+
+  # Filter out invalid or extreme coordinate ranges for shelf data
+  shelf.df <- shelf.df %>%
+    filter(lon.max <= 180, lon.min >= -180, lat.max <= 90, lat.min >= -90)
+
+  # Handle longitudes near -180 and 180 degrees for shelf data
+  shelf.df$lon.range <- abs(shelf.df$lon.min - shelf.df$lon.max)
+  shelf.df$lon.min[shelf.df$lon.range > 180 & abs(shelf.df$lon.min) == 180] <- -shelf.df$lon.min[shelf.df$lon.range > 180 & abs(shelf.df$lon.min) == 180]
+  shelf.df$lon.max[shelf.df$lon.range > 180 & abs(shelf.df$lon.max) == 180] <- -shelf.df$lon.max[shelf.df$lon.range > 180 & abs(shelf.df$lon.max) == 180]
+
+  # Create polygons for shelf data
+  shelf.poly.list <- list()
+  shelf.poly.names.list <- list()
+  for (poly in 1:nrow(shelf.df)) {
+    polygon.code <- Polygon(cbind(
+      c(shelf.df$lon.min[poly], shelf.df$lon.max[poly], shelf.df$lon.max[poly], shelf.df$lon.min[poly]),
+      c(shelf.df$lat.min[poly], shelf.df$lat.min[poly], shelf.df$lat.max[poly], shelf.df$lat.max[poly])))
+    polygons.code <- Polygons(list(polygon.code), paste0("p", poly))
+    shelf.poly.list <- append(shelf.poly.list, polygons.code)
+    shelf.poly.names.list <- append(shelf.poly.names.list, paste0("p", poly))
+  }
+
+  # Create spatial polygons data frame for shelf data
+  shelf.SpP <- SpatialPolygons(shelf.poly.list)
+  shelf.attr <- data.frame(var = shelf.df$var, row.names = shelf.poly.names.list)
+  shelf.SpDf <- SpatialPolygonsDataFrame(shelf.SpP, shelf.attr)
+  shelf.SpDfSf <- st_as_sf(shelf.SpDf)
+  st_crs(shelf.SpDfSf) = '+proj=longlat +ellps=sphere'
+
+  # Remove NAs from shelf data
+  shelf.SpDfSf <- shelf.SpDfSf %>% filter(!is.na(var))
+
   # Add frame to the map
   l1 <- cbind(c(-180, 180, rep(180, 1801), 180, -180, rep(-180, 1801), -180),
               c(-90, -90, seq(-90, 90, 0.1), 90, 90, seq(90, -90, -0.1), -90))
@@ -223,26 +298,6 @@ cGENIE.points.map.benthic <- function(var,
   SLs1df = SpatialPolygonsDataFrame(SLs1, data = data.frame(var = 2, row.names = "a"))
   SLs1dfSf <- st_as_sf(SLs1df)
   st_crs(SLs1dfSf) = '+proj=longlat +ellps=sphere'
-
-
-  matched_points$lat <- matched_points$p_lat
-  matched_points$lng <- matched_points$p_lng
-
-  # Create spatial object with the chosen points from start of script
-  points <- as.data.frame(cbind(matched_points$lng, matched_points$lat, matched_points$matched_climate*unit.factor))
-  points <- na.omit(points)
-  points_sp <- SpatialPointsDataFrame(coords = points[,1:2], data = as.data.frame(points[,3]))
-  names(points_sp) <- "matched_climate"
-
-  # code in colour scale for matched points
-  palette_name_points <- palette_name
-  min.value_1 <- min.value
-  max.value_1 <- max.value
-  intervals_1 <- intervals
-
-  # make plottable object
-  points_spsf <- st_as_sf(points_sp)
-  st_crs(points_spsf) = '+proj=longlat +ellps=sphere'
 
 
 
@@ -266,11 +321,14 @@ cGENIE.points.map.benthic <- function(var,
 
     continents <- st_union(SpDfSf.continents)
 
-    # Create the map using ggplot
+    # Create the map using ggplot with layered spatial objects
     map <- ggplot() +
-      geom_sf(data = SpDfSf %>% st_transform(projection), aes(fill = var * unit.factor), color = NA) +
-      geom_sf(data = st_as_sf(continents) %>% st_transform(projection), fill = "grey80", color = "grey20", linewidth = line.thickness)+
-      geom_sf(data = SLs1dfSf %>% st_transform(projection), color = "grey5", linewidth = 0.9, fill = NA) +
+      geom_sf(data = SpDfSf %>% st_transform(projection), aes(fill = var * unit.factor), color = NA, alpha = ocean.alpha) +
+      geom_sf(data = shelf.SpDfSf %>% st_transform(projection), aes(fill = var * unit.factor), color = NA) +
+      geom_sf(data = land.SpDfSf %>% st_transform(projection), fill = "grey80", color = NA) +
+      geom_sf(data = st_as_sf(continents) %>% st_transform(projection), fill = "grey80", color = "grey20", linewidth = line.thickness)
+      geom_sf(data = SLs1dfSf %>% st_transform(projection), color = "grey20", linewidth = line.thickness, fill = NA) +
+      geom_sf(data = land.outline.SpDfSf %>% st_transform(projection), fill = NA, color = "black", size = 0.5) +
       scale_fill_stepsn(colours = palette_name,
                         breaks = seq(min.value, max.value, intervals),
                         limits = c(min.value, max.value),
@@ -278,21 +336,24 @@ cGENIE.points.map.benthic <- function(var,
       theme_minimal() +
       theme(legend.position = "bottom") +
       labs(fill = scale.label)
-  }else{
-    # Create the map using ggplot
-    map <- ggplot() +
-      geom_sf(data = SpDfSf %>% st_transform(projection), aes(fill = var * unit.factor), color = NA) +
-      geom_sf(data = SLs1dfSf %>% st_transform(projection), color = "grey5", linewidth = 0.9, fill = NA) +
-      scale_fill_stepsn(colours = palette_name,
-                        breaks = seq(min.value, max.value, intervals),
-                        limits = c(min.value, max.value),
-                        guide = guide_colorbar(title.position = "top", barwidth = 12, barheight = 1)) +
-      theme_minimal() +
-      theme(legend.position = "bottom") +
-      labs(fill = scale.label)
-    map.points <- map +
-      geom_sf(data = points_spsf %>% st_transform(projection), aes(geometry = geometry, fill = matched_climate), shape = 21, size = 6, stroke = 1.0, alpha = 0.6) # WGS 84 / Equal Earth Greenwich
-  }
 
-  return(map.points)
+    }else{
+    # Create the map using ggplot with layered spatial objects
+    map <- ggplot() +
+      geom_sf(data = SpDfSf %>% st_transform(projection), aes(fill = var * unit.factor), color = NA, alpha = ocean.alpha) +
+      geom_sf(data = shelf.SpDfSf %>% st_transform(projection), aes(fill = var * unit.factor), color = NA) +
+      geom_sf(data = land.SpDfSf %>% st_transform(projection), fill = "grey80", color = NA) +
+      geom_sf(data = SLs1dfSf %>% st_transform(projection), color = "grey20", linewidth = line.thickness, fill = NA) +
+      geom_sf(data = land.outline.SpDfSf %>% st_transform(projection), fill = NA, color = "black", size = 0.5) +
+      scale_fill_stepsn(colours = palette_name,
+                        breaks = seq(min.value, max.value, intervals),
+                        limits = c(min.value, max.value),
+                        guide = guide_colorbar(title.position = "top", barwidth = 12, barheight = 1)) +
+      theme_minimal() +
+      theme(legend.position = "bottom") +
+      labs(fill = scale.label)
+  }
+  return(map)
+
+
 }

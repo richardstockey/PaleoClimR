@@ -26,7 +26,7 @@ cGENIE.MI.array.local2 <- function(
   year = "default",
   n_ecotypes = 1000,
   seed_number = 1993,
-  format = "habitat_viability", 
+  format = "habitat_viability",
   env = NULL,
   shelf.depth = ifelse(env == "shelf", 3, NULL),
   surf = ifelse(env == "shelf", FALSE, NULL),
@@ -152,7 +152,7 @@ if (!is.null(env) && env == "shelf") {
   # Assuming cGENIE.shelf is a function that processes the arrays for shelf environments
   pO2_array <- cGENIE.shelf(pO2_array, format = "array", shelf.depth = shelf.depth, array.only = TRUE, surf = surf, time.step = time.step)
   temp_K <- cGENIE.shelf(temp_K, format = "array", shelf.depth = shelf.depth, array.only = TRUE, surf = surf, time.step = time.step)
-  sal <- cGENIE.shelf(sal, format = "array", shelf.depth = shelf.depth, array.only = TRUE, surf = surf, time.step = time.step)
+  sal <- cGENIE.shelf(sal[,,,time], format = "array", shelf.depth = shelf.depth, array.only = TRUE, surf = surf, time.step = time.step)
   depth_array <- cGENIE.shelf(depth_array, format = "array", shelf.depth = shelf.depth, array.only = TRUE, surf = surf, time.step = time.step)
   lat_array <- cGENIE.shelf(lat_array, format = "array", shelf.depth = shelf.depth, array.only = TRUE, surf = surf, time.step = time.step)
 }
@@ -165,11 +165,11 @@ if (!is.null(env) && env == "shelf") {
 ## =============================================================
 if (!is.null(env) && env == "points") {
   # Assuming cGENIE.point.matching is a function that processes the arrays for point environments
-  pO2_array <- cGENIE.point.matching(pO2_array, format = "array", depth.level = depth.level, output = "array", coord.dat = coord.dat, lat.name = "p_lat", lng.name = "p_lng")
-  temp_K <- cGENIE.point.matching(temp_K, format = "array", depth.level = depth.level, output = "array", coord.dat = coord.dat, lat.name = "p_lat", lng.name = "p_lng")
-  sal <- cGENIE.point.matching(sal, format = "array", depth.level = depth.level, output = "array", coord.dat = coord.dat, lat.name = "p_lat", lng.name = "p_lng")
-  depth_array <- cGENIE.point.matching(depth_array, format = "array", depth.level = depth.level, output = "array", coord.dat = coord.dat, lat.name = "p_lat", lng.name = "p_lng")
-  lat_array <- cGENIE.point.matching(lat_array, format = "array", depth.level = depth.level, output = "array", coord.dat = coord.dat, lat.name = "p_lat", lng.name = "p_lng")
+  pO2_array <- cGENIE.point.matching(input = pO2_array, format = "array", depth.level = depth.level, output = "array", coord.dat = coord.dat, lat.name = "p_lat", lng.name = "p_lng")
+  temp_K <- cGENIE.point.matching(input = temp_K, format = "array", depth.level = depth.level, output = "array", coord.dat = coord.dat, lat.name = "p_lat", lng.name = "p_lng")
+  sal <- cGENIE.point.matching(input = sal[,,,time], format = "array", depth.level = depth.level, output = "array", coord.dat = coord.dat, lat.name = "p_lat", lng.name = "p_lng")
+  depth_array <- cGENIE.point.matching(input = depth_array, format = "array", depth.level = depth.level, output = "array", coord.dat = coord.dat, lat.name = "p_lat", lng.name = "p_lng")
+  lat_array <- cGENIE.point.matching(input = lat_array, format = "array", depth.level = depth.level, output = "array", coord.dat = coord.dat, lat.name = "p_lat", lng.name = "p_lng")
 }
 ## =============================================================
 ## Habitat viability model - calculate viability per cGENIE model cell

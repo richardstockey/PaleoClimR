@@ -25,7 +25,7 @@ cGENIE.point.matching <- function(var = NULL,
                                   format = "nc",
                                   depth.level = 1,
                                   dims = 3,
-                                  coord.dat = NULL, # is any data frame with the lat long column names assigned - cGENIE data will be added to this and returned
+                                  coord.dat, # is any data frame with the lat long column names assigned - cGENIE data will be added to this and returned
                                   lat.name = "p_lat", # name IF generated from rotated paleoverse coordinates...
                                   lng.name = "p_lng", # name IF generated from rotated paleoverse coordinates...
                                   output = "dataframe") # new argument

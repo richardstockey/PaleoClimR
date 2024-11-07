@@ -38,12 +38,13 @@
 #' @import ggplot2
 #' @export
 
-cGENIE.points.map <- function(var = NULL,
+cGENIE.points.shelf.map <- function(var = NULL,
                               experiment = NULL,
                               input = NULL,
                               format = "nc",
                               depth.level = 1,
                               dims = 3,
+                              ocean.alpha = 0.4,
                               year = "default",
                               unit.factor = NULL,
                               min.value = NULL,
@@ -228,6 +229,86 @@ cGENIE.points.map <- function(var = NULL,
   st_crs(SLs1dfSf) = '+proj=longlat +ellps=sphere'
 
 
+  # Create spatial polygons for NA values (land)
+  land.df <- df %>% filter(is.na(var))
+  land.poly.list <- list()
+  land.poly.names.list <- list()
+  for (poly in 1:nrow(land.df)) {
+    polygon.code <- Polygon(cbind(
+      c(land.df$lon.min[poly], land.df$lon.max[poly], land.df$lon.max[poly], land.df$lon.min[poly]),
+      c(land.df$lat.min[poly], land.df$lat.min[poly], land.df$lat.max[poly], land.df$lat.max[poly])))
+    polygons.code <- Polygons(list(polygon.code), paste0("p", poly))
+    land.poly.list <- append(land.poly.list, polygons.code)
+    land.poly.names.list <- append(land.poly.names.list, paste0("p", poly))
+  }
+
+  # Create spatial polygons data frame for land data
+  land.SpP <- SpatialPolygons(land.poly.list)
+  land.attr <- data.frame(var = land.df$var, row.names = land.poly.names.list)
+  land.SpDf <- SpatialPolygonsDataFrame(land.SpP, land.attr)
+  land.SpDfSf <- st_as_sf(land.SpDf)
+  st_crs(land.SpDfSf) = '+proj=longlat +ellps=sphere'
+
+  # Run the var.arr through cGENIE.shelf to get the shelf array
+  shelf.arr <- cGENIE.shelf(input = var.arr[,,, time.step], format = "array")
+
+  # Generate data frame for shelf data (if dims == 3)
+  if (dims == 3) {
+    shelf.df <- as.data.frame(cbind(
+      rep(lon, times = length(lat)),
+      rep(lon.edges[1:(length(lon.edges)-1)], times = length(lat)),
+      rep(lon.edges[2:length(lon.edges)], times = length(lat)),
+      rep(lat, each = length(lon)),
+      rep(lat.edges[1:(length(lat.edges)-1)], each = length(lon)),
+      rep(lat.edges[2:length(lat.edges)], each = length(lon)),
+      as.data.frame(melt(shelf.arr[,, depth.level]))$value))
+    names(shelf.df) <- c("lon.mid", "lon.min", "lon.max", "lat.mid", "lat.min", "lat.max", "var")
+  }
+
+  # Generate data frame for shelf data (if dims == 2)
+  if (dims == 2) {
+    shelf.df <- as.data.frame(cbind(
+      rep(lon, times = length(lat)),
+      rep(lon.edges[1:(length(lon.edges)-1)], times = length(lat)),
+      rep(lon.edges[2:length(lon.edges)], times = length(lat)),
+      rep(lat, each = length(lon)),
+      rep(lat.edges[1:(length(lat.edges)-1)], each = length(lon)),
+      rep(lat.edges[2:length(lat.edges)], each = length(lon)),
+      as.data.frame(melt(shelf.arr[,, time.step]))$value))
+    names(shelf.df) <- c("lon.mid", "lon.min", "lon.max", "lat.mid", "lat.min", "lat.max", "var")
+  }
+
+  # Filter out invalid or extreme coordinate ranges for shelf data
+  shelf.df <- shelf.df %>%
+    filter(lon.max <= 180, lon.min >= -180, lat.max <= 90, lat.min >= -90)
+
+  # Handle longitudes near -180 and 180 degrees for shelf data
+  shelf.df$lon.range <- abs(shelf.df$lon.min - shelf.df$lon.max)
+  shelf.df$lon.min[shelf.df$lon.range > 180 & abs(shelf.df$lon.min) == 180] <- -shelf.df$lon.min[shelf.df$lon.range > 180 & abs(shelf.df$lon.min) == 180]
+  shelf.df$lon.max[shelf.df$lon.range > 180 & abs(shelf.df$lon.max) == 180] <- -shelf.df$lon.max[shelf.df$lon.range > 180 & abs(shelf.df$lon.max) == 180]
+
+  # Create polygons for shelf data
+  shelf.poly.list <- list()
+  shelf.poly.names.list <- list()
+  for (poly in 1:nrow(shelf.df)) {
+    polygon.code <- Polygon(cbind(
+      c(shelf.df$lon.min[poly], shelf.df$lon.max[poly], shelf.df$lon.max[poly], shelf.df$lon.min[poly]),
+      c(shelf.df$lat.min[poly], shelf.df$lat.min[poly], shelf.df$lat.max[poly], shelf.df$lat.max[poly])))
+    polygons.code <- Polygons(list(polygon.code), paste0("p", poly))
+    shelf.poly.list <- append(shelf.poly.list, polygons.code)
+    shelf.poly.names.list <- append(shelf.poly.names.list, paste0("p", poly))
+  }
+
+  # Create spatial polygons data frame for shelf data
+  shelf.SpP <- SpatialPolygons(shelf.poly.list)
+  shelf.attr <- data.frame(var = shelf.df$var, row.names = shelf.poly.names.list)
+  shelf.SpDf <- SpatialPolygonsDataFrame(shelf.SpP, shelf.attr)
+  shelf.SpDfSf <- st_as_sf(shelf.SpDf)
+  st_crs(shelf.SpDfSf) = '+proj=longlat +ellps=sphere'
+
+  # Remove NAs from shelf data
+  shelf.SpDfSf <- shelf.SpDfSf %>% filter(!is.na(var))
+
   matched_points$lat <- matched_points$p_lat
   matched_points$lng <- matched_points$p_lng
 
@@ -247,19 +328,58 @@ cGENIE.points.map <- function(var = NULL,
   points_spsf <- st_as_sf(points_sp)
   st_crs(points_spsf) = '+proj=longlat +ellps=sphere'
 
-  # Create the map using ggplot
-  map <- ggplot() +
-    geom_sf(data = SpDfSf %>% st_transform(projection), aes(fill = var * unit.factor), color = NA) +
-    geom_sf(data = SLs1dfSf %>% st_transform(projection), color = "grey5", linewidth = 0.9, fill = NA) +
-    scale_fill_stepsn(colours = palette_name,
-                      breaks = seq(min.value, max.value, intervals),
-                      limits = c(min.value, max.value),
-                      guide = guide_colorbar(title.position = "top", barwidth = 12, barheight = 1)) +
-    theme_minimal() +
-    theme(legend.position = "bottom") +
-    labs(fill = scale.label)
+  if (continents.outlined == TRUE) {
+    continent_polygons <- df %>% filter(is.na(var))
 
-    map.points <- map +
+    poly.list.continents <- list()
+    for (poly in 1:(nrow(continent_polygons))) {
+      polygon.code <- Polygon(cbind(
+        c(continent_polygons$lon.min[poly], continent_polygons$lon.max[poly], continent_polygons$lon.max[poly], continent_polygons$lon.min[poly]),
+        c(continent_polygons$lat.min[poly], continent_polygons$lat.min[poly], continent_polygons$lat.max[poly], continent_polygons$lat.max[poly])))
+      polygons.code <- Polygons(list(polygon.code), paste0("p", poly))
+      poly.list.continents <- append(poly.list.continents, polygons.code)
+    }
+
+    SpP.continents <- SpatialPolygons(poly.list.continents)
+    attr.continents <- data.frame(row.names = sapply(poly.list.continents, function(x) x@ID))
+    SpDf.continents <- SpatialPolygonsDataFrame(SpP.continents, attr.continents)
+    SpDfSf.continents <- st_as_sf(SpDf.continents)
+    st_crs(SpDfSf.continents) = '+proj=longlat +ellps=sphere'
+
+    continents <- st_union(SpDfSf.continents)
+
+    # Create the map using ggplot
+    map <- ggplot() +
+      geom_sf(data = SpDfSf %>% st_transform(projection), aes(fill = var * unit.factor), color = NA, alpha = ocean.alpha) +
+      geom_sf(data = shelf.SpDfSf %>% st_transform(projection), aes(fill = var * unit.factor), color = NA) +
+      geom_sf(data = land.SpDfSf %>% st_transform(projection), fill = "grey80", color = NA) +
+      geom_sf(data = st_as_sf(continents) %>% st_transform(projection), fill = "grey80", color = "grey20", linewidth = line.thickness)+
+    geom_sf(data = SLs1dfSf %>% st_transform(projection), color = "grey20", linewidth = line.thickness, fill = NA) +
+      geom_sf(data = land.outline.SpDfSf %>% st_transform(projection), fill = NA, color = "black", size = 0.5) +
+      scale_fill_stepsn(colours = palette_name,
+                        breaks = seq(min.value, max.value, intervals),
+                        limits = c(min.value, max.value),
+                        guide = guide_colorbar(title.position = "top", barwidth = 12, barheight = 1)) +
+      theme_minimal() +
+      theme(legend.position = "bottom") +
+      labs(fill = scale.label)
+  }else{
+    # Create the map using ggplot
+    map <- ggplot() +
+      geom_sf(data = SpDfSf %>% st_transform(projection), aes(fill = var * unit.factor), color = NA, alpha = ocean.alpha) +
+      geom_sf(data = shelf.SpDfSf %>% st_transform(projection), aes(fill = var * unit.factor), color = NA) +
+      geom_sf(data = land.SpDfSf %>% st_transform(projection), fill = "grey80", color = NA) +
+      geom_sf(data = SLs1dfSf %>% st_transform(projection), color = "grey20", linewidth = line.thickness, fill = NA) +
+      geom_sf(data = land.outline.SpDfSf %>% st_transform(projection), fill = NA, color = "black", size = 0.5) +
+      scale_fill_stepsn(colours = palette_name,
+                        breaks = seq(min.value, max.value, intervals),
+                        limits = c(min.value, max.value),
+                        guide = guide_colorbar(title.position = "top", barwidth = 12, barheight = 1)) +
+      theme_minimal() +
+      theme(legend.position = "bottom") +
+      labs(fill = scale.label)
+  }
+  map.points <- map +
     geom_sf(data = points_spsf %>% st_transform(projection), aes(geometry = geometry, fill = matched_climate), shape = 21, size = 6, stroke = 1.0, alpha = 0.6) # WGS 84 / Equal Earth Greenwich
 
   return(map.points)
@@ -409,6 +529,86 @@ cGENIE.points.map <- function(var = NULL,
     st_crs(SLs1dfSf) = '+proj=longlat +ellps=sphere'
 
 
+    # Create spatial polygons for NA values (land)
+    land.df <- df %>% filter(is.na(var))
+    land.poly.list <- list()
+    land.poly.names.list <- list()
+    for (poly in 1:nrow(land.df)) {
+      polygon.code <- Polygon(cbind(
+        c(land.df$lon.min[poly], land.df$lon.max[poly], land.df$lon.max[poly], land.df$lon.min[poly]),
+        c(land.df$lat.min[poly], land.df$lat.min[poly], land.df$lat.max[poly], land.df$lat.max[poly])))
+      polygons.code <- Polygons(list(polygon.code), paste0("p", poly))
+      land.poly.list <- append(land.poly.list, polygons.code)
+      land.poly.names.list <- append(land.poly.names.list, paste0("p", poly))
+    }
+
+    # Create spatial polygons data frame for land data
+    land.SpP <- SpatialPolygons(land.poly.list)
+    land.attr <- data.frame(var = land.df$var, row.names = land.poly.names.list)
+    land.SpDf <- SpatialPolygonsDataFrame(land.SpP, land.attr)
+    land.SpDfSf <- st_as_sf(land.SpDf)
+    st_crs(land.SpDfSf) = '+proj=longlat +ellps=sphere'
+
+    # Run the var.arr through cGENIE.shelf to get the shelf array
+    shelf.arr <- cGENIE.shelf(input = var.arr, format = "array")
+
+    # Generate data frame for shelf data (if dims == 3)
+    if (dims == 3) {
+      shelf.df <- as.data.frame(cbind(
+        rep(lon, times = length(lat)),
+        rep(lon.edges[1:(length(lon.edges)-1)], times = length(lat)),
+        rep(lon.edges[2:length(lon.edges)], times = length(lat)),
+        rep(lat, each = length(lon)),
+        rep(lat.edges[1:(length(lat.edges)-1)], each = length(lon)),
+        rep(lat.edges[2:length(lat.edges)], each = length(lon)),
+        as.data.frame(melt(shelf.arr[,, depth.level]))$value))
+      names(shelf.df) <- c("lon.mid", "lon.min", "lon.max", "lat.mid", "lat.min", "lat.max", "var")
+    }
+
+    # Generate data frame for shelf data (if dims == 2)
+    if (dims == 2) {
+      shelf.df <- as.data.frame(cbind(
+        rep(lon, times = length(lat)),
+        rep(lon.edges[1:(length(lon.edges)-1)], times = length(lat)),
+        rep(lon.edges[2:length(lon.edges)], times = length(lat)),
+        rep(lat, each = length(lon)),
+        rep(lat.edges[1:(length(lat.edges)-1)], each = length(lon)),
+        rep(lat.edges[2:length(lat.edges)], each = length(lon)),
+        as.data.frame(melt(shelf.arr[,, time.step]))$value))
+      names(shelf.df) <- c("lon.mid", "lon.min", "lon.max", "lat.mid", "lat.min", "lat.max", "var")
+    }
+
+    # Filter out invalid or extreme coordinate ranges for shelf data
+    shelf.df <- shelf.df %>%
+      filter(lon.max <= 180, lon.min >= -180, lat.max <= 90, lat.min >= -90)
+
+    # Handle longitudes near -180 and 180 degrees for shelf data
+    shelf.df$lon.range <- abs(shelf.df$lon.min - shelf.df$lon.max)
+    shelf.df$lon.min[shelf.df$lon.range > 180 & abs(shelf.df$lon.min) == 180] <- -shelf.df$lon.min[shelf.df$lon.range > 180 & abs(shelf.df$lon.min) == 180]
+    shelf.df$lon.max[shelf.df$lon.range > 180 & abs(shelf.df$lon.max) == 180] <- -shelf.df$lon.max[shelf.df$lon.range > 180 & abs(shelf.df$lon.max) == 180]
+
+    # Create polygons for shelf data
+    shelf.poly.list <- list()
+    shelf.poly.names.list <- list()
+    for (poly in 1:nrow(shelf.df)) {
+      polygon.code <- Polygon(cbind(
+        c(shelf.df$lon.min[poly], shelf.df$lon.max[poly], shelf.df$lon.max[poly], shelf.df$lon.min[poly]),
+        c(shelf.df$lat.min[poly], shelf.df$lat.min[poly], shelf.df$lat.max[poly], shelf.df$lat.max[poly])))
+      polygons.code <- Polygons(list(polygon.code), paste0("p", poly))
+      shelf.poly.list <- append(shelf.poly.list, polygons.code)
+      shelf.poly.names.list <- append(shelf.poly.names.list, paste0("p", poly))
+    }
+
+    # Create spatial polygons data frame for shelf data
+    shelf.SpP <- SpatialPolygons(shelf.poly.list)
+    shelf.attr <- data.frame(var = shelf.df$var, row.names = shelf.poly.names.list)
+    shelf.SpDf <- SpatialPolygonsDataFrame(shelf.SpP, shelf.attr)
+    shelf.SpDfSf <- st_as_sf(shelf.SpDf)
+    st_crs(shelf.SpDfSf) = '+proj=longlat +ellps=sphere'
+
+    # Remove NAs from shelf data
+    shelf.SpDfSf <- shelf.SpDfSf %>% filter(!is.na(var))
+
     matched_points$lat <- matched_points$p_lat
     matched_points$lng <- matched_points$p_lng
 
@@ -427,8 +627,6 @@ cGENIE.points.map <- function(var = NULL,
     # make plottable object
     points_spsf <- st_as_sf(points_sp)
     st_crs(points_spsf) = '+proj=longlat +ellps=sphere'
-
-
 
     if (continents.outlined == TRUE) {
       continent_polygons <- df %>% filter(is.na(var))
@@ -451,32 +649,39 @@ cGENIE.points.map <- function(var = NULL,
       continents <- st_union(SpDfSf.continents)
 
     # Create the map using ggplot
-    map <- ggplot() +
-      geom_sf(data = SpDfSf %>% st_transform(projection), aes(fill = var * unit.factor), color = NA) +
-      geom_sf(data = st_as_sf(continents) %>% st_transform(projection), fill = "grey80", color = "grey20", linewidth = line.thickness)+
-      geom_sf(data = SLs1dfSf %>% st_transform(projection), color = "grey5", linewidth = 0.9, fill = NA) +
-      scale_fill_stepsn(colours = palette_name,
-                        breaks = seq(min.value, max.value, intervals),
-                        limits = c(min.value, max.value),
-                        guide = guide_colorbar(title.position = "top", barwidth = 12, barheight = 1)) +
-      theme_minimal() +
-      theme(legend.position = "bottom") +
-      labs(fill = scale.label)
+      map <- ggplot() +
+        geom_sf(data = SpDfSf %>% st_transform(projection), aes(fill = var * unit.factor), color = NA, alpha = ocean.alpha) +
+        geom_sf(data = shelf.SpDfSf %>% st_transform(projection), aes(fill = var * unit.factor), color = NA) +
+        geom_sf(data = land.SpDfSf %>% st_transform(projection), fill = "grey80", color = NA) +
+        geom_sf(data = st_as_sf(continents) %>% st_transform(projection), fill = "grey80", color = "grey20", linewidth = line.thickness)+
+      geom_sf(data = SLs1dfSf %>% st_transform(projection), color = "grey20", linewidth = line.thickness, fill = NA) +
+        geom_sf(data = land.outline.SpDfSf %>% st_transform(projection), fill = NA, color = "black", size = 0.5) +
+        scale_fill_stepsn(colours = palette_name,
+                          breaks = seq(min.value, max.value, intervals),
+                          limits = c(min.value, max.value),
+                          guide = guide_colorbar(title.position = "top", barwidth = 12, barheight = 1)) +
+        theme_minimal() +
+        theme(legend.position = "bottom") +
+        labs(fill = scale.label)
     }else{
     # Create the map using ggplot
-    map <- ggplot() +
-      geom_sf(data = SpDfSf %>% st_transform(projection), aes(fill = var * unit.factor), color = NA) +
-      geom_sf(data = SLs1dfSf %>% st_transform(projection), color = "grey5", linewidth = 0.9, fill = NA) +
-      scale_fill_stepsn(colours = palette_name,
-                        breaks = seq(min.value, max.value, intervals),
-                        limits = c(min.value, max.value),
-                        guide = guide_colorbar(title.position = "top", barwidth = 12, barheight = 1)) +
-      theme_minimal() +
-      theme(legend.position = "bottom") +
-      labs(fill = scale.label)
+      map <- ggplot() +
+        geom_sf(data = SpDfSf %>% st_transform(projection), aes(fill = var * unit.factor), color = NA, alpha = ocean.alpha) +
+        geom_sf(data = shelf.SpDfSf %>% st_transform(projection), aes(fill = var * unit.factor), color = NA) +
+        geom_sf(data = land.SpDfSf %>% st_transform(projection), fill = "grey80", color = NA) +
+      geom_sf(data = SLs1dfSf %>% st_transform(projection), color = "grey20", linewidth = line.thickness, fill = NA) +
+        geom_sf(data = land.outline.SpDfSf %>% st_transform(projection), fill = NA, color = "black", size = 0.5) +
+        scale_fill_stepsn(colours = palette_name,
+                          breaks = seq(min.value, max.value, intervals),
+                          limits = c(min.value, max.value),
+                          guide = guide_colorbar(title.position = "top", barwidth = 12, barheight = 1)) +
+        theme_minimal() +
+        theme(legend.position = "bottom") +
+        labs(fill = scale.label)
+}
+
     map.points <- map +
       geom_sf(data = points_spsf %>% st_transform(projection), aes(geometry = geometry, fill = matched_climate), shape = 21, size = 6, stroke = 1.0, alpha = 0.6) # WGS 84 / Equal Earth Greenwich
-}
 
     return(map.points)
 
