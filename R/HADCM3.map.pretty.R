@@ -25,10 +25,7 @@
 #' @export
 #'
 
-HADCM3.map.pretty <- function(file = "o.pgclann",  # Name of the netCDF file (without extension)
-  var = "insitu_T_ym_dpth",  # Name of the variable to extract from the netCDF file
-  experiment,
-  file_2,
+HADCM3.map.pretty <- function(experiment,
                         depth.level = 1,
                         dims = 3,
                        land.opt = "default",
@@ -44,7 +41,6 @@ HADCM3.map.pretty <- function(file = "o.pgclann",  # Name of the netCDF file (wi
                        calcs = TRUE,
                        plot = TRUE,
                        for.app = FALSE,
-  palette_name_ocean = pals::parula(1000),
                        polygons){
 
   # Load necessary libraries for the function
@@ -58,7 +54,7 @@ HADCM3.map.pretty <- function(file = "o.pgclann",  # Name of the netCDF file (wi
   library(ggnewscale) # For adding multiple color scales to ggplot2
 
   # Define the color palette for ocean data visualization
-  # palette_name_ocean <- pals::parula(1000)  # Using the 'parula' color palette from the 'pals' package with 1000 color steps
+  palette_name_ocean <- pals::parula(1000)  # Using the 'parula' color palette from the 'pals' package with 1000 color steps
   #palette_name_ocean <- viridis::magma(1000)  # Alternative: Using the 'magma' color palette from the 'viridis' package with 1000 color steps
   #palette_name_ocean <- viridis::plasma(1000)  # Alternative: Using the 'plasma' color palette from the 'viridis' package with 1000 color steps
 
@@ -66,7 +62,9 @@ HADCM3.map.pretty <- function(file = "o.pgclann",  # Name of the netCDF file (wi
   #palette_name_land <- paletteer::paletteer_c("grDevices::Terrain 2", 30)  # Alternative: Using the 'Terrain 2' color palette from the 'grDevices' package with 30 color steps
   palette_name_land <- paletteer::paletteer_c("grDevices::Light Grays", 30)  # Using the 'Light Grays' color palette from the 'grDevices' package with 30 color steps
 
-
+  # Define the file and variable to be used for the netCDF data
+  file <- "o.pgclann"  # Name of the netCDF file (without extension)
+  var <- "insitu_T_ym_dpth"  # Name of the variable to extract from the netCDF file
 
   # Conditional statement to open the netCDF file if calculations are to be performed
   if(calcs == TRUE){
@@ -83,11 +81,8 @@ HADCM3.map.pretty <- function(file = "o.pgclann",  # Name of the netCDF file (wi
   lat.edges <- c(lat - mean(diff(lat)/2), lat[length(lat)] + mean(diff(lat)/2)) # should work for any evenly spaced grid (although note we have values outside reality! removed later...)
   lon <- var.get.nc(nc, "longitude") # units: degrees east
   lon.edges <- c(lon - mean(diff(lon)/2), lon[length(lon)] + mean(diff(lon)/2)) # should work for any evenly spaced grid (although note we have values outside reality! removed later...)
-
-  if(dims == 3){
-    depth <- var.get.nc(nc, "depth_1") # units: metres
+  depth <- var.get.nc(nc, "depth_1") # units: metres
   depth.edges <- c(0, var.get.nc(nc, "depth"), (depth[length(depth)]+307.5)) # units: metres # NOTE - the bounding of the bottom box is fudged but seems to be reasonably fudged. All deep ocean cells ~307.5*2m deep
-  }
   if(time.present == TRUE){
   time <- var.get.nc(nc, "t") # units: year mid-point - NOTE, if want to use this then would need to update time name.
   # note that not all of these general variables will be available for fields_biogem_2d (address later)
@@ -98,7 +93,7 @@ HADCM3.map.pretty <- function(file = "o.pgclann",  # Name of the netCDF file (wi
 
   # Now we're going to load a second netCDF file with orography values
   # Define the file name and variable name for the second netCDF file
-  # file_2 <- ".qrparm.orog"  # Name of the second netCDF file (without extension)
+  file_2 <- ".qrparm.orog"  # Name of the second netCDF file (without extension)
   var_2 <- "ht"  # Name of the variable to extract from the second netCDF file
 
   # Open the second netCDF file by constructing the full path using the experiment path and file name
@@ -128,7 +123,6 @@ HADCM3.map.pretty <- function(file = "o.pgclann",  # Name of the netCDF file (wi
     lon[lon > 180] <- lon[lon > 180] - 360
   }
 
-  if(dims == 3){
   # Generate dataframe of 2D slice from 3D array
   df <- as.data.frame(cbind(
     rep(lon, times = length(lat), each = 1),  # Repeat longitude values for each latitude
@@ -140,20 +134,7 @@ HADCM3.map.pretty <- function(file = "o.pgclann",  # Name of the netCDF file (wi
     as.data.frame(melt(var.arr[,, depth.level]))$value,  # Melt the 3D array to get variable values at the specified depth level
     as.data.frame(melt(var.arr_2))$value  # Melt the second variable array to get its values
   ))
-  }
-  if(dims == 2){
-    # use 2d array
-    df <- as.data.frame(cbind(
-      rep(lon, times = length(lat), each = 1),  # Repeat longitude values for each latitude
-      rep(lon.edges[1:(length(lon.edges)-1)], times = length(lat), each = 1),  # Repeat longitude edges (min) for each latitude
-      rep(lon.edges[2:(length(lon.edges))], times = length(lat), each = 1),  # Repeat longitude edges (max) for each latitude
-      rep(lat, times = 1, each = length(lon)),  # Repeat latitude values for each longitude
-      rep(lat.edges[1:(length(lat.edges)-1)], times = 1, each = length(lon)),  # Repeat latitude edges (min) for each longitude
-      rep(lat.edges[2:(length(lat.edges))], times = 1, each = length(lon)),  # Repeat latitude edges (max) for each longitude
-      as.data.frame(melt(var.arr))$value,  # Melt the 3D array to get variable values at the specified depth level
-      as.data.frame(melt(var.arr_2))$value  # Melt the second variable array to get its values
-    ))
-  }
+
   # Assign column names to the dataframe
   names(df) <- c("lon.mid",  # Midpoint longitude
                  "lon.min",  # Minimum longitude edge
@@ -238,9 +219,6 @@ HADCM3.map.pretty <- function(file = "o.pgclann",  # Name of the netCDF file (wi
     # Create a SpatialPolygons object from the list of Polygons objects
     SpP <- SpatialPolygons(poly.list)
 
-    # Set values of var in df that equal -99999.00 to NA
-    df$var[df$var == -99999.00] <- NA
-
     # Create a dataframe with the variable values and row names
     attr <- data.frame(var = df$var, row.names = paste(poly.names.list))
 
@@ -310,9 +288,9 @@ HADCM3.map.pretty <- function(file = "o.pgclann",  # Name of the netCDF file (wi
       st_crs(SLs1dfSf) = '+proj=longlat +ellps=sphere'
 
       # Define color scale parameters for the first variable (ocean data)
-      min.value_1 <- min.value
-      max.value_1 <- max.value
-      intervals_1 <- intervals
+      min.value_1 <- 0
+      max.value_1 <- 40
+      intervals_1 <- 5
 
       # Define color scale parameters for the second variable (land data)
       min.value_2 <- 0
@@ -322,7 +300,7 @@ HADCM3.map.pretty <- function(file = "o.pgclann",  # Name of the netCDF file (wi
       # If the map is not for an app, create the plot with default settings
       if(for.app == FALSE){
         map <- ggplot() +
-          geom_sf(data = SpDfSf %>% st_transform(projection), aes(geometry = geometry, fill=unit.factor *var), color = NA, linewidth=10, linetype=0) + # Plot ocean data
+          geom_sf(data = SpDfSf %>% st_transform(projection), aes(geometry = geometry, fill=var), color = NA, linewidth=10, linetype=0) + # Plot ocean data
           geom_sf(data = SLs1dfSf %>% st_transform(projection), aes(geometry = geometry), fill=NA, color = "grey5", linewidth=0.9) + # Add map outline
           scale_fill_stepsn(colours = palette_name_ocean,
                             guide = guide_colorbar(title.position = "top",
@@ -338,7 +316,7 @@ HADCM3.map.pretty <- function(file = "o.pgclann",  # Name of the netCDF file (wi
                             breaks = seq(min.value_1, max.value_1, intervals_1),
                             limits=c(min.value_1, max.value_1)) +
           theme(legend.position="bottom") +
-          labs(fill = scale.label) +
+          labs(fill = 'Sea Surface Temperature (°C)') +
           new_scale_fill() +
           geom_sf(data = SpDfSf_2 %>% st_transform(projection), aes(geometry = geometry, fill=var), color = NA, linewidth=10, linetype=0) + # Plot land data
           scale_fill_stepsn(colours = palette_name_land,
