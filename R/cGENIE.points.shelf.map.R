@@ -355,7 +355,6 @@ cGENIE.points.shelf.map <- function(var = NULL,
       geom_sf(data = land.SpDfSf %>% st_transform(projection), fill = "grey80", color = NA) +
       geom_sf(data = st_as_sf(continents) %>% st_transform(projection), fill = "grey80", color = "grey20", linewidth = line.thickness)+
     geom_sf(data = SLs1dfSf %>% st_transform(projection), color = "grey20", linewidth = line.thickness, fill = NA) +
-      geom_sf(data = land.outline.SpDfSf %>% st_transform(projection), fill = NA, color = "black", size = 0.5) +
       scale_fill_stepsn(colours = palette_name,
                         breaks = seq(min.value, max.value, intervals),
                         limits = c(min.value, max.value),
@@ -370,7 +369,6 @@ cGENIE.points.shelf.map <- function(var = NULL,
       geom_sf(data = shelf.SpDfSf %>% st_transform(projection), aes(fill = var * unit.factor), color = NA) +
       geom_sf(data = land.SpDfSf %>% st_transform(projection), fill = "grey80", color = NA) +
       geom_sf(data = SLs1dfSf %>% st_transform(projection), color = "grey20", linewidth = line.thickness, fill = NA) +
-      geom_sf(data = land.outline.SpDfSf %>% st_transform(projection), fill = NA, color = "black", size = 0.5) +
       scale_fill_stepsn(colours = palette_name,
                         breaks = seq(min.value, max.value, intervals),
                         limits = c(min.value, max.value),
@@ -655,7 +653,6 @@ cGENIE.points.shelf.map <- function(var = NULL,
         geom_sf(data = land.SpDfSf %>% st_transform(projection), fill = "grey80", color = NA) +
         geom_sf(data = st_as_sf(continents) %>% st_transform(projection), fill = "grey80", color = "grey20", linewidth = line.thickness)+
       geom_sf(data = SLs1dfSf %>% st_transform(projection), color = "grey20", linewidth = line.thickness, fill = NA) +
-        geom_sf(data = land.outline.SpDfSf %>% st_transform(projection), fill = NA, color = "black", size = 0.5) +
         scale_fill_stepsn(colours = palette_name,
                           breaks = seq(min.value, max.value, intervals),
                           limits = c(min.value, max.value),
@@ -670,7 +667,6 @@ cGENIE.points.shelf.map <- function(var = NULL,
         geom_sf(data = shelf.SpDfSf %>% st_transform(projection), aes(fill = var * unit.factor), color = NA) +
         geom_sf(data = land.SpDfSf %>% st_transform(projection), fill = "grey80", color = NA) +
       geom_sf(data = SLs1dfSf %>% st_transform(projection), color = "grey20", linewidth = line.thickness, fill = NA) +
-        geom_sf(data = land.outline.SpDfSf %>% st_transform(projection), fill = NA, color = "black", size = 0.5) +
         scale_fill_stepsn(colours = palette_name,
                           breaks = seq(min.value, max.value, intervals),
                           limits = c(min.value, max.value),
