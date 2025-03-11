@@ -3,10 +3,11 @@ Type: Package
 Title: Extracting, Processing, and Visualizing Paleoclimate Data
 Version: 1.0.0
 Authors@R: c(
-    person("Richard G.", "Stockey", email = "richard.stockey@example.com", role = c("aut", "cre")),
+    person("Richard G.", "Stockey", email = "r.g.stockey@soton.ac.uk", role = c("aut", "cre")),
     person("Alison T.", "Cribb", role = "ctb"),
     person("Przemyslaw", "Gruszka", role = "ctb"),
     person("Aspen", "Sartin", role = "ctb"),
+    person("Dawid", "Nehrenberg", role = "ctb"),
     person("Pedro", "Monarrez", role = "ctb")
   )
 Maintainer: Richard G. Stockey <richard.stockey@example.com>
