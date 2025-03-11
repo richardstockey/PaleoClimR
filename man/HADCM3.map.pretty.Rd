@@ -84,8 +84,8 @@ HADCM3.map.pretty(
 \item{col.labels}{Labels for the color scale. Default is NULL.}
 }
 \value{
-If plot is FALSE, returns a spatial polygons data frame. If plot is TRUE, returns a ggplot object.
+If plot is FALSE - returns a spatial polygons data frame. If plot is TRUE - returns a ggplot object.
 }
 \description{
-This function generates visually appealing maps from imported .nc files, such as those from Valdes et al. 2021. It aims to include key information to visualize as much of the earth system as possible at one time.
+This function generates visually appealing maps from imported .nc files such as those from Valdes et al. 2021. It aims to include key information to visualize as much of the earth system as possible at one time.
 }

@@ -90,7 +90,7 @@ cGENIE.points.map.benthic <- function(var,
     min.value <- ifelse(is.null(min.value), 0, min.value)
     max.value <- ifelse(is.null(max.value), 40, max.value)
     intervals <- ifelse(is.null(intervals), 4, intervals)
-    scale.label <- ifelse(is.null(scale.label), "Temperature (°C)", scale.label)
+    scale.label <- ifelse(is.null(scale.label), "Temperature (\u00B0C)", scale.label)
   } else if (var == "ocn_sal") {
     unit.factor <- 1          # no conversion
     dims = 3
@@ -104,15 +104,15 @@ cGENIE.points.map.benthic <- function(var,
     min.value <- ifelse(is.null(min.value), 0, min.value)
     max.value <- ifelse(is.null(max.value), 40, max.value)
     intervals <- ifelse(is.null(intervals), 4, intervals)
-    scale.label <- ifelse(is.null(scale.label), expression(H[2]*S ~ (mu*mol/kg)), scale.label)
-  } else if (var == "ocn_O2") {
+    scale.label <- ifelse(is.null(scale.label), "Hydrogen Sulfide (\u03BCmol/kg)", scale.label)
+    } else if (var == "ocn_O2") {
     dims = 3
     unit.factor <- 1e6          # µmol/kg from mol/kg
     min.value <- ifelse(is.null(min.value), 0, min.value)
     max.value <- ifelse(is.null(max.value), 300, max.value)
     intervals <- ifelse(is.null(intervals), 25, intervals)
-    scale.label <- ifelse(is.null(scale.label), "Oxygen (µmol/kg)", scale.label)
-  } else if (var == "grid_topo") {
+    scale.label <- ifelse(is.null(scale.label), "Oxygen (\u03BCmol/kg)", scale.label)
+    } else if (var == "grid_topo") {
     unit.factor <- -1          # no conversion
     dims = 2
     min.value <- ifelse(is.null(min.value), -5000, min.value)

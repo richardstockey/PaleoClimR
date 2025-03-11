@@ -21,6 +21,6 @@ This function extracts grid-related data (latitude, longitude, and depth) from a
 It can handle both 2D and 3D grid data based on the specified dimensions.
 }
 \details{
-The function handles the adjustment of longitude values to ensure they are within the range of \link{-180, 180}.
+The function handles the adjustment of longitude values to ensure they are within the range of -180 to 180.
 It returns a list containing the relevant grid data based on the specified dimensions (2D or 3D).
 }

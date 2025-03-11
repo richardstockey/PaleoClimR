@@ -13,10 +13,10 @@
 #' @param max.value Maximum value for the color scale. Defaults to 40.
 #' @param intervals Number of intervals for the color scale. Defaults to 5.
 #' @param continents.outlined Logical indicating whether to outline continents. Defaults to NULL.
-#' @param scale.label Label for the color scale. Defaults to "[label goes here]".
+#' @param scale.label Label for the color scale. Defaults to NULL.
 #' @param model The model type; defaults to "biogem".
-#' @param palette_name Color palette to use for the plot. Defaults to `pals::parula(1000)`.
-#' @param projection Projection to use for the plot. Defaults to 'ESRI:54012'.
+#' @param palette_name Color palette to use for the plot. Defaults to "pals::parula(1000)".
+#' @param projection Projection to use for the plot. Defaults to "ESRI:54012".
 #' @return A ggplot object representing the transect plot.
 #' @importFrom RNetCDF open.nc var.get.nc
 #' @importFrom dplyr %>%
@@ -35,7 +35,7 @@ cGENIE.transect <- function(experiment, var,
         max.value = 40,
         intervals = 5,
         continents.outlined,
-        scale.label = "[label goes here]",
+        scale.label = NULL,
         model = "biogem",
         palette_name = pals::parula(1000),
         projection = 'ESRI:54012'){
@@ -113,7 +113,7 @@ cGENIE.transect <- function(experiment, var,
   df$lon.max[df$lon.range > 180 & abs(df$lon.max) == 180] <- -df$lon.max[df$lon.range > 180 & abs(df$lon.max) == 180]
   }
 
-  # Create the plot for latitude transect
+    # Create the plot for latitude transect
   if(lat.or.lon == "lat"){
   map <- ggplot(data = df, aes(x = lat.mid, y = depth.mid, xmin = lat.min, xmax = lat.max, ymin = depth.min, ymax = depth.max, fill = var * unit.factor)) +
     geom_rect(color = NA, linewidth = 10, linetype = 0) +
@@ -138,8 +138,8 @@ cGENIE.transect <- function(experiment, var,
       axis.text = element_text(size = 18)) +
     coord_cartesian(expand = FALSE) +
     ylab("Depth (m)") +
-    xlab("Latitude (°)") +
-    labs(fill = scale.label, title = paste0(lon[slice], "° Longitude"))
+    xlab("Latitude (\u00B0)") +
+    labs(fill = scale.label, title = paste0(lon[slice], "\u00B0 Longitude"))
   }
 
   # Create the plot for longitude transect
@@ -167,45 +167,10 @@ cGENIE.transect <- function(experiment, var,
       axis.text = element_text(size = 18)) +
     coord_cartesian(expand = FALSE) +
     ylab("Depth (m)") +
-    xlab("Longitude (°)") +
-    labs(fill = scale.label, title = paste0(lat[slice], "° Latitude"))
+    xlab("Longitude (\u00B0)") +
+    labs(fill = scale.label, title = paste0(lat[slice], "\u00B0 Latitude"))
   }
 
   # Return the plot
   map
 }
-# Example usage:
-# experiment: Path to the experiment directory containing the NetCDF files.
-# var: The variable to be plotted from the NetCDF file.
-# slice: The index of the slice to be plotted (default is 1).
-# dims: The number of dimensions in the NetCDF file (default is 3).
-# lat.or.lon: Whether to plot latitude or longitude transect (default is "lat").
-# year: The time step to be used (default is the last time step).
-# unit.factor: Factor to multiply the variable values by (default is 1).
-# min.value: Minimum value for the color scale (default is 0).
-# max.value: Maximum value for the color scale (default is 40).
-# intervals: Intervals for the color scale breaks (default is 5).
-# continents.outlined: Whether to outline continents (not used in this function).
-# scale.label: Label for the color scale (default is "[label goes here]").
-# model: The model type, affects the file prefix (default is "biogem").
-# palette_name: Color palette for the plot (default is pals::parula(1000)).
-# projection: Projection for the plot (default is 'ESRI:54012').
-
-# Example call:
-# map <- cGENIE.transect(
-#   experiment = "/path/to/experiment",
-#   var = "O2",
-#   slice = 10,
-#   dims = 3,
-#   lat.or.lon = "lat",
-#   year = 100,
-#   unit.factor = 1,
-#   min.value = 0,
-#   max.value = 300,
-#   intervals = 10,
-#   scale.label = "Oxygen (µmol/kg)",
-#   model = "biogem",
-#   palette_name = pals::parula(1000),
-#   projection = 'ESRI:54012'
-# )
-# print(map)

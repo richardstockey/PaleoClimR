@@ -27,7 +27,7 @@ cGENIE.map(
 )
 }
 \arguments{
-\item{var}{(character) The variable from the NetCDF file to be visualized (e.g., "ocn_temp", "ocn_sal", "ocn_O2").}
+\item{var}{(character) The variable from the NetCDF file to be visualized (e.g. "ocn_temp" "ocn_sal" "ocn_O2").}
 
 \item{experiment}{(character) The path or name of the experiment used to locate the NetCDF file.}
 
@@ -49,11 +49,11 @@ cGENIE.map(
 
 \item{scale.label}{(character) Label for the color bar.}
 
-\item{model}{(character) The model type (default is 'biogem'; can be extended for other models).}
+\item{model}{(character) The model type (default is "biogem"; can be extended for other models).}
 
 \item{line.thickness}{(numeric) Thickness of the lines outlining continents (default is 1).}
 
-\item{palette_name}{(character) Color palette to be used for the plot (default is \code{pals::parula(1000)}).}
+\item{palette_name}{(character) Color palette to be used for the plot (default is pals::parula(1000)).}
 
 \item{projection}{(character) Map projection to use (default is ESRI:54012 for Equal Earth).}
 
@@ -70,9 +70,9 @@ A ggplot object representing the generated map with the specified variable visua
 }
 \description{
 This function generates maps from imported .nc (NetCDF) files containing data from the cGENIE model outputs.
-It can handle both 2D and 3D data, visualizing variables across specified depth levels and time steps.
+It can handle both 2D and 3D data –  visualizing variables across specified depth levels and time steps.
 }
 \details{
 This function reads 2D or 3D data from cGENIE model output NetCDF files and produces a map visualization.
-Default settings are defined for several commonly used variables, and users can specify their own scaling and color settings.
+Default settings are defined for several commonly used variables and users can specify their own scaling and color settings.
 }

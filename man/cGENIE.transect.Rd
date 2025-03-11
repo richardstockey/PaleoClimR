@@ -16,7 +16,7 @@ cGENIE.transect(
   max.value = 40,
   intervals = 5,
   continents.outlined,
-  scale.label = "[label goes here]",
+  scale.label = NULL,
   model = "biogem",
   palette_name = pals::parula(1000),
   projection = "ESRI:54012"
@@ -45,13 +45,13 @@ cGENIE.transect(
 
 \item{continents.outlined}{Logical indicating whether to outline continents. Defaults to NULL.}
 
-\item{scale.label}{Label for the color scale. Defaults to "\link{label goes here}".}
+\item{scale.label}{Label for the color scale. Defaults to NULL.}
 
 \item{model}{The model type; defaults to "biogem".}
 
-\item{palette_name}{Color palette to use for the plot. Defaults to \code{pals::parula(1000)}.}
+\item{palette_name}{Color palette to use for the plot. Defaults to "pals::parula(1000)".}
 
-\item{projection}{Projection to use for the plot. Defaults to 'ESRI:54012'.}
+\item{projection}{Projection to use for the plot. Defaults to "ESRI:54012".}
 }
 \value{
 A ggplot object representing the transect plot.

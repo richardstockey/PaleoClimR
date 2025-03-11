@@ -28,7 +28,7 @@
 #' @param palette_name_ocean Color palette for ocean data visualization. Default is pals::parula(1000).
 #' @param col.labels Labels for the color scale. Default is NULL.
 #'
-#' @return If plot is FALSE, returns a spatial polygons data frame. If plot is TRUE, returns a ggplot object.
+#' @return If plot is FALSE - returns a spatial polygons data frame. If plot is TRUE - returns a ggplot object.
 #' @import RNetCDF dplyr sf sp ggspatial reshape2 ggplot2 ggnewscale
 #' @export
 #'
@@ -69,7 +69,6 @@ HADCM3.map.pretty <- function(file = "o.pgclann",  # Name of the netCDF file (wi
   library(ggplot2)    # For creating plots
   library(ggnewscale) # For adding multiple color scales to ggplot2
 
-
   # Define the color palette for ocean data visualization
   # palette_name_ocean <- pals::parula(1000)  # Using the 'parula' color palette from the 'pals' package with 1000 color steps
   #palette_name_ocean <- viridis::magma(1000)  # Alternative: Using the 'magma' color palette from the 'viridis' package with 1000 color steps
@@ -78,8 +77,6 @@ HADCM3.map.pretty <- function(file = "o.pgclann",  # Name of the netCDF file (wi
   # Define the color palette for land data visualization
   #palette_name_land <- paletteer::paletteer_c("grDevices::Terrain 2", 30)  # Alternative: Using the 'Terrain 2' color palette from the 'grDevices' package with 30 color steps
   palette_name_land <- paletteer::paletteer_c("grDevices::Light Grays", 30)  # Using the 'Light Grays' color palette from the 'grDevices' package with 30 color steps
-
-
 
   # Conditional statement to open the netCDF file if calculations are to be performed
   if(calcs == TRUE){
@@ -407,7 +404,7 @@ HADCM3.map.pretty <- function(file = "o.pgclann",  # Name of the netCDF file (wi
       theme(legend.position = "bottom",
             plot.background = element_rect(fill = bg.color),
             text = element_text(colour = fg.color)) +
-      labs(fill = 'Sea Surface Temperature (°C)') +
+      labs(fill = 'Sea Surface Temperature (\u00B0C)') +
       new_scale_fill() +
       geom_sf(data = SpDfSf_2 %>% st_transform(projection), aes(geometry = geometry, fill = var), color = NA, linewidth = 10, linetype = 0) + # Plot land data
       scale_fill_stepsn(colours = palette_name_land,

@@ -7,7 +7,7 @@
 #' @param dims An integer specifying the dimensions of the NetCDF file to read. Default is set to 3 for 3D data.
 #' @param model A character string indicating the model type (default is "biogem"). Currently, only "biogem" is supported.
 #' @return A list containing latitude, longitude, and depth information, along with their respective edges.
-#' @details The function handles the adjustment of longitude values to ensure they are within the range of [-180, 180].
+#' @details The function handles the adjustment of longitude values to ensure they are within the range of -180 to 180.
 #' It returns a list containing the relevant grid data based on the specified dimensions (2D or 3D).
 #'
 #' @importFrom RNetCDF open.nc var.get.nc

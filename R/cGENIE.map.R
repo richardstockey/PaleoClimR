@@ -14,9 +14,9 @@
 #' @param intervals (numeric) Step intervals for the color scale.
 #' @param continents.outlined (logical) Logical value to control whether to outline continents.
 #' @param scale.label (character) Label for the color bar.
-#' @param model (character) The model type (default is 'biogem'; can be extended for other models).
+#' @param model (character) The model type (default is "biogem"; can be extended for other models).
 #' @param line.thickness (numeric) Thickness of the lines outlining continents (default is 1).
-#' @param palette_name (character) Color palette to be used for the plot (default is `pals::parula(1000)`).
+#' @param palette_name (character) Color palette to be used for the plot (default is pals::parula(1000)).
 #' @param projection (character) Map projection to use (default is ESRI:54012 for Equal Earth).
 #' @param darkmode (logical) Logical value to control whether to use dark mode for the plot (default is FALSE).
 #' @param darkmode.bg (character) Background color for dark mode (default is "black").
@@ -73,7 +73,7 @@ cGENIE.map <- function(var, experiment,
   min.value <- ifelse(is.null(min.value), 0, min.value)
   max.value <- ifelse(is.null(max.value), 40, max.value)
   intervals <- ifelse(is.null(intervals), 4, intervals)
-  scale.label <- ifelse(is.null(scale.label), "Temperature (°C)", scale.label)
+  scale.label <- ifelse(is.null(scale.label), "Temperature (\u00B0C)", scale.label)
   } else if (var == "ocn_sal") {
   unit.factor <- 1          # no conversion
   dims = 3
@@ -87,14 +87,14 @@ cGENIE.map <- function(var, experiment,
   min.value <- ifelse(is.null(min.value), 0, min.value)
   max.value <- ifelse(is.null(max.value), 40, max.value)
   intervals <- ifelse(is.null(intervals), 4, intervals)
-  scale.label <- ifelse(is.null(scale.label), expression(H[2]*S ~ (mu*mol/kg)), scale.label)
+    scale.label <- ifelse(is.null(scale.label), "Hydrogen Sulfide (\u03BCmol/kg)", scale.label)
   } else if (var == "ocn_O2") {
   dims = 3
   unit.factor <- 1e6          # µmol/kg from mol/kg
   min.value <- ifelse(is.null(min.value), 0, min.value)
   max.value <- ifelse(is.null(max.value), 300, max.value)
   intervals <- ifelse(is.null(intervals), 25, intervals)
-  scale.label <- ifelse(is.null(scale.label), "Oxygen (µmol/kg)", scale.label)
+  scale.label <- ifelse(is.null(scale.label), "Oxygen (\u00B5mol/kg)", scale.label)
   } else if (var == "grid_topo") {
   unit.factor <- -1          # no conversion
   dims = 2
