@@ -103,15 +103,9 @@ HADCM3.points.map(
 \item{bg.colour}{Character. Background color for the plot in dark mode. Default is "black".}
 
 \item{fg.colour}{Character. Foreground color for the plot in dark mode. Default is "white".}
-
-\item{polygons}{SpatialPolygonsDataFrame. Pre-calculated polygons to be used if \code{calcs} is FALSE.}
-
-\item{background.colour}{Character. The background color for the plot in dark mode. Default is "black".}
-
-\item{foreground.colour}{Character. The foreground color for the plot in dark mode. Default is "white".}
 }
 \value{
-If \code{plot} is TRUE, returns a ggplot object. If \code{plot} is FALSE and \code{calcs} is TRUE, returns a SpatialPolygonsDataFrame. If \code{plot} is FALSE and \code{calcs} is FALSE, returns the input \code{polygons}.
+Returns a ggplot object.
 
 If \code{plot} is TRUE, returns a ggplot object. If \code{plot} is FALSE and \code{calcs} is TRUE, returns a SpatialPolygonsDataFrame. If \code{plot} is FALSE and \code{calcs} is FALSE, returns the input \code{polygons}.
 }

@@ -8,8 +8,6 @@
 #' @param format Character. The format of the input data. Default is "nc". Options are "nc" or "array".
 #' @param depth.level Numeric. The depth level to extract from the cGENIE model. Default is 1.
 #' @param dims Numeric. The number of dimensions in the cGENIE model. Default is 3.
-#' @param input Array. The input array for the cGENIE model data when format is "array". Otherwise does not need to be specified.
-#' @param format Character. The format of the input data. Default is "nc". Options are "nc" or "array".
 #' @param coord.dat Data frame. A data frame with latitude and longitude columns. cGENIE data will be added to this and returned.
 #' @param lat.name Character. The name of the latitude column in `coord.dat`. Default is "p_lat".
 #' @param lng.name Character. The name of the longitude column in `coord.dat`. Default is "p_lng".
