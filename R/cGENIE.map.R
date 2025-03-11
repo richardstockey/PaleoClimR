@@ -1,9 +1,9 @@
 #' Generate Maps from cGENIE Model Output
 #'
 #' This function generates maps from imported .nc (NetCDF) files containing data from the cGENIE model outputs.
-#' It can handle both 2D and 3D data, visualizing variables across specified depth levels and time steps.
+#' It can handle both 2D and 3D data –  visualizing variables across specified depth levels and time steps.
 #'
-#' @param var (character) The variable from the NetCDF file to be visualized (e.g., "ocn_temp", "ocn_sal", "ocn_O2").
+#' @param var (character) The variable from the NetCDF file to be visualized (e.g. "ocn_temp" "ocn_sal" "ocn_O2").
 #' @param experiment (character) The path or name of the experiment used to locate the NetCDF file.
 #' @param depth.level (numeric) Depth layer to visualize (default is 1 for the surface layer).
 #' @param dims (numeric) The dimensionality of the data (default is 3 for 3D; can be 2D or 3D).
@@ -27,7 +27,7 @@
 #'
 #' @details
 #' This function reads 2D or 3D data from cGENIE model output NetCDF files and produces a map visualization.
-#' Default settings are defined for several commonly used variables, and users can specify their own scaling and color settings.
+#' Default settings are defined for several commonly used variables and users can specify their own scaling and color settings.
 #'
 #' @import RNetCDF
 #' @import dplyr

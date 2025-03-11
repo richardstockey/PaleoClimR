@@ -1,6 +1,6 @@
 #' HADCM3.map.pretty
 #'
-#' This function generates visually appealing maps from imported .nc files, such as those from Valdes et al. 2021. It aims to include key information to visualize as much of the earth system as possible at one time.
+#' This function generates visually appealing maps from imported .nc files such as those from Valdes et al. 2021. It aims to include key information to visualize as much of the earth system as possible at one time.
 #'
 #' @param experiment A string specifying the path to the experiment directory.
 #' @param depth.level An integer specifying the depth level to be visualized. Default is 1.
