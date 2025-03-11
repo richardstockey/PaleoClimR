@@ -19,6 +19,9 @@
 #' @param plot Logical indicating whether to plot the map. Default is TRUE.
 #' @param for.app Logical indicating whether the map is for an app. Default is FALSE.
 #' @param polygons Spatial polygons data frame if calcs is FALSE.
+#' @param darkmode Logical indicating whether to use dark mode. Default is FALSE.
+#' @param bg.color Background color for the plot. Default is "white".
+#' @param fg.color Foreground color for the plot elements. Default is "black".
 #'
 #' @return If plot is FALSE, returns a spatial polygons data frame. If plot is TRUE, returns a ggplot object.
 #' @import RNetCDF dplyr sf sp ggspatial reshape2 ggplot2 ggnewscale
@@ -29,23 +32,27 @@ HADCM3.map.pretty <- function(file = "o.pgclann",  # Name of the netCDF file (wi
   var = "insitu_T_ym_dpth",  # Name of the variable to extract from the netCDF file
   experiment,
   file_2,
-                        depth.level = 1,
-                        dims = 3,
-                       land.opt = "default",
-                       min.value,
-                       max.value,
-                       intervals,
-                       continents.outlined,
-                       scale.label,
-                       unit.factor = 1,
-                       time.present = FALSE,
-                       scale = "viridis",
-                       projection = 'ESRI:54012',
-                       calcs = TRUE,
-                       plot = TRUE,
-                       for.app = FALSE,
+  depth.level = 1,
+  dims = 3,
+  land.opt = "default",
+  min.value,
+  max.value,
+  intervals,
+  continents.outlined,
+  scale.label,
+  unit.factor = 1,
+  time.present = FALSE,
+  scale = "viridis",
+  projection = 'ESRI:54012',
+  calcs = TRUE,
+  plot = TRUE,
+  for.app = FALSE,
   palette_name_ocean = pals::parula(1000),
-                       polygons){
+  polygons,
+  darkmode = FALSE,
+  bg.color = "white",
+  fg.color = "black",
+  col.labels = NULL) {
 
   # Load necessary libraries for the function
   library(RNetCDF)    # For reading and manipulating netCDF files
@@ -56,6 +63,7 @@ HADCM3.map.pretty <- function(file = "o.pgclann",  # Name of the netCDF file (wi
   library(reshape2)   # For reshaping data
   library(ggplot2)    # For creating plots
   library(ggnewscale) # For adding multiple color scales to ggplot2
+
 
   # Define the color palette for ocean data visualization
   # palette_name_ocean <- pals::parula(1000)  # Using the 'parula' color palette from the 'pals' package with 1000 color steps
@@ -319,90 +327,105 @@ HADCM3.map.pretty <- function(file = "o.pgclann",  # Name of the netCDF file (wi
       max.value_2 <- 3200
       intervals_2 <- 400
 
-      # If the map is not for an app, create the plot with default settings
-      if(for.app == FALSE){
-        map <- ggplot() +
-          geom_sf(data = SpDfSf %>% st_transform(projection), aes(geometry = geometry, fill=unit.factor *var), color = NA, linewidth=10, linetype=0) + # Plot ocean data
-          geom_sf(data = SLs1dfSf %>% st_transform(projection), aes(geometry = geometry), fill=NA, color = "grey5", linewidth=0.9) + # Add map outline
-          scale_fill_stepsn(colours = palette_name_ocean,
-                            guide = guide_colorbar(title.position = "top",
-                                                   barwidth = 12,
-                                                   barheight = 1,
-                                                   raster = FALSE,
-                                                   frame.colour = "grey6",
-                                                   frame.linewidth = 2/.pt,
-                                                   frame.linetype = 1,
-                                                   ticks = TRUE,
-                                                   ticks.colour = "grey6",
-                                                   ticks.linewidth = 2/.pt),
-                            breaks = seq(min.value_1, max.value_1, intervals_1),
-                            limits=c(min.value_1, max.value_1)) +
-          theme(legend.position="bottom") +
-          labs(fill = scale.label) +
-          new_scale_fill() +
-          geom_sf(data = SpDfSf_2 %>% st_transform(projection), aes(geometry = geometry, fill=var), color = NA, linewidth=10, linetype=0) + # Plot land data
-          scale_fill_stepsn(colours = palette_name_land,
-                            guide = guide_colorbar(title.position = "top",
-                                                   barwidth = 12,
-                                                   barheight = 1,
-                                                   raster = FALSE,
-                                                   frame.colour = "grey6",
-                                                   frame.linewidth = 2/.pt,
-                                                   frame.linetype = 1,
-                                                   ticks = TRUE,
-                                                   ticks.colour = "grey6",
-                                                   ticks.linewidth = 2/.pt),
-                            breaks = seq(min.value_2, max.value_2, intervals_2),
-                            limits=c(min.value_2, max.value_2)) +
-          theme_minimal() +
-          theme(legend.position="bottom") +
-          labs(fill = 'Topography (m)')
-      }
+  # Set colors based on dark mode
+  if (darkmode) {
+    bg.color <- "black"
+    fg.color <- "white"
+  }
 
-      # If the map is for an app, create the plot with app-specific settings
-      if(for.app == TRUE){
-        map <- ggplot() +
-          geom_sf(data = SpDfSf %>% st_transform(projection), aes(geometry = geometry, fill=var), color = NA, linewidth=10, linetype=0) + # Plot ocean data
-          geom_sf(data = SLs1dfSf %>% st_transform(projection), aes(geometry = geometry), fill=NA, color = "grey50", linewidth=0.9) + # Add map outline
-          scale_fill_stepsn(colours = palette_name_ocean,
-                            guide = guide_colorbar(title.position = "top",
-                                                   barwidth = 12,
-                                                   barheight = 1,
-                                                   raster = FALSE,
-                                                   frame.colour = "grey50",
-                                                   frame.linewidth = 2/.pt,
-                                                   frame.linetype = 1,
-                                                   ticks = TRUE,
-                                                   ticks.colour = "grey50",
-                                                   ticks.linewidth = 2/.pt),
-                            breaks = seq(min.value_1, max.value_1, intervals_1),
-                            limits=c(min.value_1, max.value_1)) +
-          theme(legend.position="bottom") +
-          labs(fill = 'Sea Surface Temperature (°C)') +
-          new_scale_fill() +
-          geom_sf(data = SpDfSf_2 %>% st_transform(projection), aes(geometry = geometry, fill=var), color = NA, linewidth=10, linetype=0) + # Plot land data
-          scale_fill_stepsn(colours = palette_name_land,
-                            guide = guide_colorbar(title.position = "top",
-                                                   barwidth = 12,
-                                                   barheight = 1,
-                                                   raster = FALSE,
-                                                   frame.colour = "grey50",
-                                                   frame.linewidth = 2/.pt,
-                                                   frame.linetype = 1,
-                                                   ticks = TRUE,
-                                                   ticks.colour = "grey50",
-                                                   ticks.linewidth = 2/.pt),
-                            breaks = seq(min.value_2, max.value_2, intervals_2),
-                            limits=c(min.value_2, max.value_2)) +
-          theme_minimal() +
-          theme(legend.position="bottom",
-                line = element_line(colour = "white"),
-                plot.background = element_rect(fill = "black"),
-                text = element_text(colour = "white")) +
-          labs(fill = 'Topography (m)')
-      }
+      if(is.null(col.labels)){
+        col.labels <- seq(min.value_1, max.value_1, intervals_1)
 
-      # Return the generated map
-      map
-    }
-}
+      }
+  # If the map is not for an app, create the plot with default settings
+  if (for.app == FALSE) {
+    map <- ggplot() +
+      geom_sf(data = SpDfSf %>% st_transform(projection), aes(geometry = geometry, fill = unit.factor * var), color = NA, linewidth = 10, linetype = 0) + # Plot ocean data
+      geom_sf(data = SLs1dfSf %>% st_transform(projection), aes(geometry = geometry), fill = NA, color = fg.color, linewidth = 0.9) + # Add map outline
+      scale_fill_stepsn(colours = palette_name_ocean,
+                        guide = guide_colorbar(title.position = "top",
+                                               barwidth = 12,
+                                               barheight = 1,
+                                               raster = FALSE,
+                                               frame.colour = fg.color,
+                                               frame.linewidth = 2 / .pt,
+                                               frame.linetype = 1,
+                                               ticks = TRUE,
+                                               ticks.colour = fg.color,
+                                               ticks.linewidth = 2 / .pt),
+                        breaks = seq(min.value_1, max.value_1, intervals_1),
+                        limits = c(min.value_1, max.value_1), labels = col.labels) +
+      theme(legend.position = "bottom",
+            plot.background = element_rect(fill = bg.color),
+            text = element_text(colour = fg.color)) +
+      labs(fill = scale.label) +
+      new_scale_fill() +
+      geom_sf(data = SpDfSf_2 %>% st_transform(projection), aes(geometry = geometry, fill = var), color = NA, linewidth = 10, linetype = 0) + # Plot land data
+      scale_fill_stepsn(colours = palette_name_land,
+                        guide = guide_colorbar(title.position = "top",
+                                               barwidth = 12,
+                                               barheight = 1,
+                                               raster = FALSE,
+                                               frame.colour = fg.color,
+                                               frame.linewidth = 2 / .pt,
+                                               frame.linetype = 1,
+                                               ticks = TRUE,
+                                               ticks.colour = fg.color,
+                                               ticks.linewidth = 2 / .pt),
+                        breaks = seq(min.value_2, max.value_2, intervals_2),
+                        limits = c(min.value_2, max.value_2)) +
+      theme_minimal() +
+      theme(legend.position = "bottom",
+            plot.background = element_rect(fill = bg.color),
+            text = element_text(colour = fg.color)) +
+      labs(fill = 'Topography (m)')
+  }
+
+  # If the map is for an app, create the plot with app-specific settings
+  if (for.app == TRUE) {
+    map <- ggplot() +
+      geom_sf(data = SpDfSf %>% st_transform(projection), aes(geometry = geometry, fill = var), color = NA, linewidth = 10, linetype = 0) + # Plot ocean data
+      geom_sf(data = SLs1dfSf %>% st_transform(projection), aes(geometry = geometry), fill = NA, color = fg.color, linewidth = 0.9) + # Add map outline
+      scale_fill_stepsn(colours = palette_name_ocean,
+                        guide = guide_colorbar(title.position = "top",
+                                               barwidth = 12,
+                                               barheight = 1,
+                                               raster = FALSE,
+                                               frame.colour = fg.color,
+                                               frame.linewidth = 2 / .pt,
+                                               frame.linetype = 1,
+                                               ticks = TRUE,
+                                               ticks.colour = fg.color,
+                                               ticks.linewidth = 2 / .pt),
+                        breaks = seq(min.value_1, max.value_1, intervals_1),
+                        limits = c(min.value_1, max.value_1), labels = col.labels) +
+      theme(legend.position = "bottom",
+            plot.background = element_rect(fill = bg.color),
+            text = element_text(colour = fg.color)) +
+      labs(fill = 'Sea Surface Temperature (°C)') +
+      new_scale_fill() +
+      geom_sf(data = SpDfSf_2 %>% st_transform(projection), aes(geometry = geometry, fill = var), color = NA, linewidth = 10, linetype = 0) + # Plot land data
+      scale_fill_stepsn(colours = palette_name_land,
+                        guide = guide_colorbar(title.position = "top",
+                                               barwidth = 12,
+                                               barheight = 1,
+                                               raster = FALSE,
+                                               frame.colour = fg.color,
+                                               frame.linewidth = 2 / .pt,
+                                               frame.linetype = 1,
+                                               ticks = TRUE,
+                                               ticks.colour = fg.color,
+                                               ticks.linewidth = 2 / .pt),
+                        breaks = seq(min.value_2, max.value_2, intervals_2),
+                        limits = c(min.value_2, max.value_2)) +
+      theme_minimal() +
+      theme(legend.position = "bottom",
+            line = element_line(colour = fg.color),
+            plot.background = element_rect(fill = bg.color),
+            text = element_text(colour = fg.color)) +
+      labs(fill = 'Topography (m)')
+  }
+
+  # Return the generated map
+  map
+}}

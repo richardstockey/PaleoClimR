@@ -19,18 +19,22 @@
 #' @importFrom ggplot2 ggplot geom_tile scale_fill_gradientn
 #' @export
 cGENIE.overlay.map <- function(var, experiment,
-             depth.level = 1,
-             dims = 3,
-             year = "default",
-             unit.factor = 1,
-             min.value,
-             max.value,
-             intervals,
-             continents.outlined,
-             scale.label,
-             model = "biogem",
-             palette_name = pals::parula(1000),
-             projection = 'ESRI:54012'){
+  depth.level = 1,
+  dims = 3,
+  year = "default",
+  unit.factor = 1,
+  min.value,
+  max.value,
+  intervals,
+  continents.outlined = TRUE,
+  scale.label,
+  line.thickness = 1,
+  model = "biogem",
+  palette_name = pals::parula(1000),
+  projection = 'ESRI:54012',
+  darkmode = FALSE,
+  bg_color = ifelse(darkmode, "black", "white"),
+  fg_color = ifelse(darkmode, "white", "black")){
 
   # Load necessary libraries
   library(RNetCDF)   # For reading and manipulating netCDF files
@@ -272,33 +276,55 @@ cGENIE.overlay.map <- function(var, experiment,
   SLs1dfSf <- st_as_sf(SLs1df)
   st_crs(SLs1dfSf) <- '+proj=longlat +ellps=sphere'
 
+  continent_polygons <- df2 %>% filter(is.na(oxy))
+
+  poly.list.continents <- list()
+  for (poly in 1:(nrow(continent_polygons))) {
+    polygon.code <- Polygon(cbind(
+      c(continent_polygons$lon.min[poly], continent_polygons$lon.max[poly], continent_polygons$lon.max[poly], continent_polygons$lon.min[poly]),
+      c(continent_polygons$lat.min[poly], continent_polygons$lat.min[poly], continent_polygons$lat.max[poly], continent_polygons$lat.max[poly])))
+    polygons.code <- Polygons(list(polygon.code), paste0("p", poly))
+    poly.list.continents <- append(poly.list.continents, polygons.code)
+  }
+
+  SpP.continents <- SpatialPolygons(poly.list.continents)
+  attr.continents <- data.frame(row.names = sapply(poly.list.continents, function(x) x@ID))
+  SpDf.continents <- SpatialPolygonsDataFrame(SpP.continents, attr.continents)
+  SpDfSf.continents <- st_as_sf(SpDf.continents)
+  st_crs(SpDfSf.continents) = '+proj=longlat +ellps=sphere'
+
+  continents <- st_union(SpDfSf.continents)
+
+
   map <- ggplot() +
   geom_sf(data = SpDfSf %>% st_transform(projection), aes(geometry = geometry, fill=var*unit.factor), color = NA, linewidth=10, linetype=0) + # WGS 84 / Equal Earth Greenwich
-  geom_sf(data = SLs1dfSf %>% st_transform(projection), aes(geometry = geometry), fill=NA, color = "grey5", linewidth=0.9) +
+  geom_sf(data = SLs1dfSf %>% st_transform(projection), aes(geometry = geometry), fill=NA, color = fg_color, linewidth=0.9) +
   geom_sf(data = Spdf2Sf %>% st_transform(projection), aes(geometry = geometry), fill = "grey80", alpha = 1, color = NA, linewidth=10, linetype=0) + # WGS 84 / Equal Earth Greenwich
-  #coord_sf(crs = '+proj=eqearth +lon_0=0 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs +type=crs')+
-  #coord_sf(crs = "ESRI:102003")+
-  scale_fill_stepsn(colours = palette_name,
-            #scale_fill_stepsn(colours = parula(1000),# seems like we can keep the n value (1000) just at something big?
-            guide = guide_colorbar(title.position = "top",
-                       barwidth = 12,
-                       barheight = 1,
-                       raster = FALSE,
-                       frame.colour = "grey6",
-                       frame.linewidth = 2/.pt,
-                       frame.linetype = 1,
-                       ticks = TRUE,
-                       ticks.colour = "grey6",
-                       ticks.linewidth = 2/.pt),
-            breaks = seq(min.value, max.value, intervals),
-            limits=c(min.value, max.value),
-            #labels = c("0", "", "50", "", "100", "", "150", "", "200", "", "250")
-  )+
-  theme_minimal()+
-  theme(legend.position="bottom")+
+    geom_sf(data = st_as_sf(continents) %>% st_transform(projection), fill = "grey80", color = "grey20", linewidth = line.thickness) +
+    scale_fill_stepsn(colours = palette_name,
+      guide = guide_colorbar(title.position = "top",
+        barwidth = 12,
+        barheight = 1,
+        raster = FALSE,
+        frame.linewidth = 2/.pt,
+        frame.linetype = 1,
+        ticks = TRUE,
+        ticks.linewidth = 2/.pt,
+        frame.colour = fg_color,
+        ticks.colour = fg_color),
+      breaks = seq(min.value, max.value, intervals),
+      limits=c(min.value, max.value)) +
+  theme_minimal() +
+  theme(legend.position="bottom",
+    plot.background = element_rect(fill = bg_color),
+    panel.background = element_rect(fill = bg_color),
+    legend.background = element_rect(fill = bg_color),
+    legend.text = element_text(color = fg_color),
+    legend.title = element_text(color = fg_color),
+    axis.text = element_text(color = fg_color),
+    axis.title = element_text(color = fg_color),
+    plot.title = element_text(color = fg_color)) +
   labs(fill = scale.label)
 
   map
 }
-
-

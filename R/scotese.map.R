@@ -10,6 +10,9 @@
 #' @param scale.label Character. Label for the color scale.
 #' @param scale Character. Color scale to use. Default is "viridis".
 #' @param projection Character. Projection type for the map. Default is 'ESRI:54012'.
+#' @param darkmode Logical. Whether to enable dark mode. Default is FALSE.
+#' @param bg.col Character. Background color for the map. Default is "black" when darkmode is TRUE.
+#' @param fg.col Character. Foreground color for the map. Default is "white" when darkmode is TRUE.
 #'
 #' @return A ggplot object representing the map.
 #'
@@ -24,13 +27,16 @@
 #'
 #' @export
 scotese.map <- function(map, # netcdf file
-             min.value = -6000,
-             max.value = 6000,
-             intervals = 2000,
-             continents.outlined,
-             scale.label,
-             scale = "viridis",
-             projection = 'ESRI:54012'){
+       min.value = -6000,
+       max.value = 6000,
+       intervals = 2000,
+       continents.outlined,
+       scale.label,
+       scale = "viridis",
+       projection = 'ESRI:54012',
+       darkmode = FALSE,
+       bg.col = ifelse(darkmode, "black", "white"),
+       fg.col = ifelse(darkmode, "white", "black")){
 
   # Load necessary libraries
   library(RNetCDF)  # For reading and manipulating NetCDF files
@@ -61,21 +67,21 @@ scotese.map <- function(map, # netcdf file
 
   # Rename dataframe columns
   names(df) <- c("lon.mid",
-         "lon.min",
-         "lon.max",
-         "lat.mid",
-         "lat.min",
-         "lat.max",
-         "z"
+     "lon.min",
+     "lon.max",
+     "lat.mid",
+     "lat.min",
+     "lat.max",
+     "z"
   )
 
   # Filter out unrealistic latitude and longitude values
   df <- df %>%
   filter(lon.max < 180,
-       lon.min > -180,
-       lat.max < 90,
-       lat.min > -90
-       )
+     lon.min > -180,
+     lat.max < 90,
+     lat.min > -90
+     )
 
   # Initialize lists to store polygons and their names
   poly.list <- list()
@@ -84,8 +90,8 @@ scotese.map <- function(map, # netcdf file
   # Loop through each row in the dataframe to create polygons
   for(poly in 1:(nrow(df))){
   polygon.code <- Polygon(cbind(
-    c(df$lon.min[poly], df$lon.max[poly], df$lon.max[poly], df$lon.min[poly]),
-    c(df$lat.min[poly], df$lat.min[poly], df$lat.max[poly], df$lat.max[poly])))
+  c(df$lon.min[poly], df$lon.max[poly], df$lon.max[poly], df$lon.min[poly]),
+  c(df$lat.min[poly], df$lat.min[poly], df$lat.max[poly], df$lat.max[poly])))
   assign(paste0("Polygon_", poly), polygon.code)
 
   polygons.code <- Polygons(list(polygon.code), paste0("p",poly))
@@ -126,20 +132,30 @@ scotese.map <- function(map, # netcdf file
   geom_sf(data = SpDfSf %>% st_transform(projection), aes(geometry = geometry, fill=var), color = NA, linewidth=10, linetype=0) + # Transform and plot the main data
   geom_sf(data = SLs1dfSf %>% st_transform(projection), aes(geometry = geometry), fill=NA, color = "grey5", linewidth=0.9) + # Transform and plot the outline
   scale_fill_binned(type = scale,
-            guide = guide_colorbar(title.position = "top",
-                       barwidth = 12,
-                       barheight = 1,
-                       raster = FALSE,
-                       frame.colour = "grey6",
-                       frame.linewidth = 2/.pt,
-                       frame.linetype = 1,
-                       ticks = TRUE,
-                       ticks.colour = "grey6",
-                       ticks.linewidth = 2/.pt),
-            breaks = seq(min.value, max.value, intervals),
-            limits=c(min.value, max.value)) + # Set the color scale
-  theme_minimal() + # Use a minimal theme
-  theme(legend.position="bottom") + # Position the legend at the bottom
+      guide = guide_colorbar(title.position = "top",
+             barwidth = 12,
+             barheight = 1,
+             raster = FALSE,
+             frame.colour = "grey6",
+             frame.linewidth = 2/.pt,
+             frame.linetype = 1,
+             ticks = TRUE,
+             ticks.colour = "grey6",
+             ticks.linewidth = 2/.pt),
+      breaks = seq(min.value, max.value, intervals),
+      limits=c(min.value, max.value)) + # Set the color scale
+  theme_minimal(base_family = "Arial", base_size = 15) + # Use a minimal theme
+  theme(
+  legend.position="bottom",
+  plot.background = element_rect(fill = bg.col, color = NA),
+  panel.background = element_rect(fill = bg.col, color = NA),
+  panel.grid.major = element_line(color = fg.col),
+  panel.grid.minor = element_line(color = fg.col),
+  axis.text = element_text(color = fg.col),
+  axis.title = element_text(color = fg.col),
+  legend.text = element_text(color = fg.col),
+  legend.title = element_text(color = fg.col)
+  ) + # Customize theme for dark mode
   labs(fill = scale.label) # Set the label for the color scale
 
   # Return the map plot

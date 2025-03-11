@@ -1,4 +1,4 @@
-#' cGENIE.MI.array.R
+#' cGENIE.MI.array.local2
 #'
 #' This function processes cGENIE model output to calculate habitat viability and ecotype viability based on metabolic index models.
 #'
@@ -7,6 +7,14 @@
 #' @param n_ecotypes Integer. The number of ecophysiotypes (ecotypes) to model. Default is 1000.
 #' @param seed_number Integer. The seed number for random number generation. Default is 1993.
 #' @param format Character. The format of the output. Either "habitat_viability" or "ecotype_viability". Default is "habitat_viability".
+#' @param env Character. The environment type. Either "shelf" or "points". Default is NULL.
+#' @param shelf.depth Numeric. The depth for shelf environments. Default is 3 if env is "shelf", otherwise NULL.
+#' @param surf Logical. Whether to use surface data for shelf environments. Default is FALSE if env is "shelf", otherwise NULL.
+#' @param time.step Character or numeric. The time step to use for shelf environments. Default is "default" if env is "shelf", otherwise NULL.
+#' @param depth.level Numeric. The depth level for point environments. Default is NULL.
+#' @param coord.dat Data frame. The coordinate data for point environments. Default is NULL.
+#' @param lat.name Character. The name of the latitude column in coord.dat for point environments. Default is "p_lat".
+#' @param lng.name Character. The name of the longitude column in coord.dat for point environments. Default is "p_lng".
 #'
 #' @return Depending on the format parameter, returns either a 3D array of habitat viability percentages or a 4D array of ecotype viability.
 #'
@@ -19,8 +27,6 @@
 #' @import reshape2
 #' @import RNetCDF
 #' @export
-# Note – If you want to only use shelf environments in this script, need to generate array here, then run array through cGENIE.shelf
-#
 cGENIE.MI.array.local2 <- function(
   experiment,
   year = "default",
@@ -182,6 +188,9 @@ ecotype_viability <- array(dim=c(xdim,ydim,zdim,n_ecotypes))
 # initiate data frame for viable ecotype summary (one per cGENIE simultion)
 phi.crit.xxx.summary <-  data.frame(A0.xxx = double(), phi_crit.xxx=double(), temp_K=double(), pO2=double(), phi.xxx=double(), ecotype=double(), depth=double())
 
+# Initialize a list to store phi.cell details for each cell
+phi_cell_extended <- list()
+
 # loop through by cell (we are evaluating xxx physiological ecotypes per cell)
 for(x in 1:xdim){
   for(y in 1:ydim){ # in published versions we excluded polar environments, here just want to return arrays
@@ -198,10 +207,13 @@ for(x in 1:xdim){
         phi.xxx <- A0.xxx * (pO2.cell/(exp((-E0.xxx/kB)*((1/temp.cell)-(1/Tref)))))
 
         # Combine relevant data into a dataframe
-        phi.cell <- cbind(A0.xxx, phi_crit.xxx, rep(temp.cell, init.ecotypes), rep(pO2.cell, init.ecotypes), phi.xxx, seq(1:init.ecotypes), depth[z])
+        phi.cell <- cbind(A0.xxx, E0.xxx, phi_crit.xxx, rep(temp.cell, init.ecotypes), rep(pO2.cell, init.ecotypes), phi.xxx, seq(1:init.ecotypes), depth[z])
 
         # Name variables in cell ecotypes dataframe so that we can refer to them easily
-        names(phi.cell) <- c("A0.xxx", "phi_crit.xxx", "temp_K", "pO2", "phi.xxx", "ecotype", "depth")
+        names(phi.cell) <- c("A0.xxx", "E0.xxx", "phi_crit.xxx", "temp_K", "pO2", "phi.xxx", "ecotype", "depth")
+
+        # Store the phi.cell dataframe in the list
+        phi_cell_extended[[paste0("cell_", x, "_", y, "_", z)]] <- phi.cell
 
         # Filter the cell ecotypes dataframe to only include viable ecotypes (phi > phi_crit)
         phi.crit.xxx <- phi.cell %>%
@@ -225,6 +237,18 @@ if(format == "habitat_viability"){
     return(habitat_viability)
 }else if(format == "ecotype_viability"){
     return(ecotype_viability)
+}else if(format == "everything"){
+  return(phi_cell_extended)
+}else if(format == "everything2"){
+    return(list(
+      habitat_viability = habitat_viability,
+      ecotype_viability = ecotype_viability,
+      pO2_array = pO2_array,
+      temp_K = temp_K,
+      sal = sal,
+      depth_array = depth_array,
+      lat_array = lat_array
+    ))
 }
 }
 

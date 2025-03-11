@@ -16,14 +16,16 @@
 #' @param file.name A character string specifying the name of the output file. Default is "cGENIE.sum.plots".
 #' @param format A character string specifying the format of the output file. Default is "pdf".
 #' @param save A logical value indicating whether to save the plot. Default is FALSE.
-#'
+#' @param darkmode A logical value indicating whether to use a dark theme for the plot. Default is FALSE.
 #' @return A ggplot object containing the arranged summary plots.
 #' @import egg
 #' @import ggplot2
 #' @export
 #'
 #'
-cGENIE.sum.plots <- function(experiment = NULL, directory="default", file.name = "cGENIE.sum.plots", format = "pdf", save = FALSE){
+cGENIE.sum.plots <- function(experiment = NULL, directory="default",
+                             file.name = "cGENIE.sum.plots", format = "pdf",
+                             save = FALSE, darkmode = FALSE){
   # Load necessary library
   library(egg)
   library(ggplot2)

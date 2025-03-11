@@ -17,6 +17,9 @@
 #' @param model (character) The model type (default is 'biogem'; can be extended for other models).
 #' @param palette_name (character) Color palette to be used for the plot (default is `pals::parula(1000)`).
 #' @param projection (character) Map projection to use (default is ESRI:54012 for Equal Earth).
+#' @param darkmode (logical) Logical value to control whether to use dark mode (default is FALSE).
+#' @param background.colour (character) Background color for the plot (default is "black" when darkmode is TRUE).
+#' @param foreground.colour (character) Foreground color for the plot (default is "white" when darkmode is TRUE).
 #'
 #' @return A ggplot object representing the generated map with the specified variable visualized across geographical coordinates.
 #'
@@ -33,22 +36,25 @@
 #' @import ggplot2
 #' @export
 
-
 cGENIE.shelf.map <- function(var, experiment,
-                       depth.level = 1,
-                       dims = 3,
-                       ocean.alpha = 0.4,
-                       year = "default",
-                       unit.factor = NULL,
-                       min.value = NULL,
-                       max.value = NULL,
-                       intervals = NULL,
-                       continents.outlined = TRUE,
-                       scale.label = NULL,
-                       model = "biogem",
-                       line.thickness = 1,
-                       palette_name = pals::parula(1000),
-                       projection = 'ESRI:54012') {
+             depth.level = 1,
+             dims = 3,
+             ocean.alpha = 0.4,
+             year = "default",
+             unit.factor = NULL,
+             min.value = NULL,
+             max.value = NULL,
+             intervals = NULL,
+             continents.outlined = TRUE,
+             scale.label = NULL,
+             model = "biogem",
+             line.thickness = 1,
+             line.colour = "grey20",
+             palette_name = pals::parula(1000),
+             projection = 'ESRI:54012',
+             darkmode = FALSE,
+             background.colour = "black",
+             foreground.colour = "white") {
 
   # Load necessary libraries
   library(RNetCDF)   # For reading NetCDF files
@@ -300,7 +306,6 @@ cGENIE.shelf.map <- function(var, experiment,
   st_crs(SLs1dfSf) = '+proj=longlat +ellps=sphere'
 
 
-
   if (continents.outlined == TRUE) {
     continent_polygons <- df %>% filter(is.na(var))
 
@@ -326,31 +331,39 @@ cGENIE.shelf.map <- function(var, experiment,
       geom_sf(data = SpDfSf %>% st_transform(projection), aes(fill = var * unit.factor), color = NA, alpha = ocean.alpha) +
       geom_sf(data = shelf.SpDfSf %>% st_transform(projection), aes(fill = var * unit.factor), color = NA) +
       geom_sf(data = land.SpDfSf %>% st_transform(projection), fill = "grey80", color = NA) +
-      geom_sf(data = st_as_sf(continents) %>% st_transform(projection), fill = "grey80", color = "grey20", linewidth = line.thickness)
-      geom_sf(data = SLs1dfSf %>% st_transform(projection), color = "grey20", linewidth = line.thickness, fill = NA) +
+      geom_sf(data = st_as_sf(continents) %>% st_transform(projection), fill = "grey80", color = line.colour, linewidth = line.thickness) +
+      geom_sf(data = SLs1dfSf %>% st_transform(projection), color = line.colour, linewidth = line.thickness, fill = NA) +
       geom_sf(data = land.outline.SpDfSf %>% st_transform(projection), fill = NA, color = "black", size = 0.5) +
       scale_fill_stepsn(colours = palette_name,
                         breaks = seq(min.value, max.value, intervals),
                         limits = c(min.value, max.value),
                         guide = guide_colorbar(title.position = "top", barwidth = 12, barheight = 1)) +
       theme_minimal() +
-      theme(legend.position = "bottom") +
+      theme(legend.position = "bottom",
+            plot.background = element_rect(fill = ifelse(darkmode, background.colour, "white")),
+            panel.background = element_rect(fill = ifelse(darkmode, background.colour, "white")),
+            legend.background = element_rect(fill = ifelse(darkmode, background.colour, "white")),
+            text = element_text(color = ifelse(darkmode, foreground.colour, "black"))) +
       labs(fill = scale.label)
 
-    }else{
+  } else {
     # Create the map using ggplot with layered spatial objects
     map <- ggplot() +
       geom_sf(data = SpDfSf %>% st_transform(projection), aes(fill = var * unit.factor), color = NA, alpha = ocean.alpha) +
       geom_sf(data = shelf.SpDfSf %>% st_transform(projection), aes(fill = var * unit.factor), color = NA) +
       geom_sf(data = land.SpDfSf %>% st_transform(projection), fill = "grey80", color = NA) +
-      geom_sf(data = SLs1dfSf %>% st_transform(projection), color = "grey20", linewidth = line.thickness, fill = NA) +
+      geom_sf(data = SLs1dfSf %>% st_transform(projection), color = line.colour, linewidth = line.thickness, fill = NA) +
       geom_sf(data = land.outline.SpDfSf %>% st_transform(projection), fill = NA, color = "black", size = 0.5) +
       scale_fill_stepsn(colours = palette_name,
                         breaks = seq(min.value, max.value, intervals),
                         limits = c(min.value, max.value),
                         guide = guide_colorbar(title.position = "top", barwidth = 12, barheight = 1)) +
       theme_minimal() +
-      theme(legend.position = "bottom") +
+      theme(legend.position = "bottom",
+            plot.background = element_rect(fill = ifelse(darkmode, background.colour, "white")),
+            panel.background = element_rect(fill = ifelse(darkmode, background.colour, "white")),
+            legend.background = element_rect(fill = ifelse(darkmode, background.colour, "white")),
+            text = element_text(color = ifelse(darkmode, foreground.colour, "black"))) +
       labs(fill = scale.label)
   }
   return(map)

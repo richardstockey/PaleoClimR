@@ -21,6 +21,9 @@
 #' @param coord.dat (data.frame) Data frame with latitude and longitude columns to which cGENIE data will be added and returned.
 #' @param lat.name (character) Name of the latitude column in `coord.dat` (default is "p_lat").
 #' @param lng.name (character) Name of the longitude column in `coord.dat` (default is "p_lng").
+#' @param darkmode (logical) Logical value to control whether to use dark mode (default is FALSE).
+#' @param bg.colour (character) Background color for the map in dark mode (default is "black").
+#' @param fg.colour (character) Foreground color for the map in dark mode (default is "white").
 #'
 #' @return A ggplot object representing the generated map with the specified variable visualized across geographical coordinates.
 #'
@@ -39,26 +42,29 @@
 #' @export
 
 cGENIE.points.shelf.map <- function(var = NULL,
-                              experiment = NULL,
-                              input = NULL,
-                              format = "nc",
-                              depth.level = 1,
-                              dims = 3,
-                              ocean.alpha = 0.4,
-                              year = "default",
-                              unit.factor = NULL,
-                              min.value = NULL,
-                              max.value = NULL,
-                              intervals = NULL,
-                              continents.outlined = TRUE,
-                              scale.label = NULL,
-                              model = "biogem",
-                              palette_name = pals::parula(1000),
-                              projection = 'ESRI:54012',
-                              line.thickness = 1,
-                              coord.dat = NULL, # is any data frame with the lat long column names assigned - cGENIE data will be added to this and returned
-                              lat.name = "p_lat", # name IF generated from rotated paleoverse coordinates...
-                              lng.name = "p_lng") # name IF generated from rotated paleoverse coordinates...
+                experiment = NULL,
+                input = NULL,
+                format = "nc",
+                depth.level = 1,
+                dims = 3,
+                ocean.alpha = 0.4,
+                year = "default",
+                unit.factor = NULL,
+                min.value = NULL,
+                max.value = NULL,
+                intervals = NULL,
+                continents.outlined = TRUE,
+                scale.label = NULL,
+                model = "biogem",
+                palette_name = pals::parula(1000),
+                projection = 'ESRI:54012',
+                line.thickness = 1,
+                coord.dat = NULL, # is any data frame with the lat long column names assigned - cGENIE data will be added to this and returned
+                lat.name = "p_lat", # name IF generated from rotated paleoverse coordinates...
+                lng.name = "p_lng", # name IF generated from rotated paleoverse coordinates...
+                darkmode = FALSE,
+                bg.colour = "black",
+                fg.colour = "white") # dark mode options
 {
 
   # Load necessary libraries
@@ -646,7 +652,7 @@ cGENIE.points.shelf.map <- function(var = NULL,
 
       continents <- st_union(SpDfSf.continents)
 
-    # Create the map using ggplot
+        # Create the map using ggplot
       map <- ggplot() +
         geom_sf(data = SpDfSf %>% st_transform(projection), aes(fill = var * unit.factor), color = NA, alpha = ocean.alpha) +
         geom_sf(data = shelf.SpDfSf %>% st_transform(projection), aes(fill = var * unit.factor), color = NA) +
@@ -654,33 +660,45 @@ cGENIE.points.shelf.map <- function(var = NULL,
         geom_sf(data = st_as_sf(continents) %>% st_transform(projection), fill = "grey80", color = "grey20", linewidth = line.thickness)+
       geom_sf(data = SLs1dfSf %>% st_transform(projection), color = "grey20", linewidth = line.thickness, fill = NA) +
         scale_fill_stepsn(colours = palette_name,
-                          breaks = seq(min.value, max.value, intervals),
-                          limits = c(min.value, max.value),
-                          guide = guide_colorbar(title.position = "top", barwidth = 12, barheight = 1)) +
+              breaks = seq(min.value, max.value, intervals),
+              limits = c(min.value, max.value),
+              guide = guide_colorbar(title.position = "top", barwidth = 12, barheight = 1)) +
         theme_minimal() +
-        theme(legend.position = "bottom") +
+        theme(legend.position = "bottom",
+          panel.background = element_rect(fill = ifelse(darkmode, bg.colour, "white")),
+          plot.background = element_rect(fill = ifelse(darkmode, bg.colour, "white")),
+          legend.background = element_rect(fill = ifelse(darkmode, bg.colour, "white")),
+          text = element_text(color = ifelse(darkmode, fg.colour, "black")),
+          axis.text = element_text(color = ifelse(darkmode, fg.colour, "black")),
+          axis.title = element_text(color = ifelse(darkmode, fg.colour, "black")),
+          legend.text = element_text(color = ifelse(darkmode, fg.colour, "black")),
+          legend.title = element_text(color = ifelse(darkmode, fg.colour, "black"))) +
         labs(fill = scale.label)
-    }else{
-    # Create the map using ggplot
+        }else{
+        # Create the map using ggplot
       map <- ggplot() +
         geom_sf(data = SpDfSf %>% st_transform(projection), aes(fill = var * unit.factor), color = NA, alpha = ocean.alpha) +
         geom_sf(data = shelf.SpDfSf %>% st_transform(projection), aes(fill = var * unit.factor), color = NA) +
         geom_sf(data = land.SpDfSf %>% st_transform(projection), fill = "grey80", color = NA) +
       geom_sf(data = SLs1dfSf %>% st_transform(projection), color = "grey20", linewidth = line.thickness, fill = NA) +
         scale_fill_stepsn(colours = palette_name,
-                          breaks = seq(min.value, max.value, intervals),
-                          limits = c(min.value, max.value),
-                          guide = guide_colorbar(title.position = "top", barwidth = 12, barheight = 1)) +
+              breaks = seq(min.value, max.value, intervals),
+              limits = c(min.value, max.value),
+              guide = guide_colorbar(title.position = "top", barwidth = 12, barheight = 1)) +
         theme_minimal() +
-        theme(legend.position = "bottom") +
+        theme(legend.position = "bottom",
+          panel.background = element_rect(fill = ifelse(darkmode, bg.colour, "white")),
+          plot.background = element_rect(fill = ifelse(darkmode, bg.colour, "white")),
+          legend.background = element_rect(fill = ifelse(darkmode, bg.colour, "white")),
+          text = element_text(color = ifelse(darkmode, fg.colour, "black")),
+          axis.text = element_text(color = ifelse(darkmode, fg.colour, "black")),
+          axis.title = element_text(color = ifelse(darkmode, fg.colour, "black")),
+          legend.text = element_text(color = ifelse(darkmode, fg.colour, "black")),
+          legend.title = element_text(color = ifelse(darkmode, fg.colour, "black"))) +
         labs(fill = scale.label)
-}
+    }
 
-    map.points <- map +
+        map.points <- map +
       geom_sf(data = points_spsf %>% st_transform(projection), aes(geometry = geometry, fill = matched_climate), shape = 21, size = 6, stroke = 1.0, alpha = 0.6) # WGS 84 / Equal Earth Greenwich
 
-    return(map.points)
-
-
-  }
-}
+        return(map.points)

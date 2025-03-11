@@ -21,30 +21,36 @@
 #' @param palette_name Function. The color palette function to be used for the map. Default is `pals::parula(1000)`.
 #' @param polygons SpatialPolygonsDataFrame. Pre-calculated polygons to be used if `calcs` is FALSE.
 #' @param na.colour Character. The color to be used for NA values. Default is "grey80".
+#' @param darkmode Logical. Whether to enable dark mode. Default is FALSE.
+#' @param background.colour Character. The background color for the plot in dark mode. Default is "black".
+#' @param foreground.colour Character. The foreground color for the plot in dark mode. Default is "white".
 #'
 #' @return If `plot` is TRUE, returns a ggplot object. If `plot` is FALSE and `calcs` is TRUE, returns a SpatialPolygonsDataFrame. If `plot` is FALSE and `calcs` is FALSE, returns the input `polygons`.
 #' @import RNetCDF dplyr sf sp ggspatial reshape2 ggplot2 pals viridis
 #' @export
 HADCM3.points.map <- function(var,
-             file,
-             experiment,
-             depth.level = 1,
-             dims = 3,
-             min.value,
-             max.value,
-             intervals,
-             continents.outlined,
-             scale.label,
-             unit.factor = 1,
-             time.present = FALSE,
-             projection = 'ESRI:54012',
-             calcs = TRUE,
-             plot = TRUE,
-             palette_name = pals::parula(1000),
-             na.colour = "grey80",
-             coord.dat = NULL, # is any data frame with the lat long column names assigned - cGENIE data will be added to this and returned
-             lat.name = "p_lat", # name IF generated from rotated paleoverse coordinates...
-             lng.name = "p_lng"){ # name IF generated from rotated paleoverse coordinates...
+       file,
+       experiment,
+       depth.level = 1,
+       dims = 3,
+       min.value,
+       max.value,
+       intervals,
+       continents.outlined,
+       scale.label,
+       unit.factor = 1,
+       time.present = FALSE,
+       projection = 'ESRI:54012',
+       calcs = TRUE,
+       plot = TRUE,
+       palette_name = pals::parula(1000),
+       na.colour = "grey80",
+       coord.dat = NULL, # is any data frame with the lat long column names assigned - cGENIE data will be added to this and returned
+       lat.name = "p_lat", # name IF generated from rotated paleoverse coordinates...
+       lng.name = "p_lng", # name IF generated from rotated paleoverse coordinates...
+       darkmode = FALSE,
+       background.colour = "black",
+       foreground.colour = "white"){
 
   # palette_name currently has to be followed by (1000) or some other number
   # other options than parula would include - viridis and the many other options here https://r-charts.com/color-palettes/
@@ -252,27 +258,34 @@ HADCM3.points.map <- function(var,
       # Add the main spatial data layer, transforming the projection and setting the fill aesthetic
       geom_sf(data = SpDfSf %>% st_transform(projection), aes(geometry = geometry, fill = var * unit.factor), color = NA, linewidth = 10, linetype = 0) +
       # Add the outline of the map using the framing line, transforming the projection and setting the color
-      geom_sf(data = SLs1dfSf %>% st_transform(projection), color = "grey5", linewidth = 0.9, fill = NA) +
+      geom_sf(data = SLs1dfSf %>% st_transform(projection), color = ifelse(darkmode, foreground.colour, "grey5"), linewidth = 0.9, fill = NA) +
       # Define the color scale for the fill aesthetic using the specified palette
       scale_fill_stepsn(colours = palette_name,
-                        guide = guide_colorbar(title.position = "top",  # Position the title of the color bar at the top
-                                               barwidth = 12,           # Set the width of the color bar
-                                               barheight = 1,           # Set the height of the color bar
-                                               raster = FALSE,          # Disable rasterization of the color bar
-                                               frame.colour = "grey6",  # Set the frame color of the color bar
-                                               frame.linewidth = 2 / .pt,  # Set the frame linewidth of the color bar
-                                               frame.linetype = 1,      # Set the frame linetype of the color bar
-                                               ticks = TRUE,            # Enable ticks on the color bar
-                                               ticks.colour = "grey6",  # Set the color of the ticks
-                                               ticks.linewidth = 2 / .pt),  # Set the linewidth of the ticks
-                        breaks = seq(min.value, max.value, intervals),  # Define the breaks for the color scale
-                        limits = c(min.value, max.value),  # Set the limits for the color scale
-                        na.value = na.colour  # Set the color for NA values
+              guide = guide_colorbar(title.position = "top",  # Position the title of the color bar at the top
+                           barwidth = 12,           # Set the width of the color bar
+                           barheight = 1,           # Set the height of the color bar
+                           raster = FALSE,          # Disable rasterization of the color bar
+                           frame.colour = ifelse(darkmode, foreground.colour, "grey6"),  # Set the frame color of the color bar
+                           frame.linewidth = 2 / .pt,  # Set the frame linewidth of the color bar
+                           frame.linetype = 1,      # Set the frame linetype of the color bar
+                           ticks = TRUE,            # Enable ticks on the color bar
+                           ticks.colour = ifelse(darkmode, foreground.colour, "grey6"),  # Set the color of the ticks
+                           ticks.linewidth = 2 / .pt),  # Set the linewidth of the ticks
+              breaks = seq(min.value, max.value, intervals),  # Define the breaks for the color scale
+              limits = c(min.value, max.value),  # Set the limits for the color scale
+              na.value = na.colour  # Set the color for NA values
       ) +
       # Apply a minimal theme to the plot
       theme_minimal() +
       # Position the legend at the bottom of the plot
-      theme(legend.position = "bottom") +
+      theme(legend.position = "bottom",
+        plot.background = element_rect(fill = ifelse(darkmode, background.colour, "white"), color = NA),
+        panel.background = element_rect(fill = ifelse(darkmode, background.colour, "white"), color = NA),
+        text = element_text(color = ifelse(darkmode, foreground.colour, "black")),
+        axis.text = element_text(color = ifelse(darkmode, foreground.colour, "black")),
+        legend.text = element_text(color = ifelse(darkmode, foreground.colour, "black")),
+        legend.title = element_text(color = ifelse(darkmode, foreground.colour, "black"))
+      ) +
       # Set the label for the fill aesthetic
       labs(fill = scale.label)
 
