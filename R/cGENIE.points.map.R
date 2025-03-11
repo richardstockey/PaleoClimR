@@ -63,8 +63,7 @@ cGENIE.points.map <- function(var = NULL,
                 lng.name = "p_lng", # name IF generated from rotated paleoverse coordinates...
                 darkmode = FALSE,
                 bg.colour = "black",
-                fg.colour = "white")
-{
+                fg.colour = "white"){
 
   # Load necessary libraries
   library(RNetCDF)   # For reading NetCDF files
@@ -494,4 +493,6 @@ cGENIE.points.map <- function(var = NULL,
     map.points <- map +
       geom_sf(data = points_spsf %>% st_transform(projection), aes(geometry = geometry, fill = matched_climate), shape = 21, size = 6, stroke = 1.0, alpha = 0.6) # WGS 84 / Equal Earth Greenwich
 
-    return(map.points)
+  return(map.points)
+  }
+}
