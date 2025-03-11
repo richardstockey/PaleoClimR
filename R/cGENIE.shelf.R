@@ -5,12 +5,12 @@
 #' i.e., the top 3 layers of cells directly adjacent to land. The function can be customized to alter
 #' the vertical number of cells and the horizontal distance from land.
 #'
-#' @param nc.sum A list containing the NetCDF summary data, including variables such as `var`, `time`, `lon`, `lat`, and `depth`.
+#' @param input Input file, either a NetCDF summary (from cGENIE.nc.import) or an array of the variable.
 #' @param shelf.depth An integer specifying the number of vertical layers to consider as the shelf. Default is 3.
 #' @param array.only A logical value indicating whether to return only the array of the variable for shelf synthesis. Default is TRUE.
 #' @param surf A logical value indicating whether to include the surface layer in the shelf. Default is FALSE.
-#' @param time.step A character or integer specifying the time step to use. Default is "default", which uses the length of `nc.sum$time`.
-#' @param format A character string specifying the format of the output. Default is "array".
+#' @param time.step A character or integer specifying the time step to use. Default is "default", which uses the length of `input$time`.
+#' @param format A character string specifying the format of the output. Default is "array", alternatively can use "nc.sum" or "multi.array".
 #' @return An array summarizing the shelf environments.
 #' @export
 cGENIE.shelf <- function(input, format = "array", shelf.depth = 3, array.only = TRUE, surf = FALSE, time.step = "default") {

@@ -5,8 +5,10 @@
 \title{Generate Maps from cGENIE Model Output with Points Matching}
 \usage{
 cGENIE.points.map(
-  var,
-  experiment,
+  var = NULL,
+  experiment = NULL,
+  input = NULL,
+  format = "nc",
   depth.level = 1,
   dims = 3,
   year = "default",
@@ -14,20 +16,28 @@ cGENIE.points.map(
   min.value = NULL,
   max.value = NULL,
   intervals = NULL,
-  continents.outlined = NULL,
+  continents.outlined = TRUE,
   scale.label = NULL,
   model = "biogem",
   palette_name = pals::parula(1000),
   projection = "ESRI:54012",
+  line.thickness = 1,
   coord.dat = NULL,
   lat.name = "p_lat",
-  lng.name = "p_lng"
+  lng.name = "p_lng",
+  darkmode = FALSE,
+  bg.colour = "black",
+  fg.colour = "white"
 )
 }
 \arguments{
 \item{var}{(character) The variable from the NetCDF file to be visualized (e.g., "ocn_temp", "ocn_sal", "ocn_O2").}
 
 \item{experiment}{(character) The path or name of the experiment used to locate the NetCDF file.}
+
+\item{input}{(array) The input data array when format is set to "array".}
+
+\item{format}{(character) The format of the input data, either "nc" for NetCDF files or "array" for data arrays.}
 
 \item{depth.level}{(numeric) Depth layer to visualize (default is 1 for the surface layer).}
 
@@ -53,11 +63,19 @@ cGENIE.points.map(
 
 \item{projection}{(character) Map projection to use (default is ESRI:54012 for Equal Earth).}
 
+\item{line.thickness}{(numeric) The thickness of the lines outlining continents (default is 1).}
+
 \item{coord.dat}{(data.frame) Data frame with latitude and longitude columns to which cGENIE data will be added and returned.}
 
 \item{lat.name}{(character) Name of the latitude column in \code{coord.dat} (default is "p_lat").}
 
 \item{lng.name}{(character) Name of the longitude column in \code{coord.dat} (default is "p_lng").}
+
+\item{darkmode}{(logical) Logical value to control whether to use dark mode (default is FALSE).}
+
+\item{bg.colour}{(character) Background color for the map (default is "black" when darkmode is TRUE).}
+
+\item{fg.colour}{(character) Foreground color for the map (default is "white" when darkmode is TRUE).}
 }
 \value{
 A ggplot object representing the generated map with the specified variable visualized across geographical coordinates.

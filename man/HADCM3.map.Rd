@@ -22,7 +22,10 @@ HADCM3.map(
   plot = TRUE,
   palette_name = pals::parula(1000),
   polygons,
-  na.colour = "grey80"
+  na.colour = "grey80",
+  darkmode = FALSE,
+  bg.colour = "black",
+  fg.colour = "white"
 )
 }
 \arguments{
@@ -61,6 +64,12 @@ HADCM3.map(
 \item{polygons}{SpatialPolygonsDataFrame. Pre-calculated polygons to be used if \code{calcs} is FALSE.}
 
 \item{na.colour}{Character. The color to be used for NA values. Default is "grey80".}
+
+\item{darkmode}{Logical. Whether to use dark mode for the plot. Default is FALSE.}
+
+\item{bg.colour}{Character. Background color for the plot in dark mode. Default is "black".}
+
+\item{fg.colour}{Character. Foreground color for the plot in dark mode. Default is "white".}
 }
 \value{
 If \code{plot} is TRUE, returns a ggplot object. If \code{plot} is FALSE and \code{calcs} is TRUE, returns a SpatialPolygonsDataFrame. If \code{plot} is FALSE and \code{calcs} is FALSE, returns the input \code{polygons}.

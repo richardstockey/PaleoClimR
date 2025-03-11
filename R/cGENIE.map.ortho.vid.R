@@ -25,24 +25,22 @@
 #' @param output_file Character. The name of the output video file. Default is "output.mp4".
 #'
 #' @return None. The function creates a video file as specified by `output_file`.
+#
+#' @import av
+#' @import progress
 #' @export
-#'
-#' @examples
-#' cGENIE.map.ortho.vid(experiment = "exp1", var = "ocn_O2", framerate = 10, lon_steps = 1, output_file = "output.mp4")
-library(av)  # For creating videos
-library(progress)  # For progress bar
 
-cGENIE.map.ortho.vid <- function(experiment, var, depth.level = 2, dims = 3, year = "default", unit.factor = NULL, 
-         min.value = NULL, max.value = NULL, intervals = NULL, continents.outlined = TRUE, 
-         line.thickness = 0.5, line.colour = "white", scale.label = NULL, model = "biogem", 
-         palette_name = pals::parula(1000), darkmode = TRUE, 
-         background.color = "black", text.color = "white", framerate = 10, lon_steps = 1, 
+cGENIE.map.ortho.vid <- function(experiment, var, depth.level = 2, dims = 3, year = "default", unit.factor = NULL,
+         min.value = NULL, max.value = NULL, intervals = NULL, continents.outlined = TRUE,
+         line.thickness = 0.5, line.colour = "white", scale.label = NULL, model = "biogem",
+         palette_name = pals::parula(1000), darkmode = TRUE,
+         background.color = "black", text.color = "white", framerate = 10, lon_steps = 1,
          output_file = "output.mp4") {
-  
+
   frames <- list()
   lon_seq <- seq(0, 360, by = lon_steps)
   pb <- progress_bar$new(total = length(lon_seq), format = "[:bar] :percent :eta")
-  
+
   for (lon in lon_seq) {
   plot <- cGENIE.map.ortho(
     experiment = experiment,
@@ -68,17 +66,17 @@ cGENIE.map.ortho.vid <- function(experiment, var, depth.level = 2, dims = 3, yea
   frames[[length(frames) + 1]] <- plot
   pb$tick()
   }
-  
+
   # Save frames as images
   img_files <- sapply(seq_along(frames), function(i) {
   img_file <- sprintf("frame_%03d.png", i)
   ggsave(img_file, plot = frames[[i]], width = 8, height = 6)
   img_file
   })
-  
+
   # Create video from images
   av::av_encode_video(img_files, output = output_file, framerate = framerate)
-  
+
   # Clean up image files
   file.remove(img_files)
 }

@@ -12,7 +12,10 @@ scotese.map(
   continents.outlined,
   scale.label,
   scale = "viridis",
-  projection = "ESRI:54012"
+  projection = "ESRI:54012",
+  darkmode = FALSE,
+  bg.col = ifelse(darkmode, "black", "white"),
+  fg.col = ifelse(darkmode, "white", "black")
 )
 }
 \arguments{
@@ -31,6 +34,12 @@ scotese.map(
 \item{scale}{Character. Color scale to use. Default is "viridis".}
 
 \item{projection}{Character. Projection type for the map. Default is 'ESRI:54012'.}
+
+\item{darkmode}{Logical. Whether to enable dark mode. Default is FALSE.}
+
+\item{bg.col}{Character. Background color for the map. Default is "black" when darkmode is TRUE.}
+
+\item{fg.col}{Character. Foreground color for the map. Default is "white" when darkmode is TRUE.}
 }
 \value{
 A ggplot object representing the map.

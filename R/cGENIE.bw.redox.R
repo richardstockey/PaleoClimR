@@ -7,6 +7,7 @@
 #' @param experiment A character string specifying the path to the experiment folder, where the necessary NetCDF files are stored.
 #' @param anox.thresh Numeric. The oxygen threshold (in mol/kg) for classifying anoxic bottom waters. Default is 0.
 #' @param subox.thresh Numeric. The oxygen threshold (in mol/kg) for classifying suboxic bottom waters. Default is 4.8e-6 (based on Sperling et al. 2015).
+#' @param lower.anox.lim Logical. If TRUE, sets a minimum anoxic fraction (f.anox) of 0.01% for plotting purposes. Default is TRUE.
 #'
 #' @details This function reads the NetCDF output of a cGENIE experiment, processes the ocean bottom-water oxygen data (`ocn_O2`), and
 #' categorizes each bottom-water grid cell as anoxic, suboxic, or oxic. The topographic data (`grid_topo`) is used to align the depth of each grid cell with the
@@ -35,7 +36,7 @@ cGENIE.bw.redox <- function(experiment, anox.thresh = 0, subox.thresh = 4.8e-6, 
   # experiment   : A character string indicating the path to the cGENIE experiment directory.
   # anox.thresh  : Numeric, threshold for defining anoxic conditions (default = 0 umol/kg, i.e., no oxygen).
   # subox.thresh : Numeric, threshold for defining suboxic conditions (default = 4.8 umol/kg based on Sperling et al., 2015).
-  # lower.anox.lim : Logical, if TRUE, sets a minimum anoxic fraction (f.anox) of 0.1% for plotting purposes (default = TRUE).
+  # lower.anox.lim : Logical, if TRUE, sets a minimum anoxic fraction (f.anox) of 0.01% for plotting purposes (default = TRUE).
   # -------------------------------------------------------------------------------------------------------
 
   # Load required libraries
@@ -120,10 +121,11 @@ cGENIE.bw.redox <- function(experiment, anox.thresh = 0, subox.thresh = 4.8e-6, 
   f.subox <- A.subox / (A.anox + A.subox + A.ox)
   f.ox <- A.ox / (A.anox + A.subox + A.ox)
 
-  # Apply a lower limit to the anoxic fraction (0.1%) if `lower.anox.lim` is TRUE
+  # Apply a lower limit to the anoxic fraction (0.01%) if `lower.anox.lim` is TRUE - this is designed to be approximately 
+  # 10% of the modern total of anoxic seafloor, approaching zero. 
   if (lower.anox.lim == TRUE){
-    if (f.anox < 0.001){
-      f.anox <- 0.001
+    if (f.anox < 0.0001){
+      f.anox <- 0.0001
     }
   }
 

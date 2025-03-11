@@ -9,7 +9,8 @@ cGENIE.sum.plots(
   directory = "default",
   file.name = "cGENIE.sum.plots",
   format = "pdf",
-  save = FALSE
+  save = FALSE,
+  darkmode = FALSE
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ cGENIE.sum.plots(
 \item{format}{A character string specifying the format of the output file. Default is "pdf".}
 
 \item{save}{A logical value indicating whether to save the plot. Default is FALSE.}
+
+\item{darkmode}{A logical value indicating whether to use a dark theme for the plot. Default is FALSE.}
 }
 \value{
 A ggplot object containing the arranged summary plots.

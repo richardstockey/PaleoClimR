@@ -14,14 +14,18 @@ cGENIE.points.map.benthic(
   min.value = NULL,
   max.value = NULL,
   intervals = NULL,
-  continents.outlined = NULL,
+  continents.outlined = TRUE,
   scale.label = NULL,
   model = "biogem",
   palette_name = pals::parula(1000),
   projection = "ESRI:54012",
+  line.thickness = 1,
   coord.dat = NULL,
   lat.name = "p_lat",
-  lng.name = "p_lng"
+  lng.name = "p_lng",
+  darkmode = FALSE,
+  bg.colour = "black",
+  fg.colour = "white"
 )
 }
 \arguments{
@@ -53,11 +57,19 @@ cGENIE.points.map.benthic(
 
 \item{projection}{(character) Map projection to use (default is ESRI:54012 for Equal Earth).}
 
+\item{line.thickness}{(numeric) Thickness of the lines outlining continents (default is 1).}
+
 \item{coord.dat}{(data.frame) Data frame with latitude and longitude columns to which cGENIE data will be added and returned.}
 
 \item{lat.name}{(character) Name of the latitude column in \code{coord.dat} (default is "p_lat").}
 
 \item{lng.name}{(character) Name of the longitude column in \code{coord.dat} (default is "p_lng").}
+
+\item{darkmode}{(logical) Logical value to control whether to use dark mode (default is FALSE).}
+
+\item{bg.colour}{(character) Background color for the map when in dark mode (default is "black").}
+
+\item{fg.colour}{(character) Foreground color for the map when in dark mode (default is "white").}
 }
 \value{
 A ggplot object representing the generated map with the specified variable visualized across geographical coordinates.

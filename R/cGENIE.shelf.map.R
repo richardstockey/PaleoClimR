@@ -20,6 +20,9 @@
 #' @param darkmode (logical) Logical value to control whether to use dark mode (default is FALSE).
 #' @param background.colour (character) Background color for the plot (default is "black" when darkmode is TRUE).
 #' @param foreground.colour (character) Foreground color for the plot (default is "white" when darkmode is TRUE).
+#' @param ocean.alpha (numeric) Alpha transparency for the ocean layer (default is 0.4).
+#' @param line.thickness (numeric) Thickness of the outline lines (default is 1).
+#' @param line.colour (character) Colour of the outline lines (default is "grey20").
 #'
 #' @return A ggplot object representing the generated map with the specified variable visualized across geographical coordinates.
 #'

@@ -24,6 +24,7 @@
 #' @param darkmode (logical) Logical value to control whether to use dark mode (default is FALSE).
 #' @param bg.colour (character) Background color for the map when in dark mode (default is "black").
 #' @param fg.colour (character) Foreground color for the map when in dark mode (default is "white").
+#' @param line.thickness (numeric) Thickness of the lines outlining continents (default is 1).
 #'
 #' @return A ggplot object representing the generated map with the specified variable visualized across geographical coordinates.
 #'
@@ -312,3 +313,4 @@ cGENIE.points.map.benthic <- function(var,
     geom_sf(data = points_spsf %>% st_transform(projection), aes(geometry = geometry, fill = matched_climate), shape = 21, size = 6, stroke = 1.0, alpha = 0.6) # WGS 84 / Equal Earth Greenwich
 
   return(map.points)
+}

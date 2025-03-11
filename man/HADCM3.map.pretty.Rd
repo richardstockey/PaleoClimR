@@ -5,7 +5,10 @@
 \title{HADCM3.map.pretty}
 \usage{
 HADCM3.map.pretty(
+  file = "o.pgclann",
+  var = "insitu_T_ym_dpth",
   experiment,
+  file_2,
   depth.level = 1,
   dims = 3,
   land.opt = "default",
@@ -21,11 +24,22 @@ HADCM3.map.pretty(
   calcs = TRUE,
   plot = TRUE,
   for.app = FALSE,
-  polygons
+  palette_name_ocean = pals::parula(1000),
+  polygons,
+  darkmode = FALSE,
+  bg.color = "white",
+  fg.color = "black",
+  col.labels = NULL
 )
 }
 \arguments{
+\item{file}{Name of the netCDF file (without extension). Default is "o.pgclann".}
+
+\item{var}{Name of the variable to extract from the netCDF file. Default is "insitu_T_ym_dpth".}
+
 \item{experiment}{A string specifying the path to the experiment directory.}
+
+\item{file_2}{Name of the second netCDF file (without extension). should generally be ".qrparm.orog"}
 
 \item{depth.level}{An integer specifying the depth level to be visualized. Default is 1.}
 
@@ -57,7 +71,17 @@ HADCM3.map.pretty(
 
 \item{for.app}{Logical indicating whether the map is for an app. Default is FALSE.}
 
+\item{palette_name_ocean}{Color palette for ocean data visualization. Default is pals::parula(1000).}
+
 \item{polygons}{Spatial polygons data frame if calcs is FALSE.}
+
+\item{darkmode}{Logical indicating whether to use dark mode. Default is FALSE.}
+
+\item{bg.color}{Background color for the plot. Default is "white".}
+
+\item{fg.color}{Foreground color for the plot elements. Default is "black".}
+
+\item{col.labels}{Labels for the color scale. Default is NULL.}
 }
 \value{
 If plot is FALSE, returns a spatial polygons data frame. If plot is TRUE, returns a ggplot object.

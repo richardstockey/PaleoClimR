@@ -9,6 +9,17 @@
 #' @param max.value Maximum value for the color scale. Defaults to NULL.
 #' @param intervals Number of intervals for the color scale. Defaults to NULL.
 #' @param scale.label Label for the color scale. Defaults to NULL.
+#' @param depth.level The depth level to extract from the .nc file. Defaults to 1.
+#' @param dims The number of dimensions for the data. Defaults to 3.
+#' @param year The year to extract from the .nc file. Defaults to "default".
+#' @param unit.factor The factor to multiply the variable values by. Defaults to 1.
+#' @param continents.outlined Logical indicating whether to outline continents. Defaults to TRUE.
+#' @param line.thickness The thickness of the outline lines. Defaults to 1.
+#' @param palette_name The color palette to use for the map. Defaults to pals::parula(1000).
+#' @param projection The map projection to use. Defaults to 'ESRI:54012'.
+#' @param darkmode Logical indicating whether to use dark mode. Defaults to FALSE.
+#' @param bg_color The background color of the map. Defaults to "white" if darkmode is FALSE, "black" if darkmode is TRUE.
+#' @param fg_color The foreground color of the map. Defaults to "black" if darkmode is FALSE, "white" if darkmode is TRUE.
 #' @return A ggplot object representing the overlay map.
 #' @importFrom RNetCDF open.nc var.get.nc
 #' @importFrom dplyr %>%
@@ -18,6 +29,7 @@
 #' @importFrom reshape2 melt
 #' @importFrom ggplot2 ggplot geom_tile scale_fill_gradientn
 #' @export
+#' 
 cGENIE.overlay.map <- function(var, experiment,
   depth.level = 1,
   dims = 3,

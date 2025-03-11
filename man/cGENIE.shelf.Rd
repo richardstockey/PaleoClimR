@@ -14,7 +14,9 @@ cGENIE.shelf(
 )
 }
 \arguments{
-\item{format}{A character string specifying the format of the output. Default is "array".}
+\item{input}{Input file, either a NetCDF summary (from cGENIE.nc.import) or an array of the variable.}
+
+\item{format}{A character string specifying the format of the output. Default is "array", alternatively can use "nc.sum" or "multi.array".}
 
 \item{shelf.depth}{An integer specifying the number of vertical layers to consider as the shelf. Default is 3.}
 
@@ -22,9 +24,7 @@ cGENIE.shelf(
 
 \item{surf}{A logical value indicating whether to include the surface layer in the shelf. Default is FALSE.}
 
-\item{time.step}{A character or integer specifying the time step to use. Default is "default", which uses the length of \code{nc.sum$time}.}
-
-\item{nc.sum}{A list containing the NetCDF summary data, including variables such as \code{var}, \code{time}, \code{lon}, \code{lat}, and \code{depth}.}
+\item{time.step}{A character or integer specifying the time step to use. Default is "default", which uses the length of \code{input$time}.}
 }
 \value{
 An array summarizing the shelf environments.

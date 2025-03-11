@@ -16,16 +16,11 @@
 #' @param unit.factor Numeric. A factor to multiply the variable values by. Default is 1.
 #' @param time.present Logical. Whether the netCDF file includes a time dimension. Default is FALSE.
 #' @param projection Character. The projection to be used for the map. Default is 'ESRI:54012'.
-#' @param calcs Logical. Whether to perform calculations to generate the spatial polygons. Default is TRUE.
-#' @param plot Logical. Whether to generate and return the plot. Default is TRUE.
 #' @param palette_name Function. The color palette function to be used for the map. Default is `pals::parula(1000)`.
-#' @param polygons SpatialPolygonsDataFrame. Pre-calculated polygons to be used if `calcs` is FALSE.
 #' @param na.colour Character. The color to be used for NA values. Default is "grey80".
-#' @param darkmode Logical. Whether to enable dark mode. Default is FALSE.
-#' @param background.colour Character. The background color for the plot in dark mode. Default is "black".
-#' @param foreground.colour Character. The foreground color for the plot in dark mode. Default is "white".
+
 #'
-#' @return If `plot` is TRUE, returns a ggplot object. If `plot` is FALSE and `calcs` is TRUE, returns a SpatialPolygonsDataFrame. If `plot` is FALSE and `calcs` is FALSE, returns the input `polygons`.
+#' @return Returns a ggplot object. 
 #' @import RNetCDF dplyr sf sp ggspatial reshape2 ggplot2 pals viridis
 #' @export
 HADCM3.points.map <- function(var,
@@ -41,16 +36,12 @@ HADCM3.points.map <- function(var,
        unit.factor = 1,
        time.present = FALSE,
        projection = 'ESRI:54012',
-       calcs = TRUE,
-       plot = TRUE,
        palette_name = pals::parula(1000),
        na.colour = "grey80",
        coord.dat = NULL, # is any data frame with the lat long column names assigned - cGENIE data will be added to this and returned
        lat.name = "p_lat", # name IF generated from rotated paleoverse coordinates...
-       lng.name = "p_lng", # name IF generated from rotated paleoverse coordinates...
-       darkmode = FALSE,
-       background.colour = "black",
-       foreground.colour = "white"){
+       lng.name = "p_lng" # name IF generated from rotated paleoverse coordinates...
+){
 
   # palette_name currently has to be followed by (1000) or some other number
   # other options than parula would include - viridis and the many other options here https://r-charts.com/color-palettes/

@@ -17,6 +17,8 @@ cGENIE.bw.redox(
 \item{anox.thresh}{Numeric. The oxygen threshold (in mol/kg) for classifying anoxic bottom waters. Default is 0.}
 
 \item{subox.thresh}{Numeric. The oxygen threshold (in mol/kg) for classifying suboxic bottom waters. Default is 4.8e-6 (based on Sperling et al. 2015).}
+
+\item{lower.anox.lim}{Logical. If TRUE, sets a minimum anoxic fraction (f.anox) of 0.01\% for plotting purposes. Default is TRUE.}
 }
 \value{
 A list with the following components:

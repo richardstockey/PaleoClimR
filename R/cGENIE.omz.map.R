@@ -1,7 +1,7 @@
 #' Generate Maps from cGENIE Model Output
 #'
-#' This function generate a specific kind of maps from imported .nc (NetCDF) files containing data from the cGENIE model outputs.
-#' It plots omz depths based on some thresholid.,
+#' This function generates a specific kind of maps from imported .nc (NetCDF) files containing data from the cGENIE model outputs.
+#' It plots OMZ depths based on some threshold.
 #'
 #' @param thresh A numeric value specifying the threshold oxygen concentration (in umol/kg) below which
 #'                the volume is considered part of the OMZ. Default is 58.54e-6 based on Canfield 60uM
@@ -15,6 +15,7 @@
 #' @param max.value (numeric) Maximum value for the color scale.
 #' @param intervals (numeric) Step intervals for the color scale.
 #' @param continents.outlined (logical) Logical value to control whether to outline continents.
+#' @param line.thickness (numeric) Thickness of the lines outlining the continents and other map elements.
 #' @param scale.label (character) Label for the color bar.
 #' @param model (character) The model type (default is 'biogem'; can be extended for other models).
 #' @param palette_name (character) Color palette to be used for the plot (default is `pals::parula(1000)`).
@@ -26,7 +27,8 @@
 #' @return A ggplot object representing the generated map with the specified variable visualized across geographical coordinates.
 #'
 #' @details
-
+#' This function generates a map visualization of the global distribution of oxygen minimum zones from a given NetCDF file 
+#' containing data from the cGENIE model outputs.
 #'
 #' @import RNetCDF
 #' @import dplyr

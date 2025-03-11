@@ -22,6 +22,11 @@
 #' @param darkmode Logical indicating whether to use dark mode. Default is FALSE.
 #' @param bg.color Background color for the plot. Default is "white".
 #' @param fg.color Foreground color for the plot elements. Default is "black".
+#' @param file Name of the netCDF file (without extension). Default is "o.pgclann".
+#' @param var Name of the variable to extract from the netCDF file. Default is "insitu_T_ym_dpth".
+#' @param file_2 Name of the second netCDF file (without extension). should generally be ".qrparm.orog"
+#' @param palette_name_ocean Color palette for ocean data visualization. Default is pals::parula(1000).
+#' @param col.labels Labels for the color scale. Default is NULL.
 #'
 #' @return If plot is FALSE, returns a spatial polygons data frame. If plot is TRUE, returns a ggplot object.
 #' @import RNetCDF dplyr sf sp ggspatial reshape2 ggplot2 ggnewscale

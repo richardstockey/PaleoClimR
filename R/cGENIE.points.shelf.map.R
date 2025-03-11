@@ -6,8 +6,11 @@
 #'
 #' @param var (character) The variable from the NetCDF file to be visualized (e.g., "ocn_temp", "ocn_sal", "ocn_O2").
 #' @param experiment (character) The path or name of the experiment used to locate the NetCDF file.
+#' @param input (array) The input data array for the cGENIE model.
+#' @param format (character) The format of the input data (default is "nc").
 #' @param depth.level (numeric) Depth layer to visualize (default is 1 for the surface layer).
 #' @param dims (numeric) The dimensionality of the data (default is 3 for 3D; can be 2D or 3D).
+#' @param ocean.alpha (numeric) Alpha transparency for ocean areas in the plot (default is 0.4).
 #' @param year (numeric or character) Time step to visualize (default uses the final time step if "default").
 #' @param unit.factor (numeric) A scaling factor for the variable values (default is 1).
 #' @param min.value (numeric) Minimum value for the color scale (used to set scale limits).
@@ -18,6 +21,7 @@
 #' @param model (character) The model type (default is 'biogem'; can be extended for other models).
 #' @param palette_name (character) Color palette to be used for the plot (default is `pals::parula(1000)`).
 #' @param projection (character) Map projection to use (default is ESRI:54012 for Equal Earth).
+#' @param line.thickness (numeric) Thickness of the lines outlining continents (default is 1).
 #' @param coord.dat (data.frame) Data frame with latitude and longitude columns to which cGENIE data will be added and returned.
 #' @param lat.name (character) Name of the latitude column in `coord.dat` (default is "p_lat").
 #' @param lng.name (character) Name of the longitude column in `coord.dat` (default is "p_lng").
@@ -702,3 +706,5 @@ cGENIE.points.shelf.map <- function(var = NULL,
       geom_sf(data = points_spsf %>% st_transform(projection), aes(geometry = geometry, fill = matched_climate), shape = 21, size = 6, stroke = 1.0, alpha = 0.6) # WGS 84 / Equal Earth Greenwich
 
         return(map.points)
+  }
+}

@@ -4,9 +4,10 @@
 #'
 #' @param var Character. The variable to extract from the cGENIE model.
 #' @param experiment Character. The experiment identifier for the cGENIE model.
+#' @param input Array. The input array for the cGENIE model data.
+#' @param format Character. The format of the input data. Options are "nc" or "array". Default is "nc".
 #' @param depth.level Numeric. The depth level to extract from the cGENIE model. Default is 1.
 #' @param dims Numeric. The number of dimensions in the cGENIE model. Default is 3.
-#' @param time.present Logical. Whether to use the present time for the cGENIE model. Default is FALSE.
 #' @param coord.dat Data frame. A data frame with latitude and longitude columns. cGENIE data will be added to this and returned.
 #' @param lat.name Character. The name of the latitude column in `coord.dat`. Default is "p_lat".
 #' @param lng.name Character. The name of the longitude column in `coord.dat`. Default is "p_lng".
@@ -28,9 +29,8 @@ cGENIE.point.matching <- function(var = NULL,
                                   coord.dat, # is any data frame with the lat long column names assigned - cGENIE data will be added to this and returned
                                   lat.name = "p_lat", # name IF generated from rotated paleoverse coordinates...
                                   lng.name = "p_lng", # name IF generated from rotated paleoverse coordinates...
-                                  output = "dataframe") # new argument
+                                  output = "dataframe")
 {
-
 # Load necessary libraries
 library(RNetCDF)  # For handling NetCDF files
 library(dplyr)    # For data manipulation
@@ -174,7 +174,7 @@ if (output == "array") {
     }
 
     return(result_array)
-} else {
+} else if (output == "dataframe") {
     return(coord.dat)
 }
 

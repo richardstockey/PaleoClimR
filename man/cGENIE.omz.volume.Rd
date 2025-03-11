@@ -4,13 +4,15 @@
 \alias{cGENIE.omz.volume}
 \title{Summarize the Volume of Oxygen Minimum Zones (OMZs)}
 \usage{
-cGENIE.omz.volume(experiment, thresh = 4.8e-06, time.step = "default")
+cGENIE.omz.volume(experiment, thresh = 5.854e-05, time.step = "default")
 }
 \arguments{
 \item{experiment}{A string representing the path to the experiment's directory containing the NetCDF files.}
 
 \item{thresh}{A numeric value specifying the threshold oxygen concentration (in umol/kg) below which
-the volume is considered part of the OMZ. Default is 4.8e-6.}
+the volume is considered part of the OMZ. Default is 58.54e-6 based on Canfield 60uM
+https://enviromicro-journals.onlinelibrary.wiley.com/doi/10.1111/1462-2920.16192
+(just a conversion based on global mean density of 1.025 kg/L)}
 
 \item{time.step}{Either "default" to use the last time step or a numeric index to specify a particular time step.}
 }

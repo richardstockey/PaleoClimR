@@ -15,11 +15,13 @@
 #' @param continents.outlined (logical) Logical value to control whether to outline continents.
 #' @param scale.label (character) Label for the color bar.
 #' @param model (character) The model type (default is 'biogem'; can be extended for other models).
+#' @param line.thickness (numeric) Thickness of the lines outlining continents (default is 1).
 #' @param palette_name (character) Color palette to be used for the plot (default is `pals::parula(1000)`).
 #' @param projection (character) Map projection to use (default is ESRI:54012 for Equal Earth).
 #' @param darkmode (logical) Logical value to control whether to use dark mode for the plot (default is FALSE).
 #' @param darkmode.bg (character) Background color for dark mode (default is "black").
 #' @param darkmode.fg (character) Foreground color for dark mode (default is "white").
+#' @param col.labels (character) Labels for the color bar ticks.
 #'
 #' @return A ggplot object representing the generated map with the specified variable visualized across geographical coordinates.
 #'
