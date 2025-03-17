@@ -15,7 +15,7 @@
 #' @param continents.outlined (logical) Logical value to control whether to outline continents.
 #' @param scale.label (character) Label for the color bar.
 #' @param model (character) The model type (default is 'biogem'; can be extended for other models).
-#' @param palette_name (character) Color palette to be used for the plot (default is `pals::parula(1000)`).
+#' @param palette_name (character) Color palette to be used for the plot (default is 'pals::parula(1000)'').
 #' @param projection (character) Map projection to use (default is ESRI:54012 for Equal Earth).
 #' @param darkmode (logical) Logical value to control whether to use dark mode (default is FALSE).
 #' @param background.colour (character) Background color for the plot (default is "black" when darkmode is TRUE).
@@ -75,7 +75,7 @@ cGENIE.shelf.map <- function(var, experiment,
     min.value <- ifelse(is.null(min.value), 0, min.value)
     max.value <- ifelse(is.null(max.value), 40, max.value)
     intervals <- ifelse(is.null(intervals), 4, intervals)
-    scale.label <- ifelse(is.null(scale.label), "Temperature (°C)", scale.label)
+    scale.label <- ifelse(is.null(scale.label), "Temperature (\u00B0C)", scale.label)
   } else if (var == "ocn_sal") {
     unit.factor <- 1          # no conversion
     dims = 3

@@ -62,7 +62,7 @@ cGENIE.points.shelf.map(
 
 \item{model}{(character) The model type (default is 'biogem'; can be extended for other models).}
 
-\item{palette_name}{(character) Color palette to be used for the plot (default is \code{pals::parula(1000)}).}
+\item{palette_name}{(character) Color palette to be used for the plot (default is 'pals::parula(1000)').}
 
 \item{projection}{(character) Map projection to use (default is ESRI:54012 for Equal Earth).}
 

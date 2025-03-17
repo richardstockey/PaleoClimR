@@ -19,7 +19,7 @@
 #' @param continents.outlined (logical) Logical value to control whether to outline continents.
 #' @param scale.label (character) Label for the color bar.
 #' @param model (character) The model type (default is 'biogem'; can be extended for other models).
-#' @param palette_name (character) Color palette to be used for the plot (default is `pals::parula(1000)`).
+#' @param palette_name (character) Color palette to be used for the plot (default is 'pals::parula(1000)').
 #' @param projection (character) Map projection to use (default is ESRI:54012 for Equal Earth).
 #' @param line.thickness (numeric) Thickness of the lines outlining continents (default is 1).
 #' @param coord.dat (data.frame) Data frame with latitude and longitude columns to which cGENIE data will be added and returned.

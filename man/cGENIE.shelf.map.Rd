@@ -58,7 +58,7 @@ cGENIE.shelf.map(
 
 \item{line.colour}{(character) Colour of the outline lines (default is "grey20").}
 
-\item{palette_name}{(character) Color palette to be used for the plot (default is \code{pals::parula(1000)}).}
+\item{palette_name}{(character) Color palette to be used for the plot (default is 'pals::parula(1000)'').}
 
 \item{projection}{(character) Map projection to use (default is ESRI:54012 for Equal Earth).}
 
