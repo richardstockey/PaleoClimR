@@ -91,8 +91,12 @@ cGENIE.data <- function(var, experiment,
       names(df) <- c("lon.mid", "lon.min", "lon.max", "lat.mid", "lat.min", "lat.max", "var")
     }
   }
+  if(min(lon.edges == -180)){
 
-  # the longitude range of cGENIE cells is -260 to 100. This is not correct, but we dont want to just shift everything eastwards
+  }else if(min(lon.edges == -260)){
+  print("correcting for longitude offset, beta version...")
+
+  # the longitude range of cGENIE cells in some configurations is -260 to 100. This is not correct, but we dont want to just shift everything eastwards
   # we want to instead take all values of lat.min, lat.mid, lat.max below -180 and add hen to the eastward rather than westward
   # side of the -180 to 180 grid. We therefore need to first see the difference between -260 and each lat.min, lat.mid, lat.max
   # value below -80, then just need to add that value to 100.
@@ -101,7 +105,9 @@ cGENIE.data <- function(var, experiment,
   df$lon.min[is.na(df$offset) == FALSE] <-  90 + abs(df$offset[is.na(df$offset) == FALSE])
   df$lon.mid[is.na(df$offset) == FALSE] <-  95 + abs(df$offset[is.na(df$offset) == FALSE])
   df$lon.max[is.na(df$offset) == FALSE] <-  100 + abs(df$offset[is.na(df$offset) == FALSE])
-
+  } else{
+  print("Longitude range is not -180 to 180 or -260 to 90")
+}
   # Filter the data to ensure valid lat-lon ranges
   df <- df %>%
     filter(lon.max <= 180, lon.min >= -180, lat.max <= 90, lat.min >= -90)
