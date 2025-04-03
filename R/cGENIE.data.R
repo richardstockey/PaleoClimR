@@ -91,9 +91,9 @@ cGENIE.data <- function(var, experiment,
       names(df) <- c("lon.mid", "lon.min", "lon.max", "lat.mid", "lat.min", "lat.max", "var")
     }
   }
-  if(min(lon.edges == -180)){
+  if(min(lon.edges) == -180){
 
-  }else if(min(lon.edges == -260)){
+  }else if(min(lon.edges) == -260){
   print("correcting for longitude offset, beta version...")
 
   # the longitude range of cGENIE cells in some configurations is -260 to 100. This is not correct, but we dont want to just shift everything eastwards
@@ -112,7 +112,7 @@ cGENIE.data <- function(var, experiment,
   df <- df %>%
     filter(lon.max <= 180, lon.min >= -180, lat.max <= 90, lat.min >= -90)
 
-  # Handle cells at the extremes (-180 and 180 longitude)
+  # Handle cells at the extremes (-180 and 180 longitude) - note do we need this??
   df$lon.range <- abs(df$lon.min - df$lon.max)
   df$lon.min[df$lon.range > 180 & abs(df$lon.min) == 180] <- -df$lon.min[df$lon.range > 180 & abs(df$lon.min) == 180]
   df$lon.max[df$lon.range > 180 & abs(df$lon.max) == 180] <- -df$lon.max[df$lon.range > 180 & abs(df$lon.max) == 180]
