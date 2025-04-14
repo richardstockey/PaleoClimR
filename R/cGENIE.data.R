@@ -79,7 +79,20 @@ cGENIE.data <- function(var, experiment,
         rep(lat.edges[2:length(lat.edges)], each = length(lon)),
         as.data.frame(melt(var.arr))$value))
       names(df) <- c("lon.mid", "lon.min", "lon.max", "lat.mid", "lat.min", "lat.max", "var")
-    }else{
+    }else if(var == "phys_psi"){ # note that phys_psi has 37 lat bands, linked to what would normally be the lat edge numbers.
+      # for now, just make everything in lat space lat.edges
+      # lon values are also all shifted 5 degrees east.
+      # for details, check panoply.
+      df <- as.data.frame(cbind(
+        rep(lon + 5, times = length(lat.edges)),
+        rep(lon.edges[1:(length(lon.edges)-1)] + 5, times = length(lat.edges)),
+        rep(lon.edges[2:length(lon.edges)] + 5, times = length(lat.edges)),
+        rep(lat.edges, each = length(lon)),
+        rep(lat.edges, each = length(lon)),
+        rep(lat.edges, each = length(lon)),
+        as.data.frame(melt(var.arr))$value))
+      names(df) <- c("lon.mid", "lon.min", "lon.max", "lat.mid", "lat.min", "lat.max", "var")
+    } else{
       df <- as.data.frame(cbind(
         rep(lon, times = length(lat)),
         rep(lon.edges[1:(length(lon.edges)-1)], times = length(lat)),

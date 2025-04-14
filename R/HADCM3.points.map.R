@@ -20,7 +20,7 @@
 #' @param na.colour Character. The color to be used for NA values. Default is "grey80".
 
 #'
-#' @return Returns a ggplot object. 
+#' @return Returns a ggplot object.
 #' @import RNetCDF dplyr sf sp ggspatial reshape2 ggplot2 pals viridis
 #' @export
 HADCM3.points.map <- function(var,
@@ -56,7 +56,7 @@ HADCM3.points.map <- function(var,
   library(pals)     # For color palettes
 
   matched_points <- HADCM3.point.matching(var = var,
-                                          file = NULL,
+                                          file = file,
                                           experiment = experiment,
                                           depth.level = depth.level,
                                           dims = dims,
@@ -229,7 +229,7 @@ HADCM3.points.map <- function(var,
     st_crs(SLs1dfSf) = '+proj=longlat +ellps=sphere'
 
     # Create spatial object with the chosen points from start of script
-    points <- as.data.frame(cbind(matched_points$lng, matched_points$lat, matched_points$matched_climate*unit.factor))
+    points <- as.data.frame(cbind(matched_points[[lng.name]], matched_points[[lat.name]], matched_points$matched_climate * unit.factor))
     points <- na.omit(points)
     points_sp <- SpatialPointsDataFrame(coords = points[,1:2], data = as.data.frame(points[,3]))
     names(points_sp) <- "matched_climate"

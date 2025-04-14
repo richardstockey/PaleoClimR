@@ -55,6 +55,8 @@ HADCM3.point.matching <- function(var = NULL,
 
   # Initialize a column for matched climate data
   coord.dat$matched_climate <- NA
+  coord.dat$lat.bin.mid <- NA
+  coord.dat$lon.bin.mid <- NA
 
   # sure there is an elegant way to do this without a loop. return to when there is time.
   for(row in 1:nrow(coord.dat)){
