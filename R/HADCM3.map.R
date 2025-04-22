@@ -48,169 +48,160 @@ HADCM3.map <- function(var, file, experiment,
        bg.colour = "black",
        fg.colour = "white"){
 
-  # Load necessary libraries
-  library(RNetCDF)
-  library(dplyr)
-  library(sf)
-  library(sp)
-  library(reshape2)
-  library(ggplot2)
-  library(pals)
-
   # Open the netCDF file
-  nc <- open.nc(paste0(experiment, file, ".nc"))
+  nc <- RNetCDF::open.nc(paste0(experiment, file, ".nc"))
 
   # Extract latitude values and calculate edges
-  lat <- var.get.nc(nc, "latitude")
+  lat <- RNetCDF::var.get.nc(nc, "latitude")
   lat.edges <- c(lat - mean(diff(lat)/2), lat[length(lat)] + mean(diff(lat)/2))
 
   # Extract longitude values and calculate edges
-  lon <- var.get.nc(nc, "longitude")
+  lon <- RNetCDF::var.get.nc(nc, "longitude")
   lon.edges <- c(lon - mean(diff(lon)/2), lon[length(lon)] + mean(diff(lon)/2))
 
   # If the netCDF file has 3 dimensions, extract depth values and calculate edges
   if(dims == 3){
-  depth <- var.get.nc(nc, "depth_1")
-  depth.edges <- c(0, var.get.nc(nc, "depth"), (depth[length(depth)]+307.5))
+    depth <- RNetCDF::var.get.nc(nc, "depth_1")
+    depth.edges <- c(0, RNetCDF::var.get.nc(nc, "depth"), (depth[length(depth)]+307.5))
   }
 
   # If the netCDF file includes a time dimension, extract time values
   if(time.present == TRUE){
-  time <- var.get.nc(nc, "t")
+    time <- RNetCDF::var.get.nc(nc, "t")
   }
 
   # Extract the specified variable from the netCDF file
-  var.arr <- var.get.nc(nc, var)
+  var.arr <- RNetCDF::var.get.nc(nc, var)
 
   # Amend HADCM3 grid to project on 0 degrees
-  if(mean(between(lon, -180, 180)) < 1){
-  lon.edges[lon.edges >180] <- lon.edges[lon.edges >180] - 360
-  lon[lon >180] <- lon[lon >180] -360
+  if(mean(dplyr::between(lon, -180, 180)) < 1){
+    lon.edges[lon.edges >180] <- lon.edges[lon.edges >180] - 360
+    lon[lon >180] <- lon[lon >180] -360
   }
 
   # Generate dataframe of 2D slices from the 3D array
   if(dims == 3){
-  df <- as.data.frame(cbind(
-    rep(lon, times = length(lat), each = 1),
-    rep(lon.edges[1:(length(lon.edges)-1)], times = length(lat), each = 1),
-    rep(lon.edges[2:(length(lon.edges))], times = length(lat), each = 1),
-    rep(lat, times = 1, each = length(lon)),
-    rep(lat.edges[1:(length(lat.edges)-1)], times = 1, each = length(lon)),
-    rep(lat.edges[2:(length(lat.edges))], times = 1, each = length(lon)),
-    as.data.frame(melt(var.arr[,, depth.level]))$value))
+    df <- as.data.frame(cbind(
+      rep(lon, times = length(lat), each = 1),
+      rep(lon.edges[1:(length(lon.edges)-1)], times = length(lat), each = 1),
+      rep(lon.edges[2:(length(lon.edges))], times = length(lat), each = 1),
+      rep(lat, times = 1, each = length(lon)),
+      rep(lat.edges[1:(length(lat.edges)-1)], times = 1, each = length(lon)),
+      rep(lat.edges[2:(length(lat.edges))], times = 1, each = length(lon)),
+      as.data.frame(reshape2::melt(var.arr[,, depth.level]))$value))
 
-  names(df) <- c("lon.mid",
-           "lon.min",
-           "lon.max",
-           "lat.mid",
-           "lat.min",
-           "lat.max",
-           "var"
-  )
+    names(df) <- c("lon.mid",
+                   "lon.min",
+                   "lon.max",
+                   "lat.mid",
+                   "lat.min",
+                   "lat.max",
+                   "var"
+    )
   }
 
   if(dims == 2){
-  df <- as.data.frame(cbind(
-    rep(lon, times = length(lat), each = 1),
-    rep(lon.edges[1:(length(lon.edges)-1)], times = length(lat), each = 1),
-    rep(lon.edges[2:(length(lon.edges))], times = length(lat), each = 1),
-    rep(lat, times = 1, each = length(lon)),
-    rep(lat.edges[1:(length(lat.edges)-1)], times = 1, each = length(lon)),
-    rep(lat.edges[2:(length(lat.edges))], times = 1, each = length(lon)),
-    as.data.frame(melt(var.arr))$value))
+    df <- as.data.frame(cbind(
+      rep(lon, times = length(lat), each = 1),
+      rep(lon.edges[1:(length(lon.edges)-1)], times = length(lat), each = 1),
+      rep(lon.edges[2:(length(lon.edges))], times = length(lat), each = 1),
+      rep(lat, times = 1, each = length(lon)),
+      rep(lat.edges[1:(length(lat.edges)-1)], times = 1, each = length(lon)),
+      rep(lat.edges[2:(length(lat.edges))], times = 1, each = length(lon)),
+      as.data.frame(reshape2::melt(var.arr))$value))
 
-  names(df) <- c("lon.mid",
-           "lon.min",
-           "lon.max",
-           "lat.mid",
-           "lat.min",
-           "lat.max",
-           "var"
-  )
+    names(df) <- c("lon.mid",
+                   "lon.min",
+                   "lon.max",
+                   "lat.mid",
+                   "lat.min",
+                   "lat.max",
+                   "var"
+    )
 
-  if(file == ".qrparm.orog" & var == "ht"){
-    df$var <- as.factor(df$var)
-    df <- filter(df, var != "0")
-    df$var <- as.numeric(paste(df$var))
-  }
+    if(file == ".qrparm.orog" & var == "ht"){
+      df$var <- as.factor(df$var)
+      df <- dplyr::filter(df, var != "0")
+      df$var <- as.numeric(paste(df$var))
+    }
   }
 
   df <- df %>%
-  filter(lon.max <= 180,
-       lon.min >= -180,
-       lat.max <= 90,
-       lat.min >= -90,
-       lat.max >= -90,
-       lat.min <= 90
-  )
+    dplyr::filter(lon.max <= 180,
+                  lon.min >= -180,
+                  lat.max <= 90,
+                  lat.min >= -90,
+                  lat.max >= -90,
+                  lat.min <= 90
+    )
 
   df$lon.range <- abs(df$lon.min - df$lon.max)
   df <- df %>%
-  filter(lon.range < 180)
+    dplyr::filter(lon.range < 180)
 
   poly.list <- list()
   poly.names.list <- list()
 
   for(poly in 1:(nrow(df))){
-  polygon.code <- Polygon(cbind(
-    c(df$lon.min[poly], df$lon.max[poly], df$lon.max[poly], df$lon.min[poly]),
-    c(df$lat.min[poly], df$lat.min[poly], df$lat.max[poly], df$lat.max[poly])))
-  assign(paste0("Polygon_", poly), polygon.code)
+    polygon.code <- sp::Polygon(cbind(
+      c(df$lon.min[poly], df$lon.max[poly], df$lon.max[poly], df$lon.min[poly]),
+      c(df$lat.min[poly], df$lat.min[poly], df$lat.max[poly], df$lat.max[poly])))
+    assign(paste0("Polygon_", poly), polygon.code)
 
-  polygons.code <- Polygons(list(polygon.code), paste0("p", poly))
-  assign(paste0("Polygons_", poly), polygons.code)
+    polygons.code <- sp::Polygons(list(polygon.code), paste0("p", poly))
+    assign(paste0("Polygons_", poly), polygons.code)
 
-  poly.list <- append(poly.list, polygons.code)
-  poly.names.list <- append(poly.names.list, paste0("p", poly))
+    poly.list <- append(poly.list, polygons.code)
+    poly.names.list <- append(poly.names.list, paste0("p", poly))
   }
 
-  SpP <- SpatialPolygons(poly.list)
+  SpP <- sp::SpatialPolygons(poly.list)
   attr <- data.frame(var = df$var, row.names = paste(poly.names.list))
-  SpDf <- SpatialPolygonsDataFrame(SpP, attr)
-  SpDfSf <- st_as_sf(SpDf)
-  st_crs(SpDfSf) = '+proj=longlat +ellps=sphere'
+  SpDf <- sp::SpatialPolygonsDataFrame(SpP, attr)
+  SpDfSf <- sf::st_as_sf(SpDf)
+  sf::st_crs(SpDfSf) = '+proj=longlat +ellps=sphere'
 
   l1 <- cbind(c(-180, 180, rep(180, 1801), 180, -180, rep(-180, 1801), -180), c(-90, -90, seq(-90,90,0.1),  90, 90, seq(90,-90,-0.1), -90))
-  L1 <- Polygon(l1)
-  Ls1 <- Polygons(list(L1), ID="a")
-  SLs1 <-  SpatialPolygons(list(Ls1))
+  L1 <- sp::Polygon(l1)
+  Ls1 <- sp::Polygons(list(L1), ID="a")
+  SLs1 <-  sp::SpatialPolygons(list(Ls1))
 
   df1 <- data.frame(rep(2,1), row.names = rep("a",  1))
   names(df1)[1] <- "var"
-  SLs1df = SpatialPolygonsDataFrame(SLs1, data = df1)
-  SLs1dfSf <- st_as_sf(SLs1df)
-  st_crs(SLs1dfSf) = '+proj=longlat +ellps=sphere'
+  SLs1df = sp::SpatialPolygonsDataFrame(SLs1, data = df1)
+  SLs1dfSf <- sf::st_as_sf(SLs1df)
+  sf::st_crs(SLs1dfSf) = '+proj=longlat +ellps=sphere'
 
-  map <- ggplot() +
-  geom_sf(data = SpDfSf %>% st_transform(projection), aes(geometry = geometry, fill = var * unit.factor), color = NA, linewidth = 10, linetype = 0) +
-  geom_sf(data = SLs1dfSf %>% st_transform(projection), color = ifelse(darkmode, fg.colour, "grey5"), linewidth = 0.9, fill = NA) +
-  scale_fill_stepsn(colours = palette_name,
-            guide = guide_colorbar(title.position = "top",
-                       barwidth = 12,
-                       barheight = 1,
-                       raster = FALSE,
-                       frame.colour = ifelse(darkmode, fg.colour, "grey6"),
-                       frame.linewidth = 2 / .pt,
-                       frame.linetype = 1,
-                       ticks = TRUE,
-                       ticks.colour = ifelse(darkmode, fg.colour, "grey6"),
-                       ticks.linewidth = 2 / .pt),
-            breaks = seq(min.value, max.value, intervals),
-            limits = c(min.value, max.value),
-            na.value = na.colour
-  ) +
-  theme_minimal() +
-  theme(legend.position = "bottom",
-      plot.background = element_rect(fill = ifelse(darkmode, bg.colour, "white"), color = NA),
-      panel.background = element_rect(fill = ifelse(darkmode, bg.colour, "white"), color = NA),
-      legend.background = element_rect(fill = ifelse(darkmode, bg.colour, "white"), color = NA),
-      text = element_text(color = ifelse(darkmode, fg.colour, "black")),
-      axis.text = element_text(color = ifelse(darkmode, fg.colour, "black")),
-      axis.title = element_text(color = ifelse(darkmode, fg.colour, "black")),
-      legend.title = element_text(color = ifelse(darkmode, fg.colour, "black")),
-      legend.text = element_text(color = ifelse(darkmode, fg.colour, "black"))
-  ) +
-  labs(fill = scale.label)
+  map <- ggplot2::ggplot() +
+    ggplot2::geom_sf(data = SpDfSf %>% sf::st_transform(projection), ggplot2::aes(geometry = geometry, fill = var * unit.factor), color = NA, linewidth = 10, linetype = 0) +
+    ggplot2::geom_sf(data = SLs1dfSf %>% sf::st_transform(projection), color = ifelse(darkmode, fg.colour, "grey5"), linewidth = 0.9, fill = NA) +
+    ggplot2::scale_fill_stepsn(colours = palette_name,
+              guide = ggplot2::guide_colorbar(title.position = "top",
+                         barwidth = 12,
+                         barheight = 1,
+                         raster = FALSE,
+                         frame.colour = ifelse(darkmode, fg.colour, "grey6"),
+                         frame.linewidth = 2 / ggplot2::.pt,
+                         frame.linetype = 1,
+                         ticks = TRUE,
+                         ticks.colour = ifelse(darkmode, fg.colour, "grey6"),
+                         ticks.linewidth = 2 / ggplot2::.pt),
+              breaks = seq(min.value, max.value, intervals),
+              limits = c(min.value, max.value),
+              na.value = na.colour
+    ) +
+    ggplot2::theme_minimal() +
+    ggplot2::theme(legend.position = "bottom",
+        plot.background = ggplot2::element_rect(fill = ifelse(darkmode, bg.colour, "white"), color = NA),
+        panel.background = ggplot2::element_rect(fill = ifelse(darkmode, bg.colour, "white"), color = NA),
+        legend.background = ggplot2::element_rect(fill = ifelse(darkmode, bg.colour, "white"), color = NA),
+        text = ggplot2::element_text(color = ifelse(darkmode, fg.colour, "black")),
+        axis.text = ggplot2::element_text(color = ifelse(darkmode, fg.colour, "black")),
+        axis.title = ggplot2::element_text(color = ifelse(darkmode, fg.colour, "black")),
+        legend.title = ggplot2::element_text(color = ifelse(darkmode, fg.colour, "black")),
+        legend.text = ggplot2::element_text(color = ifelse(darkmode, fg.colour, "black"))
+    ) +
+    ggplot2::labs(fill = scale.label)
 
   map
 }

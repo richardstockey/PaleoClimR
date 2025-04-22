@@ -39,36 +39,36 @@ scotese.matrix <- function(map, # netcdf file
        projection = 'ESRI:54012'){
 
   # Load necessary library
-  library(RNetCDF)
+  RNetCDF::library(RNetCDF)
 
   # Open the NetCDF file
-  nc <- open.nc(paste0(map))
+  nc <- RNetCDF::open.nc(paste0(map))
 
   # Check the resolution and extract latitude and longitude accordingly
   if(res == "deg"){
   # Extract latitude values (units: degrees)
-  lat <- var.get.nc(nc, "lat")
+  lat <- RNetCDF::var.get.nc(nc, "lat")
   # Compute latitude edges for the grid
   lat.edges <- c(lat - mean(diff(lat)/2), lat[length(lat)] + mean(diff(lat)/2)) 
   # Extract longitude values (units: degrees)
-  lon <- var.get.nc(nc, "lon")
+  lon <- RNetCDF::var.get.nc(nc, "lon")
   # Compute longitude edges for the grid
   lon.edges <- c(lon - mean(diff(lon)/2), lon[length(lon)] + mean(diff(lon)/2)) 
   }
   
   if(res == "6min"){
   # Extract latitude values (units: degrees)
-  lat <- var.get.nc(nc, "latitude")
+  lat <- RNetCDF::var.get.nc(nc, "latitude")
   # Compute latitude edges for the grid
   lat.edges <- c(lat - mean(diff(lat)/2), lat[length(lat)] + mean(diff(lat)/2)) 
   # Extract longitude values (units: degrees)
-  lon <- var.get.nc(nc, "longitude")
+  lon <- RNetCDF::var.get.nc(nc, "longitude")
   # Compute longitude edges for the grid
   lon.edges <- c(lon - mean(diff(lon)/2), lon[length(lon)] + mean(diff(lon)/2)) 
   }
 
   # Extract the main variable "z" which represents elevation (units: meters)
-  z <- var.get.nc(nc, "z")
+  z <- RNetCDF::var.get.nc(nc, "z")
   
   # Return the extracted matrix
   return(z)

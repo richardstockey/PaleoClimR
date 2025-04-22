@@ -33,114 +33,94 @@ HADCM3.data <- function(var, file, experiment,
             dims = 3,
             time.present = FALSE
              ){
+              # Open the NetCDF file
+              nc <- RNetCDF::open.nc(paste0(experiment, file, ".nc"))
 
-  # Load necessary libraries
-  # RNetCDF: for reading NetCDF files
-  # dplyr: for data manipulation
-  # sf: for handling simple features (spatial data)
-  # sp: for spatial data classes and methods
-  # ggspatial: for spatial data visualization
-  # reshape2: for reshaping data
-  # ggplot2: for data visualization
-  # pals: for color palettes
-  # viridis: for color palettes
-  library(RNetCDF)
-  library(dplyr)
-  library(sf)
-  library(sp)
-  library(ggspatial)
-  library(reshape2)
-  library(ggplot2)
-  library(pals)
-  library(viridis)
-  # Open the NetCDF file
-  nc <- open.nc(paste0(experiment, file, ".nc"))
+              # Extract latitude and longitude variables
+              lat <- RNetCDF::var.get.nc(nc, "latitude") # units: degrees north
+              lat.edges <- c(lat - mean(diff(lat)/2), lat[length(lat)] + mean(diff(lat)/2)) # Calculate latitude edges for plotting
+              lon <- RNetCDF::var.get.nc(nc, "longitude") # units: degrees east
+              lon.edges <- c(lon - mean(diff(lon)/2), lon[length(lon)] + mean(diff(lon)/2)) # Calculate longitude edges for plotting
 
-  # Extract latitude and longitude variables
-  lat <- var.get.nc(nc, "latitude") # units: degrees north
-  lat.edges <- c(lat - mean(diff(lat)/2), lat[length(lat)] + mean(diff(lat)/2)) # Calculate latitude edges for plotting
-  lon <- var.get.nc(nc, "longitude") # units: degrees east
-  lon.edges <- c(lon - mean(diff(lon)/2), lon[length(lon)] + mean(diff(lon)/2)) # Calculate longitude edges for plotting
+              # Extract depth variable if the data is 3D
+              if(dims == 3){
+                depth <- RNetCDF::var.get.nc(nc, "depth_1") # units: metres
+                depth.edges <- c(0, RNetCDF::var.get.nc(nc, "depth"), (depth[length(depth)]+307.5)) # Calculate depth edges
+              }
 
-  # Extract depth variable if the data is 3D
-  if(dims == 3){
-    depth <- var.get.nc(nc, "depth_1") # units: metres
-    depth.edges <- c(0, var.get.nc(nc, "depth"), (depth[length(depth)]+307.5)) # Calculate depth edges
-  }
+              # Extract time variable if present
+              if(time.present == TRUE){
+                time <- RNetCDF::var.get.nc(nc, "t") # units: year mid-point
+              }
 
-  # Extract time variable if present
-  if(time.present == TRUE){
-    time <- var.get.nc(nc, "t") # units: year mid-point
-  }
+              # Extract the specified variable
+              var.arr <- RNetCDF::var.get.nc(nc, var)
 
-  # Extract the specified variable
-  var.arr <- var.get.nc(nc, var)
+              # Adjust longitude values to be within the range of -180 to 180 degrees
+              if(mean(dplyr::between(lon, -180, 180)) < 1){
+                lon.edges[lon.edges > 180] <- lon.edges[lon.edges > 180] - 360
+                lon[lon > 180] <- lon[lon > 180] - 360
+              }
 
-  # Adjust longitude values to be within the range of -180 to 180 degrees
-  if(mean(between(lon, -180, 180)) < 1){
-    lon.edges[lon.edges > 180] <- lon.edges[lon.edges > 180] - 360
-    lon[lon > 180] <- lon[lon > 180] - 360
-  }
+              # Create a data frame for 3D data
+              if(dims == 3){
+                df <- as.data.frame(cbind(
+                  rep(lon, times = length(lat), each = 1),
+                  rep(lon.edges[1:(length(lon.edges)-1)], times = length(lat), each = 1),
+                  rep(lon.edges[2:(length(lon.edges))], times = length(lat), each = 1),
+                  rep(lat, times = 1, each = length(lon)),
+                  rep(lat.edges[1:(length(lat.edges)-1)], times = 1, each = length(lon)),
+                  rep(lat.edges[2:(length(lat.edges))], times = 1, each = length(lon)),
+                  as.data.frame(reshape2::melt(var.arr[,, depth.level]))$value))
 
-  # Create a data frame for 3D data
-  if(dims == 3){
-    df <- as.data.frame(cbind(
-      rep(lon, times = length(lat), each = 1),
-      rep(lon.edges[1:(length(lon.edges)-1)], times = length(lat), each = 1),
-      rep(lon.edges[2:(length(lon.edges))], times = length(lat), each = 1),
-      rep(lat, times = 1, each = length(lon)),
-      rep(lat.edges[1:(length(lat.edges)-1)], times = 1, each = length(lon)),
-      rep(lat.edges[2:(length(lat.edges))], times = 1, each = length(lon)),
-      as.data.frame(melt(var.arr[,, depth.level]))$value))
+                # Assign column names to the data frame
+                names(df) <- c("lon.mid",
+                               "lon.min",
+                               "lon.max",
+                               "lat.mid",
+                               "lat.min",
+                               "lat.max",
+                               "var"
+                )
+              }
 
-    # Assign column names to the data frame
-    names(df) <- c("lon.mid",
-                   "lon.min",
-                   "lon.max",
-                   "lat.mid",
-                   "lat.min",
-                   "lat.max",
-                   "var"
-    )
-  }
+              # Create a data frame for 2D data
+              if(dims == 2){
+                df <- as.data.frame(cbind(
+                  rep(lon, times = length(lat), each = 1),
+                  rep(lon.edges[1:(length(lon.edges)-1)], times = length(lat), each = 1),
+                  rep(lon.edges[2:(length(lon.edges))], times = length(lat), each = 1),
+                  rep(lat, times = 1, each = length(lon)),
+                  rep(lat.edges[1:(length(lat.edges)-1)], times = 1, each = length(lon)),
+                  rep(lat.edges[2:(length(lat.edges))], times = 1, each = length(lon)),
+                  as.data.frame(reshape2::melt(var.arr))$value))
 
-  # Create a data frame for 2D data
-  if(dims == 2){
-    df <- as.data.frame(cbind(
-      rep(lon, times = length(lat), each = 1),
-      rep(lon.edges[1:(length(lon.edges)-1)], times = length(lat), each = 1),
-      rep(lon.edges[2:(length(lon.edges))], times = length(lat), each = 1),
-      rep(lat, times = 1, each = length(lon)),
-      rep(lat.edges[1:(length(lat.edges)-1)], times = 1, each = length(lon)),
-      rep(lat.edges[2:(length(lat.edges))], times = 1, each = length(lon)),
-      as.data.frame(melt(var.arr))$value))
+                # Assign column names to the data frame
+                names(df) <- c("lon.mid",
+                               "lon.min",
+                               "lon.max",
+                               "lat.mid",
+                               "lat.min",
+                               "lat.max",
+                               "var"
+                )
 
-    # Assign column names to the data frame
-    names(df) <- c("lon.mid",
-                   "lon.min",
-                   "lon.max",
-                   "lat.mid",
-                   "lat.min",
-                   "lat.max",
-                   "var"
-    )
+                # Special handling for specific file and variable
+                if(file == ".qrparm.orog" & var == "ht"){
+                  df$var <- as.factor(df$var)
+                  df <- dplyr::filter(df, var != "0")
+                  df$var <- as.numeric(paste(df$var))
+                }
+              }
 
-    # Special handling for specific file and variable
-    if(file == ".qrparm.orog" & var == "ht"){
-      df$var <- as.factor(df$var)
-      df <- filter(df, var != "0")
-      df$var <- as.numeric(paste(df$var))
-    }
-  }
+              # Filter the data frame to ensure realistic geographic bounds
+              df <- df %>%
+                dplyr::filter(lon.max <= 180,
+                              lon.min >= -180,
+                              lat.max <= 90,
+                              lat.min >= -90
+                )
 
-  # Filter the data frame to ensure realistic geographic bounds
-  df <- df %>%
-    filter(lon.max <= 180,
-           lon.min >= -180,
-           lat.max <= 90,
-           lat.min >= -90
-    )
-
-  # Return the final data frame
-  return(df)
+              # Return the final data frame
+              return(df)
 }

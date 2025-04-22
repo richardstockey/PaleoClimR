@@ -162,7 +162,7 @@ cGENIE.overlay.map <- function(var, experiment,
 
     df2$lon.range <- abs(df2$lon.min - df2$lon.max)
     df2$lon.min[df2$lon.range > 180 & abs(df2$lon.min) == 180] <- -df2$lon.min[df2$lon.range > 180 & abs(df2$lon.min) == 180]
-    df2$lon.max[df2$lon.range > 180 & abs(df2$lon.max) == 180] <- -df2$lon.max[df2$lon.range > 180 & abs[df2$lon.max) == 180]
+    df2$lon.max[df2$lon.range > 180 & abs(df2$lon.max) == 180] <- -df2$lon.max[df2$lon.range > 180 & abs(df2$lon.max) == 180]
 
     # Create a list to store polygons for the main variable dataframe
     poly.list <- list()

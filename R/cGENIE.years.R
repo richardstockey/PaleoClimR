@@ -11,7 +11,7 @@ cGENIE.years <- function(var, experiment,
                         model = "biogem"){
 
   # Load necessary libraries
-  library(RNetCDF)
+  RNetCDF::library(RNetCDF)
 
   # Define the prefix based on the selected model
   if (model == "biogem") {
@@ -19,9 +19,9 @@ cGENIE.years <- function(var, experiment,
   }
 
   # Open the netCDF file based on the dimensions
-  nc <- open.nc(paste0(experiment, prefix, dims, "d", ".nc"))
+  nc <- RNetCDF::open.nc(paste0(experiment, prefix, dims, "d", ".nc"))
 
-  years <- var.get.nc(nc, "time")
+  years <- RNetCDF::var.get.nc(nc, "time")
 
   print(years)
 

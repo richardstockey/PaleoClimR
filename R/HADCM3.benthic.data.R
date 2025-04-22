@@ -27,31 +27,20 @@ HADCM3.benthic.data <- function(var, file, experiment,
        na.rm = FALSE
        ){
 
-  # Load necessary libraries for data manipulation and visualization
-  library(RNetCDF)  # For reading and writing NetCDF files
-  library(dplyr)    # For data manipulation using data frames
-  library(reshape2) # For reshaping data
+                  # Call the function to get the full ocean dataset from the NetCDF file
+                  df <- HADCM3.whole.ocean.data(var, file, experiment,
+                                    time.present = time.present,
+                                    na.rm = TRUE)
 
-  # Call the function to get the full ocean dataset from the NetCDF file
-  df <- HADCM3.whole.ocean.data(var, file, experiment,
-        time.present = time.present,
-        na.rm = TRUE)
+                  # Generate a data frame containing only the seafloor cells
+                  # Group by longitude and latitude midpoints and calculate the maximum depth level for each group
+                  benth.levels <- dplyr::group_by(df, lon.mid, lon.min, lon.max, lat.mid, lat.min, lat.max) %>%
+                  dplyr::summarize(depth.level = max(depth.level, na.rm = TRUE))
 
-  # Generate a data frame containing only the seafloor cells
-  # Group by longitude and latitude midpoints and calculate the maximum depth level for each group
-  benth.levels <- df %>%
-  group_by(lon.mid, lon.min, lon.max, lat.mid, lat.min, lat.max) %>%
-  summarize(depth.level = max(depth.level, na.rm = TRUE))
+                  # Merge the seafloor cells back with the original dataset to get the corresponding values
+                  df.benth <- base::merge(df, benth.levels, all.y = TRUE)
 
-  # Merge the seafloor cells back with the original dataset to get the corresponding values
-  df.benth <- merge(df, benth.levels, all.y = TRUE)
-
-  # Return the data frame containing the benthic data
-  return(df.benth)
+                  # Return the data frame containing the benthic data
+                  return(df.benth)
 }
 
-# Example usage:
-# ggplot(df.benth, aes(y = lat.mid, x = lon.mid, color = var)) + 
-#   geom_point() +
-#   scale_colour_viridis_c() +
-#   theme_bw()

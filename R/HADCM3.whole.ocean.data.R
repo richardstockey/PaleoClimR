@@ -42,39 +42,34 @@ HADCM3.whole.ocean.data <- function(var, file, experiment,
              na.rm = FALSE
              ){
 
-  # Load necessary libraries
-  library(RNetCDF)
-  library(dplyr)
-  library(reshape2)
-
   # Open the NetCDF file
-  nc <- open.nc(paste0(experiment, file, ".nc"))
+  nc <- RNetCDF::open.nc(paste0(experiment, file, ".nc"))
 
   # Extract latitude values from the NetCDF file
-  lat <- var.get.nc(nc, "latitude") # units: degrees north
+  lat <- RNetCDF::var.get.nc(nc, "latitude") # units: degrees north
   # Calculate latitude edges for plotting purposes
   lat.edges <- c(lat - mean(diff(lat)/2), lat[length(lat)] + mean(diff(lat)/2))
 
   # Extract longitude values from the NetCDF file
-  lon <- var.get.nc(nc, "longitude") # units: degrees east
+  lon <- RNetCDF::var.get.nc(nc, "longitude") # units: degrees east
   # Calculate longitude edges for plotting purposes
   lon.edges <- c(lon - mean(diff(lon)/2), lon[length(lon)] + mean(diff(lon)/2))
 
   # Extract depth values from the NetCDF file
-  depth <- var.get.nc(nc, "depth_1") # units: metres
+  depth <- RNetCDF::var.get.nc(nc, "depth_1") # units: metres
   # Calculate depth edges for plotting purposes
-  depth.edges <- c(0, var.get.nc(nc, "depth"), (depth[length(depth)]+307.5))
+  depth.edges <- c(0, RNetCDF::var.get.nc(nc, "depth"), (depth[length(depth)]+307.5))
 
   # Extract time values if time.present is TRUE
   if(time.present == TRUE){
-  time <- var.get.nc(nc, "t") # units: year mid-point
+    time <- RNetCDF::var.get.nc(nc, "t") # units: year mid-point
   }
 
   # Extract named variable from the NetCDF file
-  var.arr <- var.get.nc(nc, var)
+  var.arr <- RNetCDF::var.get.nc(nc, var)
 
   # Adjust HADCM3 grid to project on 0 degrees if necessary
-  if(mean(between(lon, -180, 180)) < 1){
+  if(mean(dplyr::between(lon, -180, 180)) < 1){
     # Adjust longitude edges greater than 180 degrees to be within -180 to 180 range
     lon.edges[lon.edges > 180] <- lon.edges[lon.edges > 180] - 360
     # Adjust longitude values greater than 180 degrees to be within -180 to 180 range
@@ -95,7 +90,7 @@ HADCM3.whole.ocean.data <- function(var, file, experiment,
       rep(lat.edges[1:(length(lat.edges)-1)], times = 1, each = length(lon)), # Repeat latitude edge min values for each longitude
       rep(lat.edges[2:(length(lat.edges))], times = 1, each = length(lon)), # Repeat latitude edge max values for each longitude
       rep(depth.level, times = length(lat) * length(lon)), # Repeat depth level index for each combination of latitude and longitude
-      as.data.frame(melt(var.arr[,, depth.level]))$value # Extract variable values for the current depth level
+      as.data.frame(reshape2::melt(var.arr[,, depth.level]))$value # Extract variable values for the current depth level
     ))
 
     # Append the dataframe for the current depth level to the results dataframe
@@ -115,15 +110,15 @@ HADCM3.whole.ocean.data <- function(var, file, experiment,
 
   # Filter the results dataframe to ensure longitude and latitude values are within valid ranges
   df.sum <- df.sum %>%
-    filter(lon.max <= 180,
-           lon.min >= -180,
-           lat.max <= 90,
-           lat.min >= -90
+    dplyr::filter(lon.max <= 180,
+                  lon.min >= -180,
+                  lat.max <= 90,
+                  lat.min >= -90
     )
 
   # Remove rows with NA values if na.rm is TRUE
   if(na.rm == TRUE){
-    df.sum <- na.omit(df.sum)
+    df.sum <- stats::na.omit(df.sum)
   }
 
   # Return the final results dataframe

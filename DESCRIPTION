@@ -26,6 +26,7 @@ Imports:
     lubridate,
     ncdf4,
     pals,
+    paletteer,
     progress,
     purrr,
     readr,

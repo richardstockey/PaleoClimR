@@ -22,7 +22,7 @@
 #' @param darkmode Logical indicating whether to use dark mode. Default is FALSE.
 #' @param bg.color Background color for the plot. Default is "white".
 #' @param fg.color Foreground color for the plot elements. Default is "black".
-#' @param file Name of the netCDF file (without extension). Default is "o.pgclann".
+#' @param file Name of the netCDF file (without extension). This should generally be ".qrparm".
 #' @param var Name of the variable to extract from the netCDF file. Default is "insitu_T_ym_dpth".
 #' @param file_2 Name of the second netCDF file (without extension). should generally be ".qrparm.orog"
 #' @param palette_name_ocean Color palette for ocean data visualization. Default is pals::parula(1000).
@@ -33,18 +33,18 @@
 #' @export
 #'
 
-HADCM3.map.pretty <- function(file = "o.pgclann",  # Name of the netCDF file (without extension)
-  var = "insitu_T_ym_dpth",  # Name of the variable to extract from the netCDF file
-  experiment,
-  file_2,
+HADCM3.map.pretty <- function(file = NULL,  # Name of the netCDF file (without extension)
+  var = NULL,  # Name of the variable to extract from the netCDF file
+  experiment = NULL,
+  file_2 = NULL,
   depth.level = 1,
   dims = 3,
   land.opt = "default",
-  min.value,
-  max.value,
-  intervals,
-  continents.outlined,
-  scale.label,
+  min.value = NULL,
+  max.value = NULL,
+  intervals = NULL,
+  continents.outlined = NULL,
+  scale.label = NULL,
   unit.factor = 1,
   time.present = FALSE,
   scale = "viridis",
@@ -53,7 +53,7 @@ HADCM3.map.pretty <- function(file = "o.pgclann",  # Name of the netCDF file (wi
   plot = TRUE,
   for.app = FALSE,
   palette_name_ocean = pals::parula(1000),
-  polygons,
+  polygons = NULL,
   darkmode = FALSE,
   bg.color = "white",
   fg.color = "black",
@@ -168,28 +168,7 @@ HADCM3.map.pretty <- function(file = "o.pgclann",  # Name of the netCDF file (wi
                  "var",  # Variable values from the first netCDF file
                  "var_2"  # Variable values from the second netCDF file
   )
-  # }
-  # if(dims == 2){
-  #   # generate dataframe of 2d genie slice from 3d genie array
-  #   df <- as.data.frame(cbind(
-  #     rep(lon, times = length(lat), each = 1),
-  #     rep(lon.edges[1:(length(lon.edges)-1)], times = length(lat), each = 1),
-  #     rep(lon.edges[2:(length(lon.edges))], times = length(lat), each = 1),
-  #     rep(lat, times = 1, each = length(lon)),
-  #     rep(lat.edges[1:(length(lat.edges)-1)], times = 1, each = length(lon)),
-  #     rep(lat.edges[2:(length(lat.edges))], times = 1, each = length(lon)),
-  #     #as.data.frame(melt(var.arr[,, time.step]))$value))
-  #     as.data.frame(melt(var.arr[,, time.step]))$value))
-  #
-  #   names(df) <- c("lon.mid",
-  #                  "lon.min",
-  #                  "lon.max",
-  #                  "lat.mid",
-  #                  "lat.min",
-  #                  "lat.max",
-  #                  "var"
-  #   )
-  # }
+
 
     # Eliminate cells outside of the reasonable range for longitude and latitude
     df <- df %>%

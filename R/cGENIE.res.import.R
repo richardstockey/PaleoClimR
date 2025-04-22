@@ -16,10 +16,7 @@
 #' @export
 
 cGENIE.res.import <- function(var, experiment, model = "biogem") {
-  # Load necessary libraries
-  library(readr)
-  library(dplyr)
-  
+
   # Determine the file prefix based on the model type
   if (model == "biogem") {
     prefix <- "biogem_series_"
@@ -32,14 +29,14 @@ cGENIE.res.import <- function(var, experiment, model = "biogem") {
   file_path <- paste0(experiment, "/", model, "/", prefix, var, suffix)
   
   # Import the results table from the .res file
-  res_file <- read_table(file_path, show_col_types = FALSE)
+  res_file <- readr::read_table(file_path, show_col_types = FALSE)
   
   # Remove columns that contain only NAs
-  res_file <- res_file %>% select_if(~ !any(is.na(.)))
+  res_file <- dplyr::select_if(res_file, ~ !any(is.na(.)))
   
   # Read the column names from the .res file
   # The column names have a different delimiter, so we read them separately
-  res_file_names_frame <- read_delim(file_path, delim = "/", escape_double = FALSE, trim_ws = TRUE, show_col_types = FALSE)
+  res_file_names_frame <- readr::read_delim(file_path, delim = "/", escape_double = FALSE, trim_ws = TRUE, show_col_types = FALSE)
   
   # Apply the column names obtained to the data columns in the results file
   names(res_file) <- names(res_file_names_frame)

@@ -22,12 +22,7 @@
 #' @import gridExtra
 
 cGENIE.trouble.plots <- function(experiment, directory="default", file.name = "cGENIE.trouble.plots", format = "pdf", save = FALSE){
-  # Load required library
-  library(egg)
-
-  # Ensure the experiment data is assigned
-  experiment <- experiment
-
+  
   # Generate sea surface temperature plot through time
   temp.time <- cGENIE.res.plot(var = "ocn_temp",
                                experiment = experiment)
@@ -58,43 +53,21 @@ cGENIE.trouble.plots <- function(experiment, directory="default", file.name = "c
   O2.time <- cGENIE.res.plot(var = "ocn_O2",
                              experiment = experiment)
 
-  # Optional: Generate surface alkalinity map (commented out)
-  # ALK.map.surface <- cGENIE.map(var = "ocn_sur_ALK",
-  #                               experiment = experiment,
-  #                               dims = 2,
-  #                               unit.factor = 1,
-  #                               min.value = 0,
-  #                               max.value = 0.0065,
-  #                               intervals = 0.00001,
-  #                               continents.outlined = FALSE,
-  #                               scale.label = expression("Alkalinity"))
-
-  # Optional: Generate surface H2S map (commented out)
-  # O2.map.surfish <- cGENIE.map(var = "ocn_O2",
-  #                              experiment = experiment,
-  #                              depth = 2,
-  #                              unit.factor = 1e6,
-  #                              min.value = 0,
-  #                              max.value = 250,
-  #                              intervals = 25,
-  #                              continents.outlined = FALSE,
-  #                              scale.label = expression("Dissolved O"[2]*" ("*mu*"mol/kg)"))
-
   # Set the directory to the current working directory if not specified
   if(directory == "default"){
     directory <- getwd()
   }
 
   # Arrange the generated plots into a 2x2 grid
-  sum <- ggarrange(temp.time,
-                   bathymetry,
-                   O2.time,
-                   streamfunction,
-                   ncol = 2)
+  sum <- gridExtra::grid.arrange(temp.time,
+                                 bathymetry,
+                                 O2.time,
+                                 streamfunction,
+                                 ncol = 2)
 
   # Save the plot to a file if save is TRUE
   if(save == TRUE){
-    ggsave(file = paste0(directory, "/", file.name, ".", format), sum, height = 21, width = 29.7, units = "cm")
+    ggplot2::ggsave(file = paste0(directory, "/", file.name, ".", format), sum, height = 21, width = 29.7, units = "cm")
   }
 
   # Return the arranged plot

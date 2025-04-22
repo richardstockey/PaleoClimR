@@ -71,14 +71,6 @@ cGENIE.points.shelf.map <- function(var = NULL,
                 fg.colour = "white") # dark mode options
 {
 
-  # Load necessary libraries
-  library(RNetCDF)   # For reading NetCDF files
-  library(dplyr)     # For data manipulation
-  library(sf)        # For handling spatial data
-  library(sp)        # For working with spatial polygons
-  library(ggspatial) # For adding spatial components in ggplot
-  library(reshape2)  # For reshaping data
-  library(ggplot2)   # For plotting
 
   if(format == "nc"){
   matched_points <- cGENIE.point.matching(var = var,

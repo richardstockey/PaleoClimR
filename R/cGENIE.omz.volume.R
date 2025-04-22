@@ -23,33 +23,31 @@
 #'
 #' @export
 cGENIE.omz.volume <- function(experiment, thresh = 58.54e-6, time.step = "default") {
-  # Load necessary libraries
-  library(RNetCDF)
 
   # Set dimensions
   dims <- 3
   var <- "ocn_O2"
 
   # Open NetCDF file
-  nc <- open.nc(paste0(experiment, "/biogem/fields_biogem_", dims, "d", ".nc"))
+  nc <- RNetCDF::open.nc(paste0(experiment, "/biogem/fields_biogem_", dims, "d", ".nc"))
 
   # Extract general variables
-  lat <- var.get.nc(nc, "lat") # units: degrees north
-  lat.edges <- var.get.nc(nc, "lat_edges")
-  lon <- var.get.nc(nc, "lon") # units: degrees east
-  lon.edges <- var.get.nc(nc, "lon_edges")
-  depth <- var.get.nc(nc, "zt") # units: metres
-  depth.edges <- var.get.nc(nc, "zt_edges") # units: metres
-  time <- var.get.nc(nc, "time") # units: year mid-point
+  lat <- RNetCDF::var.get.nc(nc, "lat") # units: degrees north
+  lat.edges <- RNetCDF::var.get.nc(nc, "lat_edges")
+  lon <- RNetCDF::var.get.nc(nc, "lon") # units: degrees east
+  lon.edges <- RNetCDF::var.get.nc(nc, "lon_edges")
+  depth <- RNetCDF::var.get.nc(nc, "zt") # units: metres
+  depth.edges <- RNetCDF::var.get.nc(nc, "zt_edges") # units: metres
+  time <- RNetCDF::var.get.nc(nc, "time") # units: year mid-point
 
   # Determine the time step
   time <- if (time.step == "default") length(time) else time.step
 
   # Extract variable array
-  var.arr <- var.get.nc(nc, var)
+  var.arr <- RNetCDF::var.get.nc(nc, var)
 
   # Calculate depth thicknesses
-  depth.thicknesses <- diff(depth.edges)
+  depth.thicknesses <- base::diff(depth.edges)
 
   # Initialize volume counters
   omz.vol <- 0
@@ -57,12 +55,12 @@ cGENIE.omz.volume <- function(experiment, thresh = 58.54e-6, time.step = "defaul
   total.vol <- 0
 
   # Loop through grid cells to calculate volumes
-  for (lon_idx in seq_along(lon)) {
-    for (lat_idx in seq_along(lat)) {
-      for (depth_idx in seq_along(depth)) {
+  for (lon_idx in base::seq_along(lon)) {
+    for (lat_idx in base::seq_along(lat)) {
+      for (depth_idx in base::seq_along(depth)) {
         oxygen_level <- var.arr[lon_idx, lat_idx, depth_idx, time]
 
-        if (!is.na(oxygen_level)) { # Skip land
+        if (!base::is.na(oxygen_level)) { # Skip land
           thickness <- depth.thicknesses[depth_idx]
           total.vol <- total.vol + thickness
 

@@ -30,11 +30,6 @@ HADCM3.point.matching <- function(var = NULL,
                                   lng.name = "p_lng") # name IF generated from rotated paleoverse coordinates...
 {
 
-  # Load necessary libraries
-  library(RNetCDF)
-  library(dplyr)
-  library(reshape2)
-
   # Extract grid data from cGENIE netCDF file
   grid.dat <- HADCM3.grid(file = file,
                           experiment = experiment,
@@ -48,10 +43,10 @@ HADCM3.point.matching <- function(var = NULL,
                           dims = dims)
 
   # Omit NAs in the var value for climate data file
-  clim.dat <- filter(clim.dat, !is.na(var))
+  clim.dat <- dplyr::filter(clim.dat, !is.na(var))
 
   # Remove any NA paleocoordinates
-  coord.dat <- filter(coord.dat, !is.na(!!sym(lng.name)) & !is.na(!!sym(lat.name)))
+  coord.dat <- dplyr::filter(coord.dat, !is.na(dplyr::sym(lng.name)) & !is.na(dplyr::sym(lat.name)))
 
   # Initialize a column for matched climate data
   coord.dat$matched_climate <- NA
@@ -66,8 +61,7 @@ HADCM3.point.matching <- function(var = NULL,
 
     # identify all of the cells int the whole climate model that have the same latitude as the data point.
     # (need to do one first, but reconstructed latitude is expected to be more accurate than longitude for palaeomag reasons)
-    lat.mid.opts <- clim.dat %>%
-      filter(lat.mid == coord.dat$lat.bin.mid[row])
+    lat.mid.opts <- dplyr::filter(clim.dat, lat.mid == coord.dat$lat.bin.mid[row])
 
     # if there are latitudinal mid opts (why wouldnt there be, can we get rid of this?) and the difference between
     # the closest longitudinal bin to the fossils and the closest (in longitude) climate cell is less than 10 degrees, then
@@ -87,7 +81,7 @@ HADCM3.point.matching <- function(var = NULL,
     }
   }
 
-  coord.dat <- filter(coord.dat, is.na(matched_climate) == FALSE)
+  coord.dat <- dplyr::filter(coord.dat, is.na(matched_climate) == FALSE)
 
   names(coord.dat)[1:2] <- c("lat", "lng")
 

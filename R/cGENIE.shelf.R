@@ -32,7 +32,7 @@ cGENIE.shelf <- function(input, format = "array", shelf.depth = 3, array.only = 
       time <- length(nc.sum$time)
     } else {
       time <- time.step
-      print(paste("Time step is", time))
+      base::print(base::paste("Time step is", time))
     }
   } else if (format == "array") {
     # Extract the variable array from the input
