@@ -14,30 +14,29 @@ Maintainer: Richard G. Stockey <richard.stockey@example.com>
 Description: An R package designed for extracting, processing, and visualizing paleoclimate data from cGENIE model outputs.
 License: MIT + file LICENSE
 Imports:
-    AquaEnv,
-    av,
-    dplyr,
+    dplyr, 
+    RNetCDF, 
     egg,
+    ggnewscale, 
+    ggplot2, 
+    ggspatial, 
+    gridExtra,    paletteer, 
+    pals, 
+    readr, 
+    reshape2,
+    sf, 
+    sp, 
+    tidyr,    viridis
+Suggests:
     geosphere,
-    ggnewscale,
-    ggplot2,
-    ggspatial,
-    gridExtra,
     lubridate,
     ncdf4,
-    pals,
-    paletteer,
     progress,
     purrr,
     readr,
-    reshape2,
-    RNetCDF,
     sf,
     sp,
-    stringr,
     tidyr,
-    viridis
-Suggests:
     testthat,
     knitr,
     rmarkdown

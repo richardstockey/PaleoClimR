@@ -5,18 +5,18 @@
 \title{HADCM3.map.pretty}
 \usage{
 HADCM3.map.pretty(
-  file = "o.pgclann",
-  var = "insitu_T_ym_dpth",
-  experiment,
-  file_2,
+  file = NULL,
+  var = NULL,
+  experiment = NULL,
+  file_2 = NULL,
   depth.level = 1,
   dims = 3,
   land.opt = "default",
-  min.value,
-  max.value,
-  intervals,
-  continents.outlined,
-  scale.label,
+  min.value = NULL,
+  max.value = NULL,
+  intervals = NULL,
+  continents.outlined = NULL,
+  scale.label = NULL,
   unit.factor = 1,
   time.present = FALSE,
   scale = "viridis",
@@ -25,7 +25,7 @@ HADCM3.map.pretty(
   plot = TRUE,
   for.app = FALSE,
   palette_name_ocean = pals::parula(1000),
-  polygons,
+  polygons = NULL,
   darkmode = FALSE,
   bg.color = "white",
   fg.color = "black",
@@ -33,7 +33,7 @@ HADCM3.map.pretty(
 )
 }
 \arguments{
-\item{file}{Name of the netCDF file (without extension). Default is "o.pgclann".}
+\item{file}{Name of the netCDF file (without extension). This should generally be ".qrparm".}
 
 \item{var}{Name of the variable to extract from the netCDF file. Default is "insitu_T_ym_dpth".}
 
