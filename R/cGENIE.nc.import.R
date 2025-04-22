@@ -16,29 +16,25 @@
 #' 
 cGENIE.nc.import <- function(var, experiment, dims = 3, model = "biogem") {
 
-  # Load required libraries
-  library(RNetCDF)  # For working with NetCDF files
-  library(dplyr)    # For data manipulation (pipe operator)
-
   # Define the prefix for the NetCDF file based on the model
   if (model == "biogem") {
     prefix <- "/biogem/fields_biogem_"
   }
 
   # Open the NetCDF file
-  nc <- open.nc(paste0(experiment, prefix, dims, "d", ".nc"))
+  nc <- RNetCDF::open.nc(paste0(experiment, prefix, dims, "d", ".nc"))
 
   # Extract general variables
-  lat <- var.get.nc(nc, "lat")          # units: degrees north
-  lat.edges <- var.get.nc(nc, "lat_edges")
-  lon <- var.get.nc(nc, "lon")          # units: degrees east
-  lon.edges <- var.get.nc(nc, "lon_edges")
-  depth <- var.get.nc(nc, "zt")         # units: metres
-  depth.edges <- var.get.nc(nc, "zt_edges") # units: metres
-  time <- var.get.nc(nc, "time")        # units: year mid-point
+  lat <- RNetCDF::var.get.nc(nc, "lat")          # units: degrees north
+  lat.edges <- RNetCDF::var.get.nc(nc, "lat_edges")
+  lon <- RNetCDF::var.get.nc(nc, "lon")          # units: degrees east
+  lon.edges <- RNetCDF::var.get.nc(nc, "lon_edges")
+  depth <- RNetCDF::var.get.nc(nc, "zt")         # units: metres
+  depth.edges <- RNetCDF::var.get.nc(nc, "zt_edges") # units: metres
+  time <- RNetCDF::var.get.nc(nc, "time")        # units: year mid-point
 
   # Extract the specified variable
-  var.arr <- var.get.nc(nc, var)
+  var.arr <- RNetCDF::var.get.nc(nc, var)
 
   # Create a summary list with the extracted data
   nc.sum <- list(lat = lat, lon = lon, depth = depth, time = time, var = var.arr)

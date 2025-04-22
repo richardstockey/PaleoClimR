@@ -29,7 +29,7 @@
 #' @param col.labels Labels for the color scale. Default is NULL.
 #'
 #' @return If plot is FALSE - returns a spatial polygons data frame. If plot is TRUE - returns a ggplot object.
-#' @import RNetCDF dplyr sf sp ggspatial reshape2 ggplot2 ggnewscale
+#' @import RNetCDF dplyr sf sp ggspatial reshape2 ggplot2 ggnewscale paletteer
 #' @export
 #'
 
@@ -69,13 +69,7 @@ HADCM3.map.pretty <- function(file = "o.pgclann",  # Name of the netCDF file (wi
   library(ggplot2)    # For creating plots
   library(ggnewscale) # For adding multiple color scales to ggplot2
 
-  # Define the color palette for ocean data visualization
-  # palette_name_ocean <- pals::parula(1000)  # Using the 'parula' color palette from the 'pals' package with 1000 color steps
-  #palette_name_ocean <- viridis::magma(1000)  # Alternative: Using the 'magma' color palette from the 'viridis' package with 1000 color steps
-  #palette_name_ocean <- viridis::plasma(1000)  # Alternative: Using the 'plasma' color palette from the 'viridis' package with 1000 color steps
-
   # Define the color palette for land data visualization
-  #palette_name_land <- paletteer::paletteer_c("grDevices::Terrain 2", 30)  # Alternative: Using the 'Terrain 2' color palette from the 'grDevices' package with 30 color steps
   palette_name_land <- paletteer::paletteer_c("grDevices::Light Grays", 30)  # Using the 'Light Grays' color palette from the 'grDevices' package with 30 color steps
 
   # Conditional statement to open the netCDF file if calculations are to be performed

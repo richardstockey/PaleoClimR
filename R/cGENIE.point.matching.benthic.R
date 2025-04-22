@@ -2,14 +2,15 @@
 #'
 #' This function matches palaeocoordinates to cGENIE model data.
 #'
-#' @param var Character. The variable to extract from the cGENIE model.
-#' @param experiment Character. The experiment identifier for the cGENIE model.
+#' @param var Character. The variable to extract from the cGENIE model. Not used if format is "array".
+#' @param experiment Character. The experiment identifier for the cGENIE model. Not used if format is "array".
 #' @param dims Numeric. The number of dimensions in the cGENIE model. Default is 3.
 #' @param time.present Logical. Whether to use the present time for the cGENIE model. Default is FALSE.
 #' @param coord.dat Data frame. A data frame with latitude and longitude columns. cGENIE data will be added to this and returned.
 #' @param lat.name Character. The name of the latitude column in `coord.dat`. Default is "p_lat".
 #' @param lng.name Character. The name of the longitude column in `coord.dat`. Default is "p_lng".
-#'
+#' @param format Character. The format of the input data. Can be "nc" for netCDF or "array" for array format. Default is "nc".
+#' @param input Character. The input data file name if the format is "array". Default is NULL. Not used if format is "nc".
 #' @return A data frame with the original coordinates and matched climate data from the cGENIE model.
 #'
 #' @import RNetCDF

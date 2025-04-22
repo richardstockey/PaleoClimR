@@ -15,7 +15,6 @@
 #'
 #' @return A data frame or 3D array with the original coordinates and matched climate data from the cGENIE model.
 #'
-#' @import RNetCDF
 #' @import dplyr
 #' @import reshape2
 #' @export
@@ -31,12 +30,9 @@ cGENIE.point.matching <- function(var = NULL,
                                   lng.name = "p_lng", # name IF generated from rotated paleoverse coordinates...
                                   output = "dataframe")
 {
-# Load necessary libraries
-library(RNetCDF)  # For handling NetCDF files
-library(dplyr)    # For data manipulation
-library(reshape2) # For reshaping data
 
 if(format == "nc"){
+
 # Extract grid data from cGENIE netCDF file
 # This function call retrieves the grid data for the specified experiment and dimensions.
 # The grid data contains information about the spatial layout of the cGENIE model.
@@ -93,14 +89,14 @@ clim.dat <- cGENIE.data(var = var, experiment = experiment, depth.level = depth.
         rep(lat, times = 1, each = length(lon)),
         rep(lat.edges[1:(length(lat.edges)-1)], times = 1, each = length(lon)),
         rep(lat.edges[2:length(lat.edges)], times = 1, each = length(lon)),
-        as.data.frame(melt(var.arr[,, depth.level]))$value
+        as.data.frame(reshape2::melt(var.arr[,, depth.level]))$value
     ))
 
     names(df) <- c("lon.mid", "lon.min", "lon.max", "lat.mid", "lat.min", "lat.max", "var")
 
     # Filter the data to ensure valid lat-lon ranges
     df <- df %>%
-        filter(lon.max <= 180, lon.min >= -180, lat.max <= 90, lat.min >= -90)
+        dplyr::filter(lon.max <= 180, lon.min >= -180, lat.max <= 90, lat.min >= -90)
 
     # Handle cells at the extremes (-180 and 180 longitude)
     df$lon.range <- abs(df$lon.min - df$lon.max)
@@ -113,11 +109,11 @@ clim.dat <- cGENIE.data(var = var, experiment = experiment, depth.level = depth.
 # Omit NAs in the var value for climate data file
 # This step filters out any rows in the climate data where the specified variable has NA values.
 # This ensures that only valid data points are used i§n the matching process.
-clim.dat <- filter(clim.dat, !is.na(var))
+clim.dat <- dplyr::filter(clim.dat, !is.na(var))
 # Remove any NA paleocoordinates
 # This step filters out any rows in the coordinate data where the latitude or longitude values are NA.
 # This ensures that only valid coordinates are used in the matching process.
-coord.dat <- filter(coord.dat, !is.na(!!sym(lng.name)) & !is.na(!!sym(lat.name)))
+coord.dat <- dplyr::filter(coord.dat, !is.na(!!sym(lng.name)) & !is.na(!!sym(lat.name)))
 
 # Initialize a column for matched climate data
 # This step adds a new column to the coordinate data frame to store the matched climate data.
@@ -135,7 +131,7 @@ for(row in 1:nrow(coord.dat)){
     # Identify all the cells in the climate model that have the same latitude as the data point
     # This step filters the climate data to include only the rows where the latitude matches the closest latitude grid point.
     lat.mid.opts <- clim.dat %>%
-        filter(lat.mid == coord.dat$lat.bin.mid[row])
+        dplyr::filter(lat.mid == coord.dat$lat.bin.mid[row])
 
     # Check if there are any matching latitude options and if the closest longitudinal bin is within 10 degrees
     # This condition ensures that there are valid latitude matches and that the closest longitude grid point is within a reasonable distance.
@@ -160,7 +156,7 @@ for(row in 1:nrow(coord.dat)){
 
 # Filter out rows where the matched climate data is NA
 # This step removes any coordinate points that did not have valid climate data matches.
-coord.dat <- filter(coord.dat, is.na(matched_climate) == FALSE)
+coord.dat <- dplyr::filter(coord.dat, is.na(matched_climate) == FALSE)
 
 if (output == "array") {
     # Initialize a 3D array with NA values

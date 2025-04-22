@@ -29,172 +29,165 @@
 #' This function reads 2D or 3D data from cGENIE model output NetCDF files and produces a map visualization.
 #' Default settings are defined for several commonly used variables and users can specify their own scaling and color settings.
 #'
-#' @import RNetCDF
-#' @import dplyr
-#' @import sf
-#' @import sp
-#' @import ggspatial
-#' @import reshape2
-#' @import ggplot2
+#' @importFrom RNetCDF open.nc var.get.nc
+#' @importFrom dplyr filter %>%
+#' @importFrom sf st_as_sf st_crs st_transform st_union
+#' @importFrom ggplot2 ggplot geom_sf scale_fill_stepsn theme_minimal theme element_rect element_text labs guide_colorbar
+#' @importFrom reshape2 melt
+#' @importFrom sp Polygon Polygons SpatialPolygons SpatialPolygonsDataFrame
 #' @export
 
 cGENIE.map <- function(var, experiment,
-       depth.level = 1,
-       dims = 3,
-       year = "default",
-       unit.factor = NULL,
-       min.value = NULL,
-       max.value = NULL,
-       intervals = NULL,
-       continents.outlined = TRUE,
-       scale.label = NULL,
-       model = "biogem",
-       line.thickness = 1,
-       palette_name = pals::parula(1000),
-       projection = 'ESRI:54012',
-       darkmode = FALSE,
-       darkmode.bg = "black",
-       darkmode.fg = "white",
-       col.labels = NULL) {
+  depth.level = 1,
+  dims = 3,
+  year = "default",
+  unit.factor = NULL,
+  min.value = NULL,
+  max.value = NULL,
+  intervals = NULL,
+  continents.outlined = TRUE,
+  scale.label = NULL,
+  model = "biogem",
+  line.thickness = 1,
+  palette_name = pals::parula(1000),
+  projection = 'ESRI:54012',
+  darkmode = FALSE,
+  darkmode.bg = "black",
+  darkmode.fg = "white",
+  col.labels = NULL) {
 
-  # Load necessary libraries
-  library(RNetCDF)   # For reading NetCDF files
-  library(dplyr)     # For data manipulation
-  library(sf)        # For handling spatial data
-  library(sp)        # For working with spatial polygons
-  library(ggspatial) # For adding spatial components in ggplot
-  library(reshape2)  # For reshaping data
-  library(ggplot2)   # For plotting
+  if (col.labels == NULL) {
+    col.labels <- seq(min.value, max.value, intervals)
+  }
 
-  if(col.labels == NULL){
-  col.labels <- seq(min.value, max.value, intervals)
-}
   # Define default values for different "var" variables
   if (var == "ocn_temp") {
-  unit.factor <- 1          # no conversion
-  dims = 3
-  min.value <- ifelse(is.null(min.value), 0, min.value)
-  max.value <- ifelse(is.null(max.value), 40, max.value)
-  intervals <- ifelse(is.null(intervals), 4, intervals)
-  scale.label <- ifelse(is.null(scale.label), "Temperature (\u00B0C)", scale.label)
+    unit.factor <- 1
+    dims <- 3
+    min.value <- ifelse(is.null(min.value), 0, min.value)
+    max.value <- ifelse(is.null(max.value), 40, max.value)
+    intervals <- ifelse(is.null(intervals), 4, intervals)
+    scale.label <- ifelse(is.null(scale.label), "Temperature (\u00B0C)", scale.label)
   } else if (var == "ocn_sal") {
-  unit.factor <- 1          # no conversion
-  dims = 3
-  min.value <- ifelse(is.null(min.value), 30, min.value)
-  max.value <- ifelse(is.null(max.value), 40, max.value)
-  intervals <- ifelse(is.null(intervals), 1, intervals)
-  scale.label <- ifelse(is.null(scale.label), "Salinity (PSU)", scale.label)
+    unit.factor <- 1
+    dims <- 3
+    min.value <- ifelse(is.null(min.value), 30, min.value)
+    max.value <- ifelse(is.null(max.value), 40, max.value)
+    intervals <- ifelse(is.null(intervals), 1, intervals)
+    scale.label <- ifelse(is.null(scale.label), "Salinity (PSU)", scale.label)
   } else if (var == "ocn_H2S") {
-  dims = 3
-  unit.factor <- 1e6          # µmol/kg from mol/kg
-  min.value <- ifelse(is.null(min.value), 0, min.value)
-  max.value <- ifelse(is.null(max.value), 40, max.value)
-  intervals <- ifelse(is.null(intervals), 4, intervals)
+    dims <- 3
+    unit.factor <- 1e6
+    min.value <- ifelse(is.null(min.value), 0, min.value)
+    max.value <- ifelse(is.null(max.value), 40, max.value)
+    intervals <- ifelse(is.null(intervals), 4, intervals)
     scale.label <- ifelse(is.null(scale.label), "Hydrogen Sulfide (\u03BCmol/kg)", scale.label)
   } else if (var == "ocn_O2") {
-  dims = 3
-  unit.factor <- 1e6          # µmol/kg from mol/kg
-  min.value <- ifelse(is.null(min.value), 0, min.value)
-  max.value <- ifelse(is.null(max.value), 300, max.value)
-  intervals <- ifelse(is.null(intervals), 25, intervals)
-  scale.label <- ifelse(is.null(scale.label), "Oxygen (\u00B5mol/kg)", scale.label)
+    dims <- 3
+    unit.factor <- 1e6
+    min.value <- ifelse(is.null(min.value), 0, min.value)
+    max.value <- ifelse(is.null(max.value), 300, max.value)
+    intervals <- ifelse(is.null(intervals), 25, intervals)
+    scale.label <- ifelse(is.null(scale.label), "Oxygen (\u00B5mol/kg)", scale.label)
   } else if (var == "grid_topo") {
-  unit.factor <- -1          # no conversion
-  dims = 2
-  min.value <- ifelse(is.null(min.value), -5000, min.value)
-  max.value <- ifelse(is.null(max.value), 0, max.value)
-  intervals <- ifelse(is.null(intervals), 500, intervals)
-  scale.label <- ifelse(is.null(scale.label), expression("Ocean Depth (m)"), scale.label)
+    unit.factor <- -1
+    dims <- 2
+    min.value <- ifelse(is.null(min.value), -5000, min.value)
+    max.value <- ifelse(is.null(max.value), 0, max.value)
+    intervals <- ifelse(is.null(intervals), 500, intervals)
+    scale.label <- ifelse(is.null(scale.label), expression("Ocean Depth (m)"), scale.label)
   } else if (var == "phys_psi") {
-  unit.factor <- 1          # no conversion
-  dims = 2
-  min.value <- ifelse(is.null(min.value), -75, min.value)
-  max.value <- ifelse(is.null(max.value), 75, max.value)
-  intervals <- ifelse(is.null(intervals), 15, intervals)
-  scale.label <- ifelse(is.null(scale.label), "Barotropic streamfunction (Sv)", scale.label)
+    unit.factor <- 1
+    dims <- 2
+    min.value <- ifelse(is.null(min.value), -75, min.value)
+    max.value <- ifelse(is.null(max.value), 75, max.value)
+    intervals <- ifelse(is.null(intervals), 15, intervals)
+    scale.label <- ifelse(is.null(scale.label), "Barotropic streamfunction (Sv)", scale.label)
   } else {
-  # Default values for any other variable
-  unit.factor <- 1          # default, no conversion
-  min.value <- ifelse(is.null(min.value), 0, min.value)
-  max.value <- ifelse(is.null(max.value), 100, max.value)
-  intervals <- ifelse(is.null(intervals), 10, intervals)
-  scale.label <- ifelse(is.null(scale.label), "Variable", scale.label)
+    unit.factor <- 1
+    min.value <- ifelse(is.null(min.value), 0, min.value)
+    max.value <- ifelse(is.null(max.value), 100, max.value)
+    intervals <- ifelse(is.null(intervals), 10, intervals)
+    scale.label <- ifelse(is.null(scale.label), "Variable", scale.label)
   }
 
   # Set model-specific file prefix
   if (model == "biogem") {
-  prefix <- "/biogem/fields_biogem_"
+    prefix <- "/biogem/fields_biogem_"
   }
 
   # Open the NetCDF file
-  nc <- open.nc(paste0(experiment, prefix, dims, "d", ".nc"))
+  nc <- RNetCDF::open.nc(paste0(experiment, prefix, dims, "d", ".nc"))
 
-  # Extract general variables (e.g., latitude, longitude, depth, time)
-  lat <- var.get.nc(nc, "lat") # Latitude
-  lat.edges <- var.get.nc(nc, "lat_edges")
-  lon <- var.get.nc(nc, "lon") # Longitude
-  lon.edges <- var.get.nc(nc, "lon_edges")
-  depth <- var.get.nc(nc, "zt") # Depth in meters
-  depth.edges <- var.get.nc(nc, "zt_edges")
-  time <- var.get.nc(nc, "time") # Time in years
+  # Extract general variables
+  lat <- RNetCDF::var.get.nc(nc, "lat")
+  lat.edges <- RNetCDF::var.get.nc(nc, "lat_edges")
+  lon <- RNetCDF::var.get.nc(nc, "lon")
+  lon.edges <- RNetCDF::var.get.nc(nc, "lon_edges")
+  depth <- RNetCDF::var.get.nc(nc, "zt")
+  depth.edges <- RNetCDF::var.get.nc(nc, "zt_edges")
+  time <- RNetCDF::var.get.nc(nc, "time")
 
-  # Extract the specific variable from the NetCDF file
-  var.arr <- var.get.nc(nc, var)
+  # Extract the specific variable
+  var.arr <- RNetCDF::var.get.nc(nc, var)
 
-  # Set the time step to the final value if year is "default"
+  # Set the time step
   if (year == "default") {
-  time.step <- length(time)
+    time.step <- length(time)
   } else {
-  time.step <- year
+    time.step <- year
   }
 
-  # Adjust longitude to be within 0 to 360 degrees (cGENIE model-specific)
-  if (mean(between(lon, -180, 180)) < 1) {
-  lon.edges[lon.edges <= -180] <- lon.edges[lon.edges <= -180] + 360
-  lon[lon <= -180] <- lon[lon <= -180] + 360
+  # Adjust longitude
+  if (mean(dplyr::between(lon, -180, 180)) < 1) {
+    lon.edges[lon.edges <= -180] <- lon.edges[lon.edges <= -180] + 360
+    lon[lon <= -180] <- lon[lon <= -180] + 360
   }
 
-  # Generate data frame for 3D data (if dims == 3)
+  # Generate data frame for 3D data
   if (dims == 3) {
-  df <- as.data.frame(cbind(
-  rep(lon, times = length(lat)),
-  rep(lon.edges[1:(length(lon.edges)-1)], times = length(lat)),
-  rep(lon.edges[2:length(lon.edges)], times = length(lat)),
-  rep(lat, each = length(lon)),
-  rep(lat.edges[1:(length(lat.edges)-1)], each = length(lon)),
-  rep(lat.edges[2:length(lat.edges)], each = length(lon)),
-  as.data.frame(melt(var.arr[,, depth.level, time.step]))$value))
-  names(df) <- c("lon.mid", "lon.min", "lon.max", "lat.mid", "lat.min", "lat.max", "var")
+    df <- as.data.frame(cbind(
+      rep(lon, times = length(lat)),
+      rep(lon.edges[1:(length(lon.edges) - 1)], times = length(lat)),
+      rep(lon.edges[2:length(lon.edges)], times = length(lat)),
+      rep(lat, each = length(lon)),
+      rep(lat.edges[1:(length(lat.edges) - 1)], each = length(lon)),
+      rep(lat.edges[2:length(lat.edges)], each = length(lon)),
+      as.data.frame(reshape2::melt(var.arr[, , depth.level, time.step]))$value
+    ))
+    names(df) <- c("lon.mid", "lon.min", "lon.max", "lat.mid", "lat.min", "lat.max", "var")
   }
 
-  # Generate data frame for 2D data (if dims == 2)
+  # Generate data frame for 2D data
   if (dims == 2) {
-  if(var == "grid_topo"){
-  df <- as.data.frame(cbind(
-  rep(lon, times = length(lat)),
-  rep(lon.edges[1:(length(lon.edges)-1)], times = length(lat)),
-  rep(lon.edges[2:length(lon.edges)], times = length(lat)),
-  rep(lat, each = length(lon)),
-  rep(lat.edges[1:(length(lat.edges)-1)], each = length(lon)),
-  rep(lat.edges[2:length(lat.edges)], each = length(lon)),
-  as.data.frame(melt(var.arr))$value))
-  names(df) <- c("lon.mid", "lon.min", "lon.max", "lat.mid", "lat.min", "lat.max", "var")
-  }else{
-  df <- as.data.frame(cbind(
-  rep(lon, times = length(lat)),
-  rep(lon.edges[1:(length(lon.edges)-1)], times = length(lat)),
-  rep(lon.edges[2:length(lon.edges)], times = length(lat)),
-  rep(lat, each = length(lon)),
-  rep(lat.edges[1:(length(lat.edges)-1)], each = length(lon)),
-  rep(lat.edges[2:length(lat.edges)], each = length(lon)),
-  as.data.frame(melt(var.arr[,, time.step]))$value))
-  names(df) <- c("lon.mid", "lon.min", "lon.max", "lat.mid", "lat.min", "lat.max", "var")
-  }
+    if (var == "grid_topo") {
+      df <- as.data.frame(cbind(
+   rep(lon, times = length(lat)),
+   rep(lon.edges[1:(length(lon.edges) - 1)], times = length(lat)),
+   rep(lon.edges[2:length(lon.edges)], times = length(lat)),
+   rep(lat, each = length(lon)),
+   rep(lat.edges[1:(length(lat.edges) - 1)], each = length(lon)),
+   rep(lat.edges[2:length(lat.edges)], each = length(lon)),
+   as.data.frame(reshape2::melt(var.arr))$value
+      ))
+      names(df) <- c("lon.mid", "lon.min", "lon.max", "lat.mid", "lat.min", "lat.max", "var")
+    } else {
+      df <- as.data.frame(cbind(
+   rep(lon, times = length(lat)),
+   rep(lon.edges[1:(length(lon.edges) - 1)], times = length(lat)),
+   rep(lon.edges[2:length(lon.edges)], times = length(lat)),
+   rep(lat, each = length(lon)),
+   rep(lat.edges[1:(length(lat.edges) - 1)], each = length(lon)),
+   rep(lat.edges[2:length(lat.edges)], each = length(lon)),
+   as.data.frame(reshape2::melt(var.arr[, , time.step]))$value
+      ))
+      names(df) <- c("lon.mid", "lon.min", "lon.max", "lat.mid", "lat.min", "lat.max", "var")
+    }
   }
 
-  # Filter out invalid or extreme coordinate ranges
+  # Filter out invalid ranges
   df <- df %>%
-  filter(lon.max <= 180, lon.min >= -180, lat.max <= 90, lat.min >= -90)
+    dplyr::filter(lon.max <= 180, lon.min >= -180, lat.max <= 90, lat.min >= -90)
 
   # Handle longitudes near -180 and 180 degrees
   df$lon.range <- abs(df$lon.min - df$lon.max)
@@ -205,99 +198,100 @@ cGENIE.map <- function(var, experiment,
   poly.list <- list()
   poly.names.list <- list()
   for (poly in 1:nrow(df)) {
-  polygon.code <- Polygon(cbind(
-  c(df$lon.min[poly], df$lon.max[poly], df$lon.max[poly], df$lon.min[poly]),
-  c(df$lat.min[poly], df$lat.min[poly], df$lat.max[poly], df$lat.max[poly])))
-  polygons.code <- Polygons(list(polygon.code), paste0("p", poly))
-  poly.list <- append(poly.list, polygons.code)
-  poly.names.list <- append(poly.names.list, paste0("p", poly))
+    polygon.code <- sp::Polygon(cbind(
+      c(df$lon.min[poly], df$lon.max[poly], df$lon.max[poly], df$lon.min[poly]),
+      c(df$lat.min[poly], df$lat.min[poly], df$lat.max[poly], df$lat.max[poly])
+    ))
+    polygons.code <- sp::Polygons(list(polygon.code), paste0("p", poly))
+    poly.list <- append(poly.list, polygons.code)
+    poly.names.list <- append(poly.names.list, paste0("p", poly))
   }
 
   # Create spatial polygons data frame
-  SpP <- SpatialPolygons(poly.list)
+  SpP <- sp::SpatialPolygons(poly.list)
   attr <- data.frame(var = df$var, row.names = poly.names.list)
-  SpDf <- SpatialPolygonsDataFrame(SpP, attr)
-  SpDfSf <- st_as_sf(SpDf)
-  st_crs(SpDfSf) = '+proj=longlat +ellps=sphere'
+  SpDf <- sp::SpatialPolygonsDataFrame(SpP, attr)
+  SpDfSf <- sf::st_as_sf(SpDf)
+  sf::st_crs(SpDfSf) <- '+proj=longlat +ellps=sphere'
 
   # Add frame to the map
   l1 <- cbind(c(-180, 180, rep(180, 1801), 180, -180, rep(-180, 1801), -180),
     c(-90, -90, seq(-90, 90, 0.1), 90, 90, seq(90, -90, -0.1), -90))
-  L1 <- Polygon(l1)
-  SLs1 <- SpatialPolygons(list(Polygons(list(L1), ID = "a")))
-  SLs1df = SpatialPolygonsDataFrame(SLs1, data = data.frame(var = 2, row.names = "a"))
-  SLs1dfSf <- st_as_sf(SLs1df)
-  st_crs(SLs1dfSf) = '+proj=longlat +ellps=sphere'
+  L1 <- sp::Polygon(l1)
+  SLs1 <- sp::SpatialPolygons(list(sp::Polygons(list(L1), ID = "a")))
+  SLs1df <- sp::SpatialPolygonsDataFrame(SLs1, data = data.frame(var = 2, row.names = "a"))
+  SLs1dfSf <- sf::st_as_sf(SLs1df)
+  sf::st_crs(SLs1dfSf) <- '+proj=longlat +ellps=sphere'
 
   if (continents.outlined == TRUE) {
-  continent_polygons <- df %>% filter(is.na(var))
+    continent_polygons <- df %>% dplyr::filter(is.na(var))
 
-  poly.list.continents <- list()
-  for (poly in 1:(nrow(continent_polygons))) {
-  polygon.code <- Polygon(cbind(
-  c(continent_polygons$lon.min[poly], continent_polygons$lon.max[poly], continent_polygons$lon.max[poly], continent_polygons$lon.min[poly]),
-  c(continent_polygons$lat.min[poly], continent_polygons$lat.min[poly], continent_polygons$lat.max[poly], continent_polygons$lat.max[poly])))
-  polygons.code <- Polygons(list(polygon.code), paste0("p", poly))
-  poly.list.continents <- append(poly.list.continents, polygons.code)
-  }
+    poly.list.continents <- list()
+    for (poly in 1:(nrow(continent_polygons))) {
+      polygon.code <- sp::Polygon(cbind(
+   c(continent_polygons$lon.min[poly], continent_polygons$lon.max[poly], continent_polygons$lon.max[poly], continent_polygons$lon.min[poly]),
+   c(continent_polygons$lat.min[poly], continent_polygons$lat.min[poly], continent_polygons$lat.max[poly], continent_polygons$lat.max[poly])
+      ))
+      polygons.code <- sp::Polygons(list(polygon.code), paste0("p", poly))
+      poly.list.continents <- append(poly.list.continents, polygons.code)
+    }
 
-  SpP.continents <- SpatialPolygons(poly.list.continents)
-  attr.continents <- data.frame(row.names = sapply(poly.list.continents, function(x) x@ID))
-  SpDf.continents <- SpatialPolygonsDataFrame(SpP.continents, attr.continents)
-  SpDfSf.continents <- st_as_sf(SpDf.continents)
-  st_crs(SpDfSf.continents) = '+proj=longlat +ellps=sphere'
+    SpP.continents <- sp::SpatialPolygons(poly.list.continents)
+    attr.continents <- data.frame(row.names = sapply(poly.list.continents, function(x) x@ID))
+    SpDf.continents <- sp::SpatialPolygonsDataFrame(SpP.continents, attr.continents)
+    SpDfSf.continents <- sf::st_as_sf(SpDf.continents)
+    sf::st_crs(SpDfSf.continents) <- '+proj=longlat +ellps=sphere'
 
-  continents <- st_union(SpDfSf.continents)
+    continents <- sf::st_union(SpDfSf.continents)
 
-  # Create the map using ggplot with layered spatial objects
-  map <- ggplot() +
-  geom_sf(data = SpDfSf %>% st_transform(projection), aes(fill = var * unit.factor), color = NA) +
-  geom_sf(data = st_as_sf(continents) %>% st_transform(projection), fill = "grey80", color = "grey20", linewidth = line.thickness) +
-  geom_sf(data = SLs1dfSf %>% st_transform(projection), color = darkmode.fg, linewidth = line.thickness, fill = NA) +
-  scale_fill_stepsn(colours = palette_name,
-      breaks = seq(min.value, max.value, intervals),
-      limits = c(min.value, max.value),
-      guide = guide_colorbar(title.position = "top", barwidth = 12, barheight = 1,
-                             frame.colour = darkmode.fg,
-                             ticks.colour = darkmode.fg),
-      labels = col.labels) +
-  theme_minimal() +
-  theme(legend.position = "bottom") +
-  labs(fill = scale.label)
+    # Create the map using ggplot with layered spatial objects
+    map <- ggplot2::ggplot() +
+      ggplot2::geom_sf(data = SpDfSf %>% sf::st_transform(projection), ggplot2::aes(fill = var * unit.factor), color = NA) +
+      ggplot2::geom_sf(data = sf::st_as_sf(continents) %>% sf::st_transform(projection), fill = "grey80", color = "grey20", linewidth = line.thickness) +
+      ggplot2::geom_sf(data = SLs1dfSf %>% sf::st_transform(projection), color = darkmode.fg, linewidth = line.thickness, fill = NA) +
+      ggplot2::scale_fill_stepsn(colours = palette_name,
+             breaks = seq(min.value, max.value, intervals),
+             limits = c(min.value, max.value),
+             guide = ggplot2::guide_colorbar(title.position = "top", barwidth = 12, barheight = 1,
+                    frame.colour = darkmode.fg,
+                    ticks.colour = darkmode.fg),
+             labels = col.labels) +
+      ggplot2::theme_minimal() +
+      ggplot2::theme(legend.position = "bottom") +
+      ggplot2::labs(fill = scale.label)
 
-  }else{
-  # Create the map using ggplot
-  map <- ggplot() +
-  geom_sf(data = SpDfSf %>% st_transform(projection), aes(fill = var * unit.factor), color = NA) +
-  geom_sf(data = SLs1dfSf %>% st_transform(projection), color = darkmode.fg, linewidth = 0.9, fill = NA) +
-  scale_fill_stepsn(colours = palette_name,
-      breaks = seq(min.value, max.value, intervals),
-      limits = c(min.value, max.value),
-      guide = guide_colorbar(title.position = "top", barwidth = 12, barheight = 1,
-                             frame.colour = darkmode.fg,
-                             ticks.colour = darkmode.fg),
-      labels = col.labels) +
-  theme_minimal() +
-  theme(legend.position = "bottom") +
-  labs(fill = scale.label)
-
+  } else {
+    # Create the map using ggplot
+    map <- ggplot2::ggplot() +
+      ggplot2::geom_sf(data = SpDfSf %>% sf::st_transform(projection), ggplot2::aes(fill = var * unit.factor), color = NA) +
+      ggplot2::geom_sf(data = SLs1dfSf %>% sf::st_transform(projection), color = darkmode.fg, linewidth = 0.9, fill = NA) +
+      ggplot2::scale_fill_stepsn(colours = palette_name,
+             breaks = seq(min.value, max.value, intervals),
+             limits = c(min.value, max.value),
+             guide = ggplot2::guide_colorbar(title.position = "top", barwidth = 12, barheight = 1,
+                    frame.colour = darkmode.fg,
+                    ticks.colour = darkmode.fg),
+             labels = col.labels) +
+      ggplot2::theme_minimal() +
+      ggplot2::theme(legend.position = "bottom") +
+      ggplot2::labs(fill = scale.label)
   }
 
   # Apply dark mode theme if darkmode is TRUE
   if (darkmode) {
-  map <- map +
-  theme(
-  panel.background = element_rect(fill = darkmode.bg, color = NA),
-  plot.background = element_rect(fill = darkmode.bg, color = NA),
-  legend.background = element_rect(fill = darkmode.bg, color = NA),
-  legend.text = element_text(color = darkmode.fg),
-  legend.title = element_text(color = darkmode.fg),
-  axis.text = element_text(color = darkmode.fg),
-  axis.title = element_text(color = darkmode.fg),
-  plot.title = element_text(color = darkmode.fg),
-  plot.subtitle = element_text(color = darkmode.fg),
-  plot.caption = element_text(color = darkmode.fg)
-  )
+    map <- map +
+      ggplot2::theme(
+   panel.background = ggplot2::element_rect(fill = darkmode.bg, color = NA),
+   plot.background = ggplot2::element_rect(fill = darkmode.bg, color = NA),
+   legend.background = ggplot2::element_rect(fill = darkmode.bg, color = NA),
+   legend.text = ggplot2::element_text(color = darkmode.fg),
+   legend.title = ggplot2::element_text(color = darkmode.fg),
+   axis.text = ggplot2::element_text(color = darkmode.fg),
+   axis.title = ggplot2::element_text(color = darkmode.fg),
+   plot.title = ggplot2::element_text(color = darkmode.fg),
+   plot.subtitle = ggplot2::element_text(color = darkmode.fg),
+   plot.caption = ggplot2::element_text(color = darkmode.fg)
+      )
   }
 
   return(map)
