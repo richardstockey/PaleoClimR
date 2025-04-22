@@ -4,21 +4,17 @@
 \alias{cGENIE.benthic.data}
 \title{Summarize Bottom-Water Environments from cGENIE NetCDF Files}
 \usage{
-cGENIE.benthic.data(var, experiment, dataframe = TRUE, array = FALSE)
+cGENIE.benthic.data(var, experiment, output = "dataframe")
 }
 \arguments{
 \item{var}{Character string specifying the variable to extract from the NetCDF file.}
 
 \item{experiment}{Character string indicating the path to the experiment directory containing the NetCDF files.}
 
-\item{dataframe}{Logical, if TRUE (default), return the data as a dataframe. If FALSE, return the data as an array.}
-
-\item{array}{Logical, if TRUE, return the extracted bottom-water data as an array. Default is FALSE.}
+\item{output}{Character. The format of the output. Default is "dataframe". Options are "dataframe" or "array".}
 }
 \value{
-Depending on the \code{dataframe} and \code{array} parameters:
-\item{dataframe}{A dataframe containing the extracted bottom-water data, including longitude, latitude, and variable values.}
-\item{array}{A 2D array of the extracted bottom-water variable values if \code{array} is TRUE.}
+A data frame or 3D array with the original coordinates and matched climate data from the cGENIE model.
 }
 \description{
 This function extracts and summarizes the bottom-water redox state from 3D cGENIE NetCDF files. It retrieves specified variables, computes the corresponding bottom-water depths, and optionally returns the data as either an array or a dataframe.

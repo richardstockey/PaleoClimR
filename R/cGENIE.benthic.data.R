@@ -4,25 +4,15 @@
 #'
 #' @param var Character string specifying the variable to extract from the NetCDF file.
 #' @param experiment Character string indicating the path to the experiment directory containing the NetCDF files.
-#' @param dataframe Logical, if TRUE (default), return the data as a dataframe. If FALSE, return the data as an array.
-#' @param array Logical, if TRUE, return the extracted bottom-water data as an array. Default is FALSE.
-#' @return Depending on the `dataframe` and `array` parameters:
-#' \item{dataframe}{A dataframe containing the extracted bottom-water data, including longitude, latitude, and variable values.}
-#' \item{array}{A 2D array of the extracted bottom-water variable values if `array` is TRUE.}
+#' @param output Character. The format of the output. Default is "dataframe". Options are "dataframe" or "array".
+#' @return A data frame or 3D array with the original coordinates and matched climate data from the cGENIE model.
 #' @import RNetCDF
 #' @import dplyr
 #' @export
 #'
 #'
 #'
-cGENIE.benthic.data <- function(var, experiment, dataframe = TRUE, array = FALSE){
-  # -------------------------------------------------------------------------------------------------------
-  # Parameters:
-  # var        : A character string specifying the variable to extract (e.g., "ocn_O2" for oxygen).
-  # experiment : A character string indicating the path to the cGENIE experiment directory.
-  # dataframe  : Logical, if TRUE (default), the function returns a dataframe of the bottom-water data.
-  # array      : Logical, if TRUE, the function returns a 2D array of the bottom-water data (default is FALSE).
-  # -------------------------------------------------------------------------------------------------------
+cGENIE.benthic.data <- function(var, experiment, output = "dataframe"){
 
   # Load required libraries
   library(RNetCDF)  # For reading NetCDF files
@@ -81,13 +71,13 @@ cGENIE.benthic.data <- function(var, experiment, dataframe = TRUE, array = FALSE
     }
   }
 
-  # Return the array of bottom-water values if array = TRUE
-  if(array == TRUE){
+  # Return the array of bottom-water values if output == "array"
+  if(output == "array"){
     return(bw.array)
   }
 
-  # If dataframe = TRUE, convert the data into a structured dataframe
-  if(dataframe == TRUE){
+  # If output == "dataframe", convert the data into a structured dataframe
+  if(output == "dataframe"){
     # Create a dataframe by binding longitude, latitude, and the respective edges with the extracted variable values
     df <- as.data.frame(cbind(
       rep(lon, times = length(lat), each = 1),                            # Longitude mid-points

@@ -66,6 +66,9 @@ cGENIE.map <- function(var, experiment,
   library(reshape2)  # For reshaping data
   library(ggplot2)   # For plotting
 
+  if(col.labels == NULL){
+  col.labels <- seq(min.value, max.value, intervals)
+}
   # Define default values for different "var" variables
   if (var == "ocn_temp") {
   unit.factor <- 1          # no conversion
