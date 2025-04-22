@@ -4,12 +4,12 @@
 #' of bottom-water environments. It categorizes the ocean bottom water into anoxic, suboxic, and oxic conditions
 #' based on specified oxygen thresholds. The function also handles the topographic grid data to ensure correct depth assignments.
 #'
-#' @param experiment A character string specifying the path to the experiment folder, where the necessary NetCDF files are stored.
-#' @param anox.thresh Numeric. The oxygen threshold (in mol/kg) for classifying anoxic bottom waters. Default is 0.
-#' @param subox.thresh Numeric. The oxygen threshold (in mol/kg) for classifying suboxic bottom waters. Default is 4.8e-6 (based on Sperling et al. 2015).
-#' @param lower.anox.lim Logical. If TRUE, sets a minimum anoxic fraction (f.anox) of 0.01% for plotting purposes. Default is TRUE.
+#' @param experiment \code{character}. A character string specifying the path to the experiment folder where the target cGENIE netCDF files are stored.
+#' @param anox.thresh \code{numeric}. The oxygen threshold (in mol/kg) for classifying anoxic bottom waters. Default is 0.
+#' @param subox.thresh \code{numeric}. The oxygen threshold (in mol/kg) for classifying suboxic bottom waters. Default is 4.8e-6 (based on Sperling et al. 2015).
+#' @param lower.anox.lim \code{numeric}. If TRUE, sets a minimum anoxic fraction (f.anox) of 0.01% for plotting purposes. Default is TRUE.
 #'
-#' @details This function reads the NetCDF output of a cGENIE experiment, processes the ocean bottom-water oxygen data (`ocn_O2`), and
+#' @details This function reads the netCDF output of a cGENIE experiment, processes the ocean bottom-water oxygen data (`ocn_O2`), and
 #' categorizes each bottom-water grid cell as anoxic, suboxic, or oxic. The topographic data (`grid_topo`) is used to align the depth of each grid cell with the
 #' correct ocean layer, and the function outputs the fraction of anoxic, suboxic, and oxic bottom waters.
 #'
@@ -36,10 +36,10 @@ cGENIE.bw.redox <- function(experiment, anox.thresh = 0, subox.thresh = 4.8e-6, 
   dims <- 3
   var <- "ocn_O2"
 
-  # Open the NetCDF file from the experiment directory
+  # Open the netCDF file from the experiment directory
   nc <- RNetCDF::open.nc(paste0(experiment, "/biogem/fields_biogem_", dims, "d", ".nc"))
 
-  # Extract spatial and temporal variables from NetCDF (latitude, longitude, depth, and time)
+  # Extract spatial and temporal variables from netCDF (latitude, longitude, depth, and time)
   lat <- RNetCDF::var.get.nc(nc, "lat")               # Latitude (degrees north)
   lat.edges <- RNetCDF::var.get.nc(nc, "lat_edges")   # Latitude edges
   lon <- RNetCDF::var.get.nc(nc, "lon")               # Longitude (degrees east)

@@ -3,25 +3,25 @@
 #' This function generates maps from imported .nc (NetCDF) files containing data from the cGENIE model outputs.
 #' It can handle both 2D and 3D data –  visualizing variables across specified depth levels and time steps.
 #'
-#' @param var (character) The variable from the NetCDF file to be visualized (e.g. "ocn_temp" "ocn_sal" "ocn_O2").
-#' @param experiment (character) The path or name of the experiment used to locate the NetCDF file.
-#' @param depth.level (numeric) Depth layer to visualize (default is 1 for the surface layer).
-#' @param dims (numeric) The dimensionality of the data (default is 3 for 3D; can be 2D or 3D).
-#' @param year (numeric or character) Time step to visualize (default uses the final time step if "default").
-#' @param unit.factor (numeric) A scaling factor for the variable values (default is 1).
-#' @param min.value (numeric) Minimum value for the color scale (used to set scale limits).
-#' @param max.value (numeric) Maximum value for the color scale.
-#' @param intervals (numeric) Step intervals for the color scale.
-#' @param continents.outlined (logical) Logical value to control whether to outline continents.
-#' @param scale.label (character) Label for the color bar.
-#' @param model (character) The model type (default is "biogem"; can be extended for other models).
-#' @param line.thickness (numeric) Thickness of the lines outlining continents (default is 1).
-#' @param palette_name (character) Color palette to be used for the plot (default is pals::parula(1000)).
-#' @param projection (character) Map projection to use (default is ESRI:54012 for Equal Earth).
-#' @param darkmode (logical) Logical value to control whether to use dark mode for the plot (default is FALSE).
-#' @param darkmode.bg (character) Background color for dark mode (default is "black").
-#' @param darkmode.fg (character) Foreground color for dark mode (default is "white").
-#' @param col.labels (character) Labels for the color bar ticks.
+#' @param var \code{character}. Variable name to extract from cGENIE netCDF file.
+#' @param experiment \code{character}. A character string specifying the path to the experiment folder where the target cGENIE netCDF files are stored.
+#' @param depth.level \code{numeric}. Depth layer to visualise. Defaults to 1 for surface layer.
+#' @param dims \code{numeric}. The dimensionality of the data. Default is 3 for 3D. Use 2 for 2D.
+#' @param year \code{numeric} or \code{character}. Time step to visualize. Defaults to "default" to use most recent time step.
+#' @param unit.factor \code{numeric}. A scaling factor for the variable values. Default is 1.
+#' @param min.value \code{numeric}. Sets minimum value for the color scale. 
+#' @param max.value \code{numeric}. Sets maximum value for the color scale.
+#' @param intervals \code{numeric}. Sets interval steps for the color scale.
+#' @param continents.outlined \code{logical} Logical value to control whether to outline continents. Defaults to TRUE.
+#' @param scale.label \code{character}. Label for the color bar.
+#' @param model \code{character}. The model type (default is "biogem"; can be extended for other models).
+#' @param line.thickness \code{numeric}. Thickness of the lines outlining continents (default is 1).
+#' @param palette_name \code{character}. Color palette to be used for the plot (default is pals::parula(1000)).
+#' @param projection \code{character}. Map projection to use (default is ESRI:54012 for Equal Earth).
+#' @param darkmode \code{logical}. Logical value to control whether to use dark mode for the plot (default is FALSE).
+#' @param darkmode.bg \code{character}. Background color for dark mode (default is "black").
+#' @param darkmode.fg \code{character}. Foreground color for dark mode (default is "white").
+#' @param col.labels \code{character}. Labels for the color bar ticks.
 #'
 #' @return A ggplot object representing the generated map with the specified variable visualized across geographical coordinates.
 #'
