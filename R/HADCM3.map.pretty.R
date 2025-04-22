@@ -316,7 +316,7 @@ HADCM3.map.pretty <- function(file = NULL,  # Name of the netCDF file (without e
       ggspatial::geom_sf(data = SpDfSf %>% sf::st_transform(projection), ggplot2::aes(geometry = geometry, fill = unit.factor * var), color = NA, linewidth = 10, linetype = 0) + # Plot ocean data
       ggspatial::geom_sf(data = SLs1dfSf %>% sf::st_transform(projection), ggplot2::aes(geometry = geometry), fill = NA, color = fg.color, linewidth = 0.9) + # Add map outline
       ggplot2::scale_fill_stepsn(colours = palette_name_ocean,
-                        guide = ggspatial::guide_colorbar(title.position = "top",
+                        guide = ggplot2::guide_colorbar(title.position = "top",
                                                barwidth = 12,
                                                barheight = 1,
                                                raster = FALSE,
@@ -329,13 +329,13 @@ HADCM3.map.pretty <- function(file = NULL,  # Name of the netCDF file (without e
                         breaks = seq(min.value_1, max.value_1, intervals_1),
                         limits = c(min.value_1, max.value_1), labels = col.labels) +
       theme(legend.position = "bottom",
-            plot.background = ggspatial::element_rect(fill = bg.color),
-            text = ggspatial::element_text(colour = fg.color)) +
+            plot.background = ggplot2::element_rect(fill = bg.color),
+            text = ggplot2::element_text(colour = fg.color)) +
       ggplot2::labs(fill = scale.label) +
       ggnewscale::new_scale_fill() +
       ggspatial::geom_sf(data = SpDfSf_2 %>% sf::st_transform(projection), ggplot2::aes(geometry = geometry, fill = var), color = NA, linewidth = 10, linetype = 0) + # Plot land data
       ggplot2::scale_fill_stepsn(colours = palette_name_land,
-                        guide = ggspatial::guide_colorbar(title.position = "top",
+                        guide = ggplot2::guide_colorbar(title.position = "top",
                                                barwidth = 12,
                                                barheight = 1,
                                                raster = FALSE,
@@ -349,8 +349,8 @@ HADCM3.map.pretty <- function(file = NULL,  # Name of the netCDF file (without e
                         limits = c(min.value_2, max.value_2)) +
       ggplot2::theme_minimal() +
       ggplot2::theme(legend.position = "bottom",
-            plot.background = ggspatial::element_rect(fill = bg.color),
-            text = ggspatial::element_text(colour = fg.color)) +
+            plot.background = ggplot2::element_rect(fill = bg.color),
+            text = ggplot2::element_text(colour = fg.color)) +
       ggplot2::labs(fill = 'Topography (m)')
   }
 
@@ -360,7 +360,7 @@ HADCM3.map.pretty <- function(file = NULL,  # Name of the netCDF file (without e
       ggspatial::geom_sf(data = SpDfSf %>% sf::st_transform(projection), ggplot2::aes(geometry = geometry, fill = var), color = NA, linewidth = 10, linetype = 0) + # Plot ocean data
       ggspatial::geom_sf(data = SLs1dfSf %>% sf::st_transform(projection), ggplot2::aes(geometry = geometry), fill = NA, color = fg.color, linewidth = 0.9) + # Add map outline
       ggplot2::scale_fill_stepsn(colours = palette_name_ocean,
-                        guide = ggspatial::guide_colorbar(title.position = "top",
+                        guide = ggplot2::guide_colorbar(title.position = "top",
                                                barwidth = 12,
                                                barheight = 1,
                                                raster = FALSE,
@@ -373,13 +373,13 @@ HADCM3.map.pretty <- function(file = NULL,  # Name of the netCDF file (without e
                         breaks = seq(min.value_1, max.value_1, intervals_1),
                         limits = c(min.value_1, max.value_1), labels = col.labels) +
       ggplot2::theme(legend.position = "bottom",
-            plot.background = ggspatial::element_rect(fill = bg.color),
-            text = ggspatial::element_text(colour = fg.color)) +
+            plot.background = ggplot2::element_rect(fill = bg.color),
+            text = ggplot2::element_text(colour = fg.color)) +
       ggplot2::labs(fill = 'Sea Surface Temperature (\u00B0C)') +
       ggnewscale::new_scale_fill() +
       ggspatial::geom_sf(data = SpDfSf_2 %>% sf::st_transform(projection), ggplot2::aes(geometry = geometry, fill = var), color = NA, linewidth = 10, linetype = 0) + # Plot land data
       ggplot2::scale_fill_stepsn(colours = palette_name_land,
-                        guide = ggspatial::guide_colorbar(title.position = "top",
+                        guide = ggplot2::guide_colorbar(title.position = "top",
                                                barwidth = 12,
                                                barheight = 1,
                                                raster = FALSE,
@@ -393,9 +393,9 @@ HADCM3.map.pretty <- function(file = NULL,  # Name of the netCDF file (without e
                         limits = c(min.value_2, max.value_2)) +
       ggplot2::theme_minimal() +
       ggplot2::theme(legend.position = "bottom",
-            line = ggspatial::element_line(colour = fg.color),
-            plot.background = ggspatial::element_rect(fill = bg.color),
-            text = ggspatial::element_text(colour = fg.color)) +
+            line = ggplot2::element_line(colour = fg.color),
+            plot.background = ggplot2::element_rect(fill = bg.color),
+            text = ggplot2::element_text(colour = fg.color)) +
       ggplot2::labs(fill = 'Topography (m)')
   }
 
