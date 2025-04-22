@@ -7,6 +7,7 @@
 #' @param output Character. The format of the output. Default is "dataframe". Options are "dataframe" or "array".
 #' @return A data frame or 3D array with the original coordinates and matched climate data from the cGENIE model.
 #' @import RNetCDF
+#' @import reshape2
 #' @import dplyr
 #' @export
 #'
@@ -16,31 +17,30 @@ cGENIE.benthic.data <- function(var, experiment, output = "dataframe"){
 
   # Load required libraries
   library(RNetCDF)  # For reading NetCDF files
-  library(dplyr)    # For data manipulation
 
   # Define the dimension (3D grid) of the data
   dims <- 3
 
   # Open the NetCDF file located in the experiment directory
-  nc <- open.nc(paste0(experiment, "/biogem/fields_biogem_", dims, "d", ".nc"))
+  nc <- RNetCDF::open.nc(paste0(experiment, "/biogem/fields_biogem_", dims, "d", ".nc"))
 
   # Extract general grid variables: latitude, longitude, depth, and time
-  lat <- var.get.nc(nc, "lat")              # Latitude in degrees north
-  lat.edges <- var.get.nc(nc, "lat_edges")  # Latitude edges
-  lon <- var.get.nc(nc, "lon")              # Longitude in degrees east
-  lon.edges <- var.get.nc(nc, "lon_edges")  # Longitude edges
-  depth <- var.get.nc(nc, "zt")             # Depth in meters
-  depth.edges <- var.get.nc(nc, "zt_edges") # Depth edges in meters
-  time <- var.get.nc(nc, "time")            # Time (year mid-point)
+  lat <- RNetCDF::var.get.nc(nc, "lat")              # Latitude in degrees north
+  lat.edges <- RNetCDF::var.get.nc(nc, "lat_edges")  # Latitude edges
+  lon <- RNetCDF::var.get.nc(nc, "lon")              # Longitude in degrees east
+  lon.edges <- RNetCDF::var.get.nc(nc, "lon_edges")  # Longitude edges
+  depth <- RNetCDF::var.get.nc(nc, "zt")             # Depth in meters
+  depth.edges <- RNetCDF::var.get.nc(nc, "zt_edges") # Depth edges in meters
+  time <- RNetCDF::var.get.nc(nc, "time")            # Time (year mid-point)
 
   # Extract the specified variable (e.g., oxygen, temperature) from the NetCDF file
-  var.arr <- var.get.nc(nc, var)
+  var.arr <- RNetCDF::var.get.nc(nc, var)
 
   # Extract topography data to determine ocean floor depth
-  topo <- var.get.nc(nc, "grid_topo")       # Topography in meters
+  topo <- RNetCDF::var.get.nc(nc, "grid_topo")       # Topography in meters
 
   # Adjust longitude coordinates to ensure they are projected between 0 and 360 degrees
-  if(mean(between(lon, -180, 180)) < 1){
+  if(mean(dplyr::between(lon, -180, 180)) < 1){
     lon.edges[lon.edges <= -180] <- lon.edges[lon.edges <= -180] + 360
     lon[lon <= -180] <- lon[lon <= -180] + 360
   }
@@ -86,7 +86,7 @@ cGENIE.benthic.data <- function(var, experiment, output = "dataframe"){
       rep(lat, times = 1, each = length(lon)),                            # Latitude mid-points
       rep(lat.edges[1:(length(lat.edges) - 1)], times = 1, each = length(lon)), # Latitude min (edges)
       rep(lat.edges[2:(length(lat.edges))], times = 1, each = length(lon)),     # Latitude max (edges)
-      as.data.frame(melt(bw.array))$value))                               # Extracted variable values as 2D matrix
+      as.data.frame(reshape2::melt(bw.array))$value))                               # Extracted variable values as 2D matrix
 
     # Rename the dataframe columns for clarity
     names(df) <- c("lon.mid",   # Longitude mid-point

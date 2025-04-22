@@ -43,11 +43,6 @@ cGENIE.data.3D <- function(var, experiment,
                            year = "default",
                            model = "biogem") {
 
-  # Load necessary libraries
-  library(RNetCDF)
-  library(dplyr)
-  library(reshape2)
-
   # Define model prefix for file paths
   if (model == "biogem") {
     prefix <- "/biogem/fields_biogem_"
@@ -55,19 +50,19 @@ cGENIE.data.3D <- function(var, experiment,
 
   # Set dimensionality to 3D by default
   dims <- 3
-  nc <- open.nc(paste0(experiment, prefix, dims, "d", ".nc"))
+  nc <- RNetCDF::open.nc(paste0(experiment, prefix, dims, "d", ".nc"))
 
   # Extract general variables
-  lat <- var.get.nc(nc, "lat")  # Latitude (degrees north)
-  lat.edges <- var.get.nc(nc, "lat_edges")
-  lon <- var.get.nc(nc, "lon")  # Longitude (degrees east)
-  lon.edges <- var.get.nc(nc, "lon_edges")
-  depth <- var.get.nc(nc, "zt")  # Depth (meters)
-  depth.edges <- var.get.nc(nc, "zt_edges")  # Depth edges (meters)
-  time <- var.get.nc(nc, "time")  # Time (year mid-point)
+  lat <- RNetCDF::var.get.nc(nc, "lat")  # Latitude (degrees north)
+  lat.edges <- RNetCDF::var.get.nc(nc, "lat_edges")
+  lon <- RNetCDF::var.get.nc(nc, "lon")  # Longitude (degrees east)
+  lon.edges <- RNetCDF::var.get.nc(nc, "lon_edges")
+  depth <- RNetCDF::var.get.nc(nc, "zt")  # Depth (meters)
+  depth.edges <- RNetCDF::var.get.nc(nc, "zt_edges")  # Depth edges (meters)
+  time <- RNetCDF::var.get.nc(nc, "time")  # Time (year mid-point)
 
   # Extract the variable array for the chosen time step
-  var.arr <- var.get.nc(nc, var)
+  var.arr <- RNetCDF::var.get.nc(nc, var)
 
   # Determine which time step to extract
   if (year == "default") {
@@ -77,7 +72,7 @@ cGENIE.data.3D <- function(var, experiment,
   }
 
   # Adjust grid for longitude projection (to 0-360 degrees if needed)
-  if (mean(between(lon, -180, 180)) < 1) {
+  if (mean(dplyr::between(lon, -180, 180)) < 1) {
     lon.edges[lon.edges <= -180] <- lon.edges[lon.edges <= -180] + 360
     lon[lon <= -180] <- lon[lon <= -180] + 360
   }
@@ -97,7 +92,7 @@ cGENIE.data.3D <- function(var, experiment,
       rep(lat, times = 1, each = length(lon)),
       rep(lat.edges[1:(length(lat.edges) - 1)], times = 1, each = length(lon)),
       rep(lat.edges[2:(length(lat.edges))], times = 1, each = length(lon)),
-      as.data.frame(melt(var.arr[, , depth.level, time.step]))$value
+      as.data.frame(reshape2::melt(var.arr[, , depth.level, time.step]))$value
     ))
 
     names(df) <- c("lon.mid", "lon.min", "lon.max",
@@ -110,7 +105,7 @@ cGENIE.data.3D <- function(var, experiment,
     df$depth.max <- depth.edges[depth.level + 1]
 
     # Filter out invalid geographical coordinates
-    df <- df %>% filter(lon.max <= 180, lon.min >= -180, lat.max <= 90, lat.min >= -90)
+    df <- dplyr::filter(df, lon.max <= 180, lon.min >= -180, lat.max <= 90, lat.min >= -90)
 
     # Adjust longitudes that cross map boundaries
     df$lon.range <- abs(df$lon.min - df$lon.max)

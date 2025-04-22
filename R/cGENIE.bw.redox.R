@@ -31,37 +31,26 @@
 #' @export
 
 cGENIE.bw.redox <- function(experiment, anox.thresh = 0, subox.thresh = 4.8e-6, lower.anox.lim = TRUE){
-  # -------------------------------------------------------------------------------------------------------
-  # Parameters:
-  # experiment   : A character string indicating the path to the cGENIE experiment directory.
-  # anox.thresh  : Numeric, threshold for defining anoxic conditions (default = 0 umol/kg, i.e., no oxygen).
-  # subox.thresh : Numeric, threshold for defining suboxic conditions (default = 4.8 umol/kg based on Sperling et al., 2015).
-  # lower.anox.lim : Logical, if TRUE, sets a minimum anoxic fraction (f.anox) of 0.01% for plotting purposes (default = TRUE).
-  # -------------------------------------------------------------------------------------------------------
-
-  # Load required libraries
-  library(RNetCDF)
-  library(dplyr)
 
   # Initialize dimensions for 3D ocean grid and set oxygen variable name
   dims <- 3
   var <- "ocn_O2"
 
   # Open the NetCDF file from the experiment directory
-  nc <- open.nc(paste0(experiment, "/biogem/fields_biogem_", dims, "d", ".nc"))
+  nc <- RNetCDF::open.nc(paste0(experiment, "/biogem/fields_biogem_", dims, "d", ".nc"))
 
   # Extract spatial and temporal variables from NetCDF (latitude, longitude, depth, and time)
-  lat <- var.get.nc(nc, "lat")               # Latitude (degrees north)
-  lat.edges <- var.get.nc(nc, "lat_edges")   # Latitude edges
-  lon <- var.get.nc(nc, "lon")               # Longitude (degrees east)
-  lon.edges <- var.get.nc(nc, "lon_edges")   # Longitude edges
-  depth <- var.get.nc(nc, "zt")              # Depth (meters)
-  depth.edges <- var.get.nc(nc, "zt_edges")  # Depth edges (meters)
-  time <- var.get.nc(nc, "time")             # Time (year mid-point)
+  lat <- RNetCDF::var.get.nc(nc, "lat")               # Latitude (degrees north)
+  lat.edges <- RNetCDF::var.get.nc(nc, "lat_edges")   # Latitude edges
+  lon <- RNetCDF::var.get.nc(nc, "lon")               # Longitude (degrees east)
+  lon.edges <- RNetCDF::var.get.nc(nc, "lon_edges")   # Longitude edges
+  depth <- RNetCDF::var.get.nc(nc, "zt")              # Depth (meters)
+  depth.edges <- RNetCDF::var.get.nc(nc, "zt_edges")  # Depth edges (meters)
+  time <- RNetCDF::var.get.nc(nc, "time")             # Time (year mid-point)
 
   # Extract bottom-water oxygen and topography data
-  var.arr <- var.get.nc(nc, var)             # Bottom-water oxygen array
-  topo <- var.get.nc(nc, "grid_topo")        # Topography (meters)
+  var.arr <- RNetCDF::var.get.nc(nc, var)             # Bottom-water oxygen array
+  topo <- RNetCDF::var.get.nc(nc, "grid_topo")        # Topography (meters)
 
   # Set the length of time, longitude, and latitude variables
   time <- length(time)
