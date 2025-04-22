@@ -56,7 +56,7 @@ cGENIE.map <- function(var, experiment,
   darkmode.fg = "white",
   col.labels = NULL) {
 
-  if (col.labels == NULL) {
+if(is.null(col.labels)){
     col.labels <- seq(min.value, max.value, intervals)
   }
 
