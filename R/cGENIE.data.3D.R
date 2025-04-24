@@ -1,18 +1,14 @@
-#' Extract and Process 3D Data from cGENIE NetCDF Files
+#' Extract and Process 3D Data from cGENIE netCDF Files
 #'
-#' This function extracts and processes 3D data from cGENIE model NetCDF files
+#' This function extracts and processes 3D data from cGENIE model netCDF files
 #' based on latitude, longitude, depth, and time. It converts the 3D array into a
 #' 2D dataframe with geographical coordinates and depth levels, making the data
 #' easier to visualize or further process.
 #'
-#' @param var A string specifying the variable name to extract from the NetCDF file.
-#'            Examples include "ocn_temp", "ocn_O2", etc.
-#' @param experiment A string specifying the path to the folder or file prefix
-#'                   where the experiment's data is stored.
-#' @param year A numeric value or the string "default" indicating the time step
-#'             to extract data for. If "default", the latest time step will be selected.
-#' @param model A string indicating the model type (default is "biogem").
-#'               Currently supports the "biogem" model.
+#' @param var \code{character}. Variable name to extract from cGENIE netCDF file.
+#' @param experiment \code{character}. A character string specifying the path to the experiment folder where the target cGENIE netCDF files are stored.
+#' @param year \code{numeric} or \code{string}. A numeric value or the string "default" indicating the time step to extract data for. If "default", the latest time step will be selected.
+#' @param model \code{string}. The model type (default is "biogem"). Currently supports the "biogem" model.
 #'
 #' @return A dataframe (`df.sum`) containing:
 #'   - `lon.mid`: Midpoint of the longitude.
@@ -29,7 +25,7 @@
 #'   - `lon.range`: Range of longitude for handling map boundaries.
 #'
 #' @details
-#' 1. The function assumes a 3D NetCDF file (longitude, latitude, depth) is used.
+#' 1. The function assumes a 3D netCDF file (longitude, latitude, depth) is used.
 #' 2. Default projection adjustments are made for handling longitudes that cross
 #'    0 degrees.
 #' 3. The data is reshaped from a 3D array into a 2D dataframe for easier analysis.

@@ -1,15 +1,15 @@
-#' Summarise Global Depth Averages and Standard Deviations from cGENIE NetCDF Data
+#' Summarise Global Depth Averages and Standard Deviations from cGENIE netCDF Data
 #'
-#' This function extracts and processes a 3D variable from a cGENIE NetCDF file.
+#' This function extracts and processes a 3D variable from a cGENIE netCDF file.
 #' It computes the mean and standard deviation for the variable at different depth levels,
 #' grouped by depth ranges.
 #'
-#' @param var A character string specifying the variable name to extract from the NetCDF file (e.g., "ocn_O2").
-#' @param experiment A character string indicating the path to the cGENIE experiment directory.
-#' @param year A character string or numeric value specifying the year to extract. Default is "default" which selects the last time step.
-#' @param model A character string indicating the model type (default is "biogem").
-#' @return A dataframe with summarized mean and standard deviation of the variable grouped by depth ranges.
-#' @details The function reads the specified 3D variable from the NetCDF file, groups the data by depth, and calculates summary statistics (mean and standard deviation). The depth is grouped by minimum and maximum depth edges.
+#' @param var \code{character}. Variable name to extract from cGENIE netCDF file.
+#' @param experiment \code{character}. A character string specifying the path to the experiment folder where the target cGENIE netCDF files are stored.
+#' @param year \code{numeric} or \code{string}. A numeric value or the string "default" indicating the time step to extract data for. Defaults to "default", which selects the latest time step.
+#' @param model \code{string}. The model type (default is "biogem").Currently supports the "biogem" model.
+#' @return A \code{dataframe} with summarized mean and standard deviation of the variable grouped by depth ranges.
+#' @details The function reads the specified 3D variable from the netCDF file, groups the data by depth, and calculates summary statistics (mean and standard deviation). The depth is grouped by minimum and maximum depth edges.
 #' @import dplyr
 #' @import RNetCDF
 #' @import tidyr

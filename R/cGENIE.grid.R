@@ -1,11 +1,11 @@
-#' Extract Grid Data from cGENIE NetCDF Files
+#' Extract Grid Data from cGENIE netCDF Files
 #'
-#' This function extracts grid-related data (latitude, longitude, and depth) from a specified cGENIE NetCDF file.
+#' This function extracts grid-related data (latitude, longitude, and depth) from a specified cGENIE netCDF file.
 #' It can handle both 2D and 3D grid data based on the specified dimensions.
 #'
-#' @param experiment A character string indicating the path to the cGENIE experiment directory.
-#' @param dims An integer specifying the dimensions of the NetCDF file to read. Default is set to 3 for 3D data.
-#' @param model A character string indicating the model type (default is "biogem"). Currently, only "biogem" is supported.
+#' @param experiment \code{character}. A character string specifying the path to the experiment folder where the target cGENIE netCDF files are stored.
+#' @param dims \code{numberic}. Number of dimensions in the netCDF file. Defaults to 3.
+#' @param model \code{string}. The model type (default is "biogem"). Currently supports the "biogem" model.
 #' @return A list containing latitude, longitude, and depth information, along with their respective edges.
 #' @details The function handles the adjustment of longitude values to ensure they are within the range of -180 to 180.
 #' It returns a list containing the relevant grid data based on the specified dimensions (2D or 3D).
