@@ -97,9 +97,9 @@ cGENIE.point.matching <- function(var = NULL,
         df <- dplyr::filter(df, lon.max <= 180, lon.min >= -180, lat.max <= 90, lat.min >= -90)
 
         # Handle cells at the extremes (-180 and 180 longitude)
-        df$lon.range <- abs(df$lon.min - df$lon.max)
-        df$lon.min[df$lon.range > 180 & abs(df$lon.min) == 180] <- -df$lon.min[df$lon.range > 180 & abs(df$lon.min) == 180]
-        df$lon.max[df$lon.range > 180 & abs(df$lon.max) == 180] <- -df$lon.max[df$lon.range > 180 & abs(df$lon.max) == 180]
+        df$lon.range <- base::abs(df$lon.min - df$lon.max)
+        df$lon.min[df$lon.range > 180 & base::abs(df$lon.min) == 180] <- -df$lon.min[df$lon.range > 180 & base::abs(df$lon.min) == 180]
+        df$lon.max[df$lon.range > 180 & base::abs(df$lon.max) == 180] <- -df$lon.max[df$lon.range > 180 & base::abs(df$lon.max) == 180]
 
         clim.dat <- df
     }
@@ -111,7 +111,7 @@ cGENIE.point.matching <- function(var = NULL,
     # Remove any NA paleocoordinates
     # This step filters out any rows in the coordinate data where the latitude or longitude values are NA.
     # This ensures that only valid coordinates are used in the matching process.
-    coord.dat <- dplyr::filter(coord.dat, !is.na(rlang::sym(lng.name)) & !is.na(rlang::sym(lat.name)))
+    coord.dat <- dplyr::filter(coord.dat, !is.na(paste(rlang::sym(lng.name))) & !is.na(paste(rlang::sym(lat.name))))
 
     # Initialize a column for matched climate data
     # This step adds a new column to the coordinate data frame to store the matched climate data.
@@ -121,7 +121,7 @@ cGENIE.point.matching <- function(var = NULL,
     # Iterate over each row in the coordinate data frame
     # This loop processes each coordinate point to find the matching climate data.
     for(row in 1:nrow(coord.dat)){
-
+    try({
         # Find the mid-point of the nearest latitudinal grid cell for each occurrence
         # This step identifies the closest latitude grid point in the cGENIE model to the current coordinate's latitude.
         coord.dat$lat.bin.mid[row] <- grid.dat$lat[which.min(abs(coord.dat[[lat.name]][row] - grid.dat$lat))]
@@ -148,7 +148,7 @@ cGENIE.point.matching <- function(var = NULL,
             coord.dat$lon.bin.mid[row] <- NA
             coord.dat$matched_climate[row] <- NA
         }
-
+    })
     }
 
     # Filter out rows where the matched climate data is NA
@@ -171,4 +171,4 @@ cGENIE.point.matching <- function(var = NULL,
         return(coord.dat)
     }
 
-}
+a}

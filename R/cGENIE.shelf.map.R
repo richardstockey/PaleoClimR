@@ -31,7 +31,7 @@
 #' Default settings are defined for several commonly used variables, and users can specify their own scaling and color settings.
 #'
 #' @importFrom RNetCDF open.nc var.get.nc
-#' @importFrom dplyr filter %>% 
+#' @importFrom dplyr filter %>%
 #' @importFrom sf st_as_sf st_crs st_transform st_union
 #' @importFrom sp Polygon Polygons SpatialPolygons SpatialPolygonsDataFrame
 #' @importFrom ggspatial geom_sf
@@ -187,9 +187,9 @@ cGENIE.shelf.map <- function(var, experiment,
     dplyr::filter(lon.max <= 180, lon.min >= -180, lat.max <= 90, lat.min >= -90)
 
   # Handle longitudes near -180 and 180 degrees
-  df$lon.range <- abs(df$lon.min - df$lon.max)
-  df$lon.min[df$lon.range > 180 & abs(df$lon.min) == 180] <- -df$lon.min[df$lon.range > 180 & abs(df$lon.min) == 180]
-  df$lon.max[df$lon.range > 180 & abs(df$lon.max) == 180] <- -df$lon.max[df$lon.range > 180 & abs(df$lon.max) == 180]
+  df$lon.range <- base::abs(df$lon.min - df$lon.max)
+  df$lon.min[df$lon.range > 180 & base::abs(df$lon.min) == 180] <- -df$lon.min[df$lon.range > 180 & base::abs(df$lon.min) == 180]
+  df$lon.max[df$lon.range > 180 & base::abs(df$lon.max) == 180] <- -df$lon.max[df$lon.range > 180 & base::abs(df$lon.max) == 180]
 
   # Create polygons for plotting
   poly.list <- list()
@@ -264,9 +264,9 @@ cGENIE.shelf.map <- function(var, experiment,
     dplyr::filter(lon.max <= 180, lon.min >= -180, lat.max <= 90, lat.min >= -90)
 
   # Handle longitudes near -180 and 180 degrees for shelf data
-  shelf.df$lon.range <- abs(shelf.df$lon.min - shelf.df$lon.max)
-  shelf.df$lon.min[shelf.df$lon.range > 180 & abs(shelf.df$lon.min) == 180] <- -shelf.df$lon.min[shelf.df$lon.range > 180 & abs(shelf.df$lon.min) == 180]
-  shelf.df$lon.max[shelf.df$lon.range > 180 & abs(shelf.df$lon.max) == 180] <- -shelf.df$lon.max[shelf.df$lon.range > 180 & abs(shelf.df$lon.max) == 180]
+  shelf.df$lon.range <- base::abs(shelf.df$lon.min - shelf.df$lon.max)
+  shelf.df$lon.min[shelf.df$lon.range > 180 & base::abs(shelf.df$lon.min) == 180] <- -shelf.df$lon.min[shelf.df$lon.range > 180 & base::abs(shelf.df$lon.min) == 180]
+  shelf.df$lon.max[shelf.df$lon.range > 180 & base::abs(shelf.df$lon.max) == 180] <- -shelf.df$lon.max[shelf.df$lon.range > 180 & base::abs(shelf.df$lon.max) == 180]
 
   # Create polygons for shelf data
   shelf.poly.list <- list()
@@ -327,40 +327,42 @@ cGENIE.shelf.map <- function(var, experiment,
       ggspatial::geom_sf(data = land.SpDfSf %>% sf::st_transform(projection), fill = "grey80", color = NA) +
       ggspatial::geom_sf(data = sf::st_as_sf(continents) %>% sf::st_transform(projection), fill = "grey80", color = line.colour, linewidth = line.thickness) +
       ggspatial::geom_sf(data = SLs1dfSf %>% sf::st_transform(projection), color = line.colour, linewidth = line.thickness, fill = NA) +
-      ggspatial::geom_sf(data = land.outline.SpDfSf %>% sf::st_transform(projection), fill = NA, color = "black", size = 0.5) +
+      # ggspatial::geom_sf(data = land.outline.SpDfSf %>% sf::st_transform(projection), fill = NA, color = "black", size = 0.5) +
       ggplot2::scale_fill_stepsn(colours = palette_name,
-                        breaks = seq(min.value, max.value, intervals),
-                        limits = c(min.value, max.value),
-                        guide = ggplot2::guide_colorbar(title.position = "top", barwidth = 12, barheight = 1)) +
+          breaks = seq(min.value, max.value, intervals),
+          limits = c(min.value, max.value),
+          guide = ggplot2::guide_colorbar(title.position = "top", barwidth = 12, barheight = 1)) +
       ggplot2::theme_minimal() +
-      ggplot2::theme(legend.position = "bottom",
-            plot.background = ggplot2::element_rect(fill = ifelse(darkmode, background.colour, "white")),
-            panel.background = ggplot2::element_rect(fill = ifelse(darkmode, background.colour, "white")),
-            legend.background = ggplot2::element_rect(fill = ifelse(darkmode, background.colour, "white")),
-            text = ggplot2::element_text(color = ifelse(darkmode, foreground.colour, "black"))) +
+      ggplot2::theme(
+      legend.position = "bottom",
+      plot.background = ggplot2::element_rect(fill = ifelse(darkmode, background.colour, NA), color = NA),
+      panel.background = ggplot2::element_rect(fill = ifelse(darkmode, background.colour, NA), color = NA),
+      legend.background = ggplot2::element_rect(fill = ifelse(darkmode, background.colour, NA), color = NA),
+      text = ggplot2::element_text(color = ifelse(darkmode, foreground.colour, "black"))
+      ) +
       ggplot2::labs(fill = scale.label)
 
-  } else {
+    } else {
     # Create the map using ggplot with layered spatial objects
     map <- ggplot2::ggplot() +
       ggspatial::geom_sf(data = SpDfSf %>% sf::st_transform(projection), ggplot2::aes(fill = var * unit.factor), color = NA, alpha = ocean.alpha) +
       ggspatial::geom_sf(data = shelf.SpDfSf %>% sf::st_transform(projection), ggplot2::aes(fill = var * unit.factor), color = NA) +
       ggspatial::geom_sf(data = land.SpDfSf %>% sf::st_transform(projection), fill = "grey80", color = NA) +
       ggspatial::geom_sf(data = SLs1dfSf %>% sf::st_transform(projection), color = line.colour, linewidth = line.thickness, fill = NA) +
-      ggspatial::geom_sf(data = land.outline.SpDfSf %>% sf::st_transform(projection), fill = NA, color = "black", size = 0.5) +
+      # ggspatial::geom_sf(data = land.outline.SpDfSf %>% sf::st_transform(projection), fill = NA, color = "black", size = 0.5) +
       ggplot2::scale_fill_stepsn(colours = palette_name,
-                        breaks = seq(min.value, max.value, intervals),
-                        limits = c(min.value, max.value),
-                        guide = ggplot2::guide_colorbar(title.position = "top", barwidth = 12, barheight = 1)) +
+          breaks = seq(min.value, max.value, intervals),
+          limits = c(min.value, max.value),
+          guide = ggplot2::guide_colorbar(title.position = "top", barwidth = 12, barheight = 1)) +
       ggplot2::theme_minimal() +
-      ggplot2::theme(legend.position = "bottom",
-            plot.background = ggplot2::element_rect(fill = ifelse(darkmode, background.colour, "white")),
-            panel.background = ggplot2::element_rect(fill = ifelse(darkmode, background.colour, "white")),
-            legend.background = ggplot2::element_rect(fill = ifelse(darkmode, background.colour, "white")),
-            text = ggplot2::element_text(color = ifelse(darkmode, foreground.colour, "black"))) +
+      ggplot2::theme(
+      legend.position = "bottom",
+      plot.background = ggplot2::element_rect(fill = ifelse(darkmode, background.colour, NA), color = NA),
+      panel.background = ggplot2::element_rect(fill = ifelse(darkmode, background.colour, NA), color = NA),
+      legend.background = ggplot2::element_rect(fill = ifelse(darkmode, background.colour, NA), color = NA),
+      text = ggplot2::element_text(color = ifelse(darkmode, foreground.colour, "black"))
+      ) +
       ggplot2::labs(fill = scale.label)
-  }
-  return(map)
-
-
+    }
+    return(map)
 }
