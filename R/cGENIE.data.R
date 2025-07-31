@@ -2,12 +2,12 @@
 #'
 #' This function extracts 2D latitude-longitude data fields from 3D or 2D netCDF (.nc) files.
 #'
-#' @param var The variable name to extract from the .nc file.
-#' @param experiment Directory containing the experiment's netCDF files.
-#' @param depth.level Depth level to extract the data from. Set to NULL by default.
-#' @param dims Number of dimensions in the netCDF file. Defaults to 3.
-#' @param year Year to extract data for (default is "default", meaning the last time point).
-#' @param model The model type; defaults to "biogem".
+#' @param var \code{character}. Variable name to extract from cGENIE netCDF file.
+#' @param experiment \code{character}. A character string specifying the path to the experiment folder where the target cGENIE netCDF files are stored.
+#' @param depth.level \code{numeric}. Depth level to extract the data from. Set to NULL by default.
+#' @param dims \code{numberic}. Number of dimensions in the netCDF file. Defaults to 3.
+#' @param year \code{numeric} or \code{string}. A numeric value or the string "default" indicating the time step to extract data for. Defaults to "default", which selects the latest time step.
+#' @param model \code{string}. The model type (default is "biogem"). Currently supports the "biogem" model.
 #' @return A data frame containing the extracted 2D lat-lon data field with corresponding grid information.
 #' @importFrom RNetCDF open.nc var.get.nc
 #' @importFrom dplyr %>%

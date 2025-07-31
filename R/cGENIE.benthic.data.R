@@ -1,10 +1,10 @@
-#' Summarize Bottom-Water Environments from cGENIE NetCDF Files
+uy#' Summarize Bottom-Water Environments from cGENIE netCDF Files
 #'
-#' This function extracts and summarizes the bottom-water redox state from 3D cGENIE NetCDF files. It retrieves specified variables, computes the corresponding bottom-water depths, and optionally returns the data as either an array or a dataframe.
+#' This function extracts and summarizes the bottom-water redox state from 3D cGENIE netCDF files. It retrieves specified variables, computes the corresponding bottom-water depths, and optionally returns the data as either an array or a dataframe.
 #'
-#' @param var Character string specifying the variable to extract from the NetCDF file.
-#' @param experiment Character string indicating the path to the experiment directory containing the NetCDF files.
-#' @param output Character. The format of the output. Default is "dataframe". Options are "dataframe" or "array".
+#' @param var \code{character}. Variable name to extract from cGENIE netCDF file.
+#' @param experiment \code{character}. A character string specifying the path to the experiment folder where the target cGENIE netCDF files are stored.
+#' @param output \code{character}. The format of the output. Default is "dataframe". Options are "dataframe" or "array".
 #' @return A data frame or 3D array with the original coordinates and matched climate data from the cGENIE model.
 #' @import RNetCDF
 #' @import reshape2
@@ -16,12 +16,12 @@
 cGENIE.benthic.data <- function(var, experiment, output = "dataframe"){
 
   # Load required libraries
-  library(RNetCDF)  # For reading NetCDF files
+  library(RNetCDF)  # For reading netCDF files
 
   # Define the dimension (3D grid) of the data
   dims <- 3
 
-  # Open the NetCDF file located in the experiment directory
+  # Open the netCDF file located in the experiment directory
   nc <- RNetCDF::open.nc(paste0(experiment, "/biogem/fields_biogem_", dims, "d", ".nc"))
 
   # Extract general grid variables: latitude, longitude, depth, and time
@@ -33,7 +33,7 @@ cGENIE.benthic.data <- function(var, experiment, output = "dataframe"){
   depth.edges <- RNetCDF::var.get.nc(nc, "zt_edges") # Depth edges in meters
   time <- RNetCDF::var.get.nc(nc, "time")            # Time (year mid-point)
 
-  # Extract the specified variable (e.g., oxygen, temperature) from the NetCDF file
+  # Extract the specified variable (e.g., oxygen, temperature) from the netCDF file
   var.arr <- RNetCDF::var.get.nc(nc, var)
 
   # Extract topography data to determine ocean floor depth
