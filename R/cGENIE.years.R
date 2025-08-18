@@ -7,11 +7,14 @@
 #' @importFrom RNetCDF open.nc var.get.nc
 #' @export
 
-cGENIE.years <- function(var, experiment,
-                        model = "biogem"){
+cGENIE.years <- function(experiment,
+                        var = "ocn_temp",
+                        model = "biogem",
+                        dims = 3){
 
-  # Load necessary libraries
-  RNetCDF::library(RNetCDF)
+  # note that var and dims are essentially arbitrary here
+  # anticipating any model with biogem will include temperature
+  # could change but not sure why you would.
 
   # Define the prefix based on the selected model
   if (model == "biogem") {
@@ -22,8 +25,6 @@ cGENIE.years <- function(var, experiment,
   nc <- RNetCDF::open.nc(paste0(experiment, prefix, dims, "d", ".nc"))
 
   years <- RNetCDF::var.get.nc(nc, "time")
-
-  print(years)
 
   return(years)
 }
