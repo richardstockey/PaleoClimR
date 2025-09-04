@@ -27,7 +27,7 @@
 #' @return A ggplot object representing the generated map with the specified variable visualized across geographical coordinates.
 #'
 #' @details
-#' This function generates a map visualization of the global distribution of oxygen minimum zones from a given NetCDF file 
+#' This function generates a map visualization of the global distribution of oxygen minimum zones from a given NetCDF file
 #' containing data from the cGENIE model outputs.
 #'
 #' @import RNetCDF
@@ -66,7 +66,7 @@ cGENIE.omz.map <- function(experiment,
 
   depth.level = 1
   # Open the NetCDF file
-  nc <- RNetCDF::open.nc(paste0(experiment, prefix, dims, "d", ".nc"))
+  nc <- RNetCDF::open.nc(paste0(experiment, "/biogem/fields_biogem_", dims, "d", ".nc"))
 
   # Extract general variables (e.g., latitude, longitude, depth, time)
   lat <- RNetCDF::var.get.nc(nc, "lat") # Latitude

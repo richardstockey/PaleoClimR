@@ -248,13 +248,13 @@ if(is.null(col.labels)){
     map <- ggplot2::ggplot() +
       ggplot2::geom_sf(data = SpDfSf %>% sf::st_transform(projection), ggplot2::aes(fill = var * unit.factor), color = NA) +
       ggplot2::geom_sf(data = sf::st_as_sf(continents) %>% sf::st_transform(projection), fill = "grey80", color = "grey20", linewidth = line.thickness) +
-      ggplot2::geom_sf(data = SLs1dfSf %>% sf::st_transform(projection), color = darkmode.fg, linewidth = line.thickness, fill = NA) +
+      ggplot2::geom_sf(data = SLs1dfSf %>% sf::st_transform(projection), color = darkmode.bg, linewidth = line.thickness, fill = NA) +
       ggplot2::scale_fill_stepsn(colours = palette_name,
              breaks = seq(min.value, max.value, intervals),
              limits = c(min.value, max.value),
              guide = ggplot2::guide_colorbar(title.position = "top", barwidth = 12, barheight = 1,
-                    frame.colour = darkmode.fg,
-                    ticks.colour = darkmode.fg),
+                    frame.colour = darkmode.bg,
+                    ticks.colour = darkmode.bg),
              labels = col.labels) +
       ggplot2::theme_minimal() +
       ggplot2::theme(legend.position = "bottom") +
@@ -264,13 +264,13 @@ if(is.null(col.labels)){
     # Create the map using ggplot
     map <- ggplot2::ggplot() +
       ggplot2::geom_sf(data = SpDfSf %>% sf::st_transform(projection), ggplot2::aes(fill = var * unit.factor), color = NA) +
-      ggplot2::geom_sf(data = SLs1dfSf %>% sf::st_transform(projection), color = darkmode.fg, linewidth = 0.9, fill = NA) +
+      ggplot2::geom_sf(data = SLs1dfSf %>% sf::st_transform(projection), color = darkmode.bg, linewidth = 0.9, fill = NA) +
       ggplot2::scale_fill_stepsn(colours = palette_name,
              breaks = seq(min.value, max.value, intervals),
              limits = c(min.value, max.value),
              guide = ggplot2::guide_colorbar(title.position = "top", barwidth = 12, barheight = 1,
-                    frame.colour = darkmode.fg,
-                    ticks.colour = darkmode.fg),
+                    frame.colour = darkmode.bg,
+                    ticks.colour = darkmode.bg),
              labels = col.labels) +
       ggplot2::theme_minimal() +
       ggplot2::theme(legend.position = "bottom") +

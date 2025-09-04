@@ -31,12 +31,12 @@
 #' @return If plot is FALSE - returns a spatial polygons data frame. If plot is TRUE - returns a ggplot object.
 #' @importFrom RNetCDF open.nc var.get.nc
 #' @importFrom dplyr filter
-#' @importFrom sf st_as_sf st_transform st_crs 
+#' @importFrom sf st_as_sf st_transform st_crs
 #' @importFrom ggspatial geom_sf annotation_scale
 #' @importFrom sp Polygon Polygons SpatialPolygons SpatialPolygonsDataFrame
 #' @importFrom reshape2 melt
 #' @importFrom ggplot2 ggplot aes labs theme
-#' @importFrom ggnewscale new_scale 
+#' @importFrom ggnewscale new_scale
 #' @importFrom paletteer paletteer_c
 #' @export
 #'
@@ -63,7 +63,7 @@ HADCM3.map.pretty <- function(file = NULL,  # Name of the netCDF file (without e
   palette_name_ocean = pals::parula(1000),
   polygons = NULL,
   darkmode = FALSE,
-  bg.color = "white",
+  bg.color = NA,
   fg.color = "black",
   col.labels = NULL) {
 
