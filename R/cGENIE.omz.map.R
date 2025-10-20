@@ -241,7 +241,7 @@ cGENIE.omz.map <- function(experiment,
     ggplot2::scale_fill_stepsn(colours = palette_name,
                  breaks = seq(min.value, max.value, intervals),
                  limits = c(min.value, max.value),
-                 guide = ggplot2::guide_colorbar(title.position = "top", barwidth = 12, barheight = 1)) +
+                 guide = ggplot2::guide_colorbar(title.position = "top", barwidth = 20, barheight = 1)) +
     ggplot2::theme_minimal(base_family = "Arial", base_size = 12) +
     ggplot2::theme(legend.position = "bottom",
            plot.background = ggplot2::element_rect(fill = bg.color, color = NA),
@@ -264,7 +264,7 @@ cGENIE.omz.map <- function(experiment,
     ggplot2::scale_fill_stepsn(colours = palette_name,
                  breaks = seq(min.value, max.value, intervals),
                  limits = c(min.value, max.value),
-                 guide = ggplot2::guide_colorbar(title.position = "top", barwidth = 12, barheight = 1)) +
+                 guide = ggplot2::guide_colorbar(title.position = "top", barwidth = 20, barheight = 1)) +
     ggplot2::theme_minimal(base_family = "Arial", base_size = 12) +
     ggplot2::theme(legend.position = "bottom",
            plot.background = ggplot2::element_rect(fill = bg.color, color = NA),
