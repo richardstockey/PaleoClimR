@@ -27,7 +27,7 @@ HADCM3.map.pretty(
   palette_name_ocean = pals::parula(1000),
   polygons = NULL,
   darkmode = FALSE,
-  bg.color = "white",
+  bg.color = NA,
   fg.color = "black",
   col.labels = NULL
 )
