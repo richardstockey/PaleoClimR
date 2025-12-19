@@ -34,7 +34,7 @@ cGENIE.data <- function(var,
                          lat.edges = nc.list$lat.edges,
                          lon = nc.list$lon,
                          lon.edges = nc.list$lon.edges,
-                         var = nc.list$var,
+                         var.arr = nc.list$var,
                          depth.level = depth.level,
                          dims = dims,
                          time.step = time.step

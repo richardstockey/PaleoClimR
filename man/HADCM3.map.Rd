@@ -2,78 +2,70 @@
 % Please edit documentation in R/HADCM3.map.R
 \name{HADCM3.map}
 \alias{HADCM3.map}
-\title{HADCM3.map}
+\title{Generate Maps from HADCM3 Model Output (as formatted by the BRIDGE Group)}
 \usage{
 HADCM3.map(
   var,
   file,
   experiment,
   depth.level = 1,
-  dims = 3,
-  min.value,
-  max.value,
-  intervals,
-  continents.outlined,
-  scale.label,
-  unit.factor = 1,
-  time.present = FALSE,
-  projection = "ESRI:54012",
-  calcs = TRUE,
-  plot = TRUE,
+  dims = NULL,
+  year = "default",
+  unit.factor = NULL,
+  min.value = NULL,
+  max.value = NULL,
+  intervals = NULL,
+  continents.outlined = TRUE,
+  scale.label = NULL,
+  line.thickness = 1,
   palette_name = pals::parula(1000),
-  polygons,
-  na.colour = "grey80",
+  projection = "ESRI:54012",
   darkmode = FALSE,
-  bg.colour = "black",
-  fg.colour = "white"
+  custom.bg = NULL,
+  custom.fg = NULL,
+  col.labels = NULL
 )
 }
 \arguments{
-\item{var}{Character. The variable to be extracted from the netCDF file.}
+\item{var}{A character string specifying the name of the variable to extract from the NetCDF file. (e.g. "insitu_T_ym_dpth")}
 
-\item{file}{Character. The name of the netCDF file (without extension).}
+\item{file}{A character string indicating the name of the NetCDF file (without the .nc extension).}
 
-\item{experiment}{Character. The path to the experiment directory containing the netCDF file.}
+\item{experiment}{A character string indicating the path to the HADCM3 experiment directory.}
 
-\item{depth.level}{Numeric. The depth level to be extracted for 3D netCDF files. Default is 1.}
+\item{depth.level}{(numeric) Depth layer to visualize (default = 1).}
 
-\item{dims}{Numeric. The number of dimensions in the netCDF file (2 or 3). Default is 3.}
+\item{dims}{(numeric) Dimensionality of the data (default NULL; auto-set by var).}
 
-\item{min.value}{Numeric. The minimum value for the color scale.}
+\item{year}{(numeric or character) Time step to visualize (default "default").}
 
-\item{max.value}{Numeric. The maximum value for the color scale.}
+\item{unit.factor}{(numeric) Scaling factor for variable (default NULL; auto-set by var).}
 
-\item{intervals}{Numeric. The intervals for the color scale.}
+\item{min.value, max.value}{(numeric) Color scale limits (default NULL; auto-set by var).}
 
-\item{continents.outlined}{Logical. Whether to outline continents. (Not used in the current implementation)}
+\item{intervals}{(numeric) Color scale intervals (default NULL; auto-set by var).}
 
-\item{scale.label}{Character. The label for the color scale.}
+\item{continents.outlined}{(logical) Whether to outline continents (default TRUE).}
 
-\item{unit.factor}{Numeric. A factor to multiply the variable values by. Default is 1.}
+\item{scale.label}{(character) Label for color scale (default NULL; auto-set by var).}
 
-\item{time.present}{Logical. Whether the netCDF file includes a time dimension. Default is FALSE.}
+\item{line.thickness}{(numeric) Thickness of continent outlines (default 1).}
 
-\item{projection}{Character. The projection to be used for the map. Default is 'ESRI:54012'.}
+\item{palette_name}{(character) Color palette for the plot (default pals::parula(1000)).}
 
-\item{calcs}{Logical. Whether to perform calculations to generate the spatial polygons. Default is TRUE.}
+\item{projection}{(character) Map projection (default 'ESRI:54012').}
 
-\item{plot}{Logical. Whether to generate and return the plot. Default is TRUE.}
+\item{darkmode}{(logical) Enable dark mode (default FALSE).}
 
-\item{palette_name}{Function. The color palette function to be used for the map. Default is \code{pals::parula(1000)}.}
+\item{custom.bg}{(character) Background color for dark mode (default NULL; auto-set if darkmode = TRUE).}
 
-\item{polygons}{SpatialPolygonsDataFrame. Pre-calculated polygons to be used if \code{calcs} is FALSE.}
+\item{custom.fg}{(character) Foreground color for dark mode (default NULL; auto-set if darkmode = TRUE).}
 
-\item{na.colour}{Character. The color to be used for NA values. Default is "grey80".}
-
-\item{darkmode}{Logical. Whether to use dark mode for the plot. Default is FALSE.}
-
-\item{bg.colour}{Character. Background color for the plot in dark mode. Default is "black".}
-
-\item{fg.colour}{Character. Foreground color for the plot in dark mode. Default is "white".}
+\item{col.labels}{(numeric) Labels for the color bar ticks.}
 }
 \value{
-If \code{plot} is TRUE, returns a ggplot object. If \code{plot} is FALSE and \code{calcs} is TRUE, returns a SpatialPolygonsDataFrame. If \code{plot} is FALSE and \code{calcs} is FALSE, returns the input \code{polygons}.
+A ggplot object representing the map.
 }
 \description{
-This function generates maps from imported .nc files, such as those from Valdes et al. 2021. It can handle both 2D and 3D netCDF files and provides options for various customizations including projections, color palettes, and more.
+Generate Maps from HADCM3 Model Output (as formatted by the BRIDGE Group)
 }

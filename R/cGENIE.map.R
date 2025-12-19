@@ -39,7 +39,7 @@ cGENIE.map <- function(var, experiment,
                        custom.fg = NULL,
                        col.labels = NULL) {
 
-  # --- Default values based on variable ---
+  # Set default values based on variable
   unit.factor <- if(is.null(unit.factor)) switch(var,
                                                  "ocn_temp" = 1,
                                                  "ocn_sal"  = 1,

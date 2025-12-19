@@ -7,6 +7,9 @@
 #' @param experiment Character string; path to experiment directory.
 #' @param model Character string; model type. Default "biogem".
 #'
+#' @importFrom stringr str_split str_trim
+#' @importFrom readr read_lines read_table
+#' @importFrom dplyr select where
 #' @return Data frame with imported data. Columns full of NAs are removed.
 #' @export
 cGENIE.res.import <- function(var, experiment, model = "biogem") {

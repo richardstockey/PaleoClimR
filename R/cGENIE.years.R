@@ -7,12 +7,7 @@
 #' @export
 
 cGENIE.years <- function(experiment,
-                        model = "biogem",
-                        dims = 3){
-
-  # note that dims are essentially arbitrary here
-  # anticipating any model with biogem will include both 2d and 3d netcdf output
-  # could change but not sure why you would.
+                        model = "biogem"){
 
   # Define the prefix for the NetCDF file based on the model
   if (model == "biogem") {
@@ -20,6 +15,8 @@ cGENIE.years <- function(experiment,
   } else {
     stop("Currently only 'biogem' model is supported.")
   }
+
+  dims <- 3 # shouldn't matter whether we use 2 or 3 here - both NetCDF files usually saved at same resolution.
 
   # Open the netCDF file based on the dimensions
   nc <- RNetCDF::open.nc(paste0(experiment, prefix, dims, "d", ".nc"))

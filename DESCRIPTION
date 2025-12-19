@@ -1,46 +1,32 @@
 Package: PaleoClimR
 Type: Package
-Title: Extracting, Processing, and Visualizing Paleoclimate Data
+Title: Extracting, Visualizing, and Analyzing Paleoclimate Data
 Version: 1.0.0
 Authors@R: c(
     person("Richard G.", "Stockey", email = "r.g.stockey@soton.ac.uk", role = c("aut", "cre")),
-    person("Alison T.", "Cribb", role = "ctb"),
     person("Przemyslaw", "Gruszka", role = "ctb"),
     person("Aspen", "Sartin", role = "ctb"),
     person("Dawid", "Nehrenberg", role = "ctb"),
-    person("Pedro", "Monarrez", role = "ctb")
+    person("Pedro", "Monarrez", role = "ctb"),
+    person("Alison T.", "Cribb", role = "ctb")
   )
 Maintainer: Richard G. Stockey <richard.stockey@example.com>
-Description: An R package designed for extracting, processing, and visualizing paleoclimate data from cGENIE model outputs.
+Description: An R package designed for extracting, visualizing and analyzing paleoclimate data from palaeoclimate model outputs, with specific emphasis on cGENIE and HADCM3.
 License: MIT + file LICENSE
 Imports:
     dplyr, 
-    RNetCDF, 
-    egg,
-    ggnewscale, 
     ggplot2, 
-    ggspatial, 
-    gridExtra,    paletteer, 
-    pals, 
+    ggspatial,
     readr, 
     reshape2,
+    RNetCDF, 
     sf, 
     sp, 
-    tidyr,    viridis
+    stringr
 Suggests:
-    geosphere,
-    lubridate,
-    ncdf4,
-    progress,
-    purrr,
-    readr,
-    sf,
-    sp,
-    tidyr,
-    testthat,
     knitr,
     rmarkdown
 VignetteBuilder: knitr
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Encoding: UTF-8

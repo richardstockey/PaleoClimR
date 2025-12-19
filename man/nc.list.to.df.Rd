@@ -9,10 +9,10 @@ nc.list.to.df(
   lat.edges,
   lon,
   lon.edges,
-  var,
+  var.arr,
   depth.level,
   dims,
-  time.step
+  time.step = NULL
 )
 }
 \arguments{
@@ -24,7 +24,7 @@ nc.list.to.df(
 
 \item{lon.edges}{Numeric vector of longitude cell edges.}
 
-\item{var}{Character string giving the variable name.}
+\item{var.arr}{Array of variable values to use (2D or 3D).}
 
 \item{depth.level}{Integer depth index to extract (3D variables only).}
 
@@ -47,6 +47,8 @@ midpoints and grid-cell bounds.
 The function is model-agnostic and should work for any regularly gridded
 lat–lon NetCDF output. Model-specific exceptions (e.g. certain cGENIE
 diagnostics with non-standard grids) are handled explicitly where required.
+
+This function expects inputs similar to the outputs of \code{\link{cGENIE.get.nc}} and \code{\link{HADCM3.get.nc}}.
 
 This function does not read NetCDF files directly. It operates on arrays
 already extracted from NetCDF output and assumes a regular lat–lon grid.

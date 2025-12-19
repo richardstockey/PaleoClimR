@@ -4,37 +4,24 @@
 \alias{HADCM3.data}
 \title{Extract Data from NetCDF Files}
 \usage{
-HADCM3.data(
-  var,
-  file,
-  experiment,
-  depth.level = 1,
-  dims = 3,
-  time.present = FALSE
-)
+HADCM3.data(var, file, experiment, depth.level = 1, dims = 3, year = "default")
 }
 \arguments{
-\item{var}{Character. The name of the variable to extract from the NetCDF file.}
+\item{var}{A character string specifying the name of the variable to extract from the NetCDF file.}
 
-\item{file}{Character. The name of the NetCDF file (without the .nc extension).}
+\item{file}{A character string indicating the name of the NetCDF file (without the .nc extension).}
 
-\item{experiment}{Character. The path to the directory containing the NetCDF file.}
+\item{experiment}{A character string indicating the path to the HADCM3 experiment directory.}
 
-\item{depth.level}{Numeric. The depth level to extract (default is 1).}
+\item{depth.level}{Depth level to extract the data from. Set to NULL by default.}
 
-\item{dims}{Numeric. The number of dimensions of the NetCDF file (default is 3).}
+\item{dims}{An integer specifying the dimensions of the NetCDF file to read. Default is set to 3 for 3D data but can alternatively be set to 2. .}
 
-\item{time.present}{Logical. Whether the time dimension is present in the NetCDF file (default is FALSE).}
+\item{year}{Year to extract data for (default is "default", meaning the last or only time point (note this is slightly different to cGENIE.data because HADCM3 outputs more commonly have only one time point)).}
 }
 \value{
-A data frame containing the extracted data, with columns for longitude, latitude, and the specified variable.
+A data frame containing the extracted 2D lat-lon data field with corresponding grid information.
 }
 \description{
 This function extracts data from imported NetCDF (.nc) files, specifically designed for use with HADCM3 model outputs.
-}
-\details{
-This function reads in a NetCDF file using the RNetCDF package and extracts the specified variable. It handles both 2D and 3D data, and can adjust longitude values to be within the range of -180 to 180 degrees. The function also filters the data to ensure it falls within realistic geographic bounds.
-}
-\note{
-The function assumes that the NetCDF file follows a specific structure, with variables named "latitude", "longitude", "depth_1", and "t" for time. Adjustments may be needed for different file structures.
 }

@@ -4,12 +4,10 @@
 \alias{cGENIE.years}
 \title{Prints the years that are saved in a cGENIE model experiment}
 \usage{
-cGENIE.years(experiment, var = "ocn_temp", model = "biogem", dims = 3)
+cGENIE.years(experiment, model = "biogem")
 }
 \arguments{
 \item{experiment}{Directory containing the experiment's netCDF files.}
-
-\item{var}{The variable name to extract from the .nc file.}
 
 \item{model}{The model type; defaults to "biogem".}
 }

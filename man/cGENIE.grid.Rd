@@ -4,23 +4,24 @@
 \alias{cGENIE.grid}
 \title{Extract Grid Data from cGENIE NetCDF Files}
 \usage{
-cGENIE.grid(experiment, dims, model = "biogem")
+cGENIE.grid(experiment = NULL, dims = NULL, model = "biogem")
 }
 \arguments{
-\item{experiment}{A character string indicating the path to the cGENIE experiment directory.}
+\item{experiment}{Character string indicating the path to the cGENIE experiment directory.}
 
-\item{dims}{An integer specifying the dimensions of the NetCDF file to read. Default is set to 3 for 3D data.}
+\item{dims}{Integer specifying the dimensions of the NetCDF file to read. Default is NULL (returns default grid).}
 
-\item{model}{A character string indicating the model type (default is "biogem"). Currently, only "biogem" is supported.}
+\item{model}{Character string indicating the model type (default "biogem"). Currently only "biogem" is supported.}
 }
 \value{
-A list containing latitude, longitude, and depth information, along with their respective edges.
+A list containing latitude, longitude, depth (if dims=3), and their respective edges.
 }
 \description{
-This function extracts grid-related data (latitude, longitude, and depth) from a specified cGENIE NetCDF file.
-It can handle both 2D and 3D grid data based on the specified dimensions.
+This function extracts grid-related data (latitude, longitude, and depth)
+from a specified cGENIE NetCDF file. It handles both 2D and 3D grid data
+based on the specified dimensions. If \code{experiment} or \code{dims} is \code{NULL},
+it returns the default 36x36x16 cGENIE grid dimensions.
 }
 \details{
-The function handles the adjustment of longitude values to ensure they are within the range of -180 to 180.
-It returns a list containing the relevant grid data based on the specified dimensions (2D or 3D).
+The function adjusts longitude values to be within -180 to 180 and reports if any values were outside this range.
 }

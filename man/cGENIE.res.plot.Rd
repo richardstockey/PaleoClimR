@@ -2,21 +2,33 @@
 % Please edit documentation in R/cGENIE.res.plot.R
 \name{cGENIE.res.plot}
 \alias{cGENIE.res.plot}
-\title{cGENIE.res.plot}
+\title{Plot cGENIE .res File Variables}
 \usage{
-cGENIE.res.plot(var, sub_var = "default", experiment)
+cGENIE.res.plot(
+  var,
+  experiment,
+  var_col_no = 2,
+  x_var = "\% time (yr)",
+  plot_type = "line",
+  base_size = 14
+)
 }
 \arguments{
-\item{var}{A character string specifying the variable to be plotted (e.g., "ocn_temp", "ocn_O2", "atm_pO2", "atm_pCO2").}
+\item{var}{Character; variable name to import (e.g., "ocn_temp", "ocn_O2").}
 
-\item{sub_var}{A character string specifying the sub-variable to be plotted. Default is "default".}
+\item{experiment}{Character; experiment directory.}
 
-\item{experiment}{A character string specifying the experiment name.}
+\item{var_col_no}{Numeric; column index for y-axis variable (default = 2, first column after time).}
+
+\item{x_var}{Character; column name for x-axis (default = "\% time (yr)").}
+
+\item{plot_type}{Character; "line", "dots", or "both" (default = "line").}
+
+\item{base_size}{Numeric; base font size for theme (default = 14).}
 }
 \value{
-A ggplot object representing the time series plot of the specified variable.
+ggplot object.
 }
 \description{
-This function imports .res files and converts them into data frames, then plots them as time series.
-It builds on the \code{cGENIE.res.import} function.
+Imports .res files, converts to data frame, and plots as a time series or custom x/y variable.
 }

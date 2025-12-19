@@ -5,7 +5,7 @@
 #' suitable for spatial plotting.
 #'
 #' This function is designed to work with the output of
-#' [cGENIE.data()] after cleaning with [clean.nc.df()], but is
+#' ' \code{\link{cGENIE.data}} after cleaning with \code{\link{clean.nc.df}}, but is
 #' model-agnostic and can be used with any model that provides
 #' rectangular grid-cell bounds.
 #'
