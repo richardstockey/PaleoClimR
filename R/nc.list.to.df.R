@@ -37,54 +37,92 @@ nc.list.to.df <- function(lat,
                           var,
                           depth.level,
                           dims,
-                          time.step){
+                          time.step = NULL) {
 
-  # Build data frame
+  # ---- sanity checks ----
+  if (!dims %in% c(2, 3)) {
+    stop("dims must be 2 or 3")
+  }
+
+  has_time <- !is.null(time.step)
+
+  # ---- extract variable slice ----
   if (dims == 3) {
-    df <- as.data.frame(cbind(
-      rep(lon, times = length(lat)),
-      rep(lon.edges[1:(length(lon.edges) - 1)], times = length(lat)),
-      rep(lon.edges[2:length(lon.edges)], times = length(lat)),
-      rep(lat, each = length(lon)),
-      rep(lat.edges[1:(length(lat.edges) - 1)], each = length(lon)),
-      rep(lat.edges[2:length(lat.edges)], each = length(lon)),
-      reshape2::melt(var.arr[, , depth.level, time.step])$value
-    ))
-    names(df) <- c("lon.mid", "lon.min", "lon.max", "lat.mid", "lat.min", "lat.max", "var")
-  } else if (dims == 2) {
-    if (var == "grid_topo") { # this is a specific cGENIE use case
-      df <- as.data.frame(cbind(
-        rep(lon, times = length(lat)),
-        rep(lon.edges[1:(length(lon.edges) - 1)], times = length(lat)),
-        rep(lon.edges[2:length(lon.edges)], times = length(lat)),
-        rep(lat, each = length(lon)),
-        rep(lat.edges[1:(length(lat.edges) - 1)], each = length(lon)),
-        rep(lat.edges[2:length(lat.edges)], each = length(lon)),
-        reshape2::melt(var.arr)$value
-      ))
-      names(df) <- c("lon.mid", "lon.min", "lon.max", "lat.mid", "lat.min", "lat.max", "var")
-    } else if (var == "phys_psi") {  # this is a specific cGENIE use case
-      df <- as.data.frame(cbind(
-        rep(lon + 5, times = length(lat.edges)),
-        rep(lon.edges[1:(length(lon.edges) - 1)] + 5, times = length(lat.edges)),
-        rep(lon.edges[2:length(lon.edges)] + 5, times = length(lat.edges)),
-        rep(lat.edges, each = length(lon)),
-        rep(lat.edges, each = length(lon)),
-        rep(lat.edges, each = length(lon)),
-        reshape2::melt(var.arr)$value
-      ))
-      names(df) <- c("lon.mid", "lon.min", "lon.max", "lat.mid", "lat.min", "lat.max", "var")
+
+    if (has_time) {
+      # lon × lat × depth × time
+      slice <- var.arr[, , depth.level, time.step]
     } else {
-      df <- as.data.frame(cbind(
-        rep(lon, times = length(lat)),
-        rep(lon.edges[1:(length(lon.edges) - 1)], times = length(lat)),
-        rep(lon.edges[2:length(lon.edges)], times = length(lat)),
-        rep(lat, each = length(lon)),
-        rep(lat.edges[1:(length(lat.edges) - 1)], each = length(lon)),
-        rep(lat.edges[2:length(lat.edges)], each = length(lon)),
-        reshape2::melt(var.arr[, , time.step])$value
-      ))
-      names(df) <- c("lon.mid", "lon.min", "lon.max", "lat.mid", "lat.min", "lat.max", "var")
+      # lon × lat × depth
+      slice <- var.arr[, , depth.level]
+    }
+
+  } else if (dims == 2) {
+
+    if (var == "grid_topo" || var == "phys_psi") {
+      # handled separately below
+      slice <- var.arr
+    } else if (has_time) {
+      # lon × lat × time
+      slice <- var.arr[, , time.step]
+    } else {
+      # lon × lat
+      slice <- var.arr
+    }
+  }
+
+  values <- reshape2::melt(slice)$value
+
+  # ---- construct spatial dataframe ----
+  if (dims == 3) {
+
+    df <- data.frame(
+      lon.mid = rep(lon, times = length(lat)),
+      lon.min = rep(lon.edges[-length(lon.edges)], times = length(lat)),
+      lon.max = rep(lon.edges[-1], times = length(lat)),
+      lat.mid = rep(lat, each = length(lon)),
+      lat.min = rep(lat.edges[-length(lat.edges)], each = length(lon)),
+      lat.max = rep(lat.edges[-1], each = length(lon)),
+      var     = values
+    )
+
+  } else if (dims == 2) {
+
+    if (var == "grid_topo") {
+
+      df <- data.frame(
+        lon.mid = rep(lon, times = length(lat)),
+        lon.min = rep(lon.edges[-length(lon.edges)], times = length(lat)),
+        lon.max = rep(lon.edges[-1], times = length(lat)),
+        lat.mid = rep(lat, each = length(lon)),
+        lat.min = rep(lat.edges[-length(lat.edges)], each = length(lon)),
+        lat.max = rep(lat.edges[-1], each = length(lon)),
+        var     = values
+      )
+
+    } else if (var == "phys_psi") {
+
+      df <- data.frame(
+        lon.mid = rep(lon + 5, times = length(lat.edges)),
+        lon.min = rep(lon.edges[-length(lon.edges)] + 5, times = length(lat.edges)),
+        lon.max = rep(lon.edges[-1] + 5, times = length(lat.edges)),
+        lat.mid = rep(lat.edges, each = length(lon)),
+        lat.min = rep(lat.edges, each = length(lon)),
+        lat.max = rep(lat.edges, each = length(lon)),
+        var     = values
+      )
+
+    } else {
+
+      df <- data.frame(
+        lon.mid = rep(lon, times = length(lat)),
+        lon.min = rep(lon.edges[-length(lon.edges)], times = length(lat)),
+        lon.max = rep(lon.edges[-1], times = length(lat)),
+        lat.mid = rep(lat, each = length(lon)),
+        lat.min = rep(lat.edges[-length(lat.edges)], each = length(lon)),
+        lat.max = rep(lat.edges[-1], each = length(lon)),
+        var     = values
+      )
     }
   }
 

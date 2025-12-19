@@ -2,125 +2,49 @@
 #'
 #' This function extracts data from imported NetCDF (.nc) files, specifically designed for use with HADCM3 model outputs.
 #'
-#' @param var Character. The name of the variable to extract from the NetCDF file.
-#' @param file Character. The name of the NetCDF file (without the .nc extension).
-#' @param experiment Character. The path to the directory containing the NetCDF file.
-#' @param depth.level Numeric. The depth level to extract (default is 1).
-#' @param dims Numeric. The number of dimensions of the NetCDF file (default is 3).
-#' @param time.present Logical. Whether the time dimension is present in the NetCDF file (default is FALSE).
-#'
-#' @return A data frame containing the extracted data, with columns for longitude, latitude, and the specified variable.
-#'
-#' @details
-#' This function reads in a NetCDF file using the RNetCDF package and extracts the specified variable. It handles both 2D and 3D data, and can adjust longitude values to be within the range of -180 to 180 degrees. The function also filters the data to ensure it falls within realistic geographic bounds.
-#'
-#' @note
-#' The function assumes that the NetCDF file follows a specific structure, with variables named "latitude", "longitude", "depth_1", and "t" for time. Adjustments may be needed for different file structures.
-#'
-#'
-#' @import RNetCDF
-#' @import dplyr
-#' @import sf
-#' @import sp
-#' @import ggspatial
-#' @import reshape2
-#' @import ggplot2
-#' @import pals
-#' @import viridis
+#' @param var A character string specifying the name of the variable to extract from the NetCDF file.
+#' @param file A character string indicating the name of the NetCDF file (without the .nc extension).
+#' @param experiment A character string indicating the path to the HADCM3 experiment directory.
+#' @param depth.level Depth level to extract the data from. Set to NULL by default.
+#' @param dims An integer specifying the dimensions of the NetCDF file to read. Default is set to 3 for 3D data but can alternatively be set to 2. .
+#' @param year Year to extract data for (default is "default", meaning the last or only time point (note this is slightly different to cGENIE.data because HADCM3 outputs more commonly have only one time point)).
+#' @return A data frame containing the extracted 2D lat-lon data field with corresponding grid information.
 #' @export
-HADCM3.data <- function(var, file, experiment,
-            depth.level = 1,
-            dims = 3,
-            time.present = FALSE
-             ){
-              # Open the NetCDF file
-              nc <- RNetCDF::open.nc(paste0(experiment, file, ".nc"))
+HADCM3.data <- function(var,
+                        file,
+                        experiment,
+                        depth.level = 1,
+                        dims = 3,
+                        year = "default"
+                        ){
 
-              # Extract latitude and longitude variables
-              lat <- RNetCDF::var.get.nc(nc, "latitude") # units: degrees north
-              lat.edges <- c(lat - mean(diff(lat)/2), lat[length(lat)] + mean(diff(lat)/2)) # Calculate latitude edges for plotting
-              lon <- RNetCDF::var.get.nc(nc, "longitude") # units: degrees east
-              lon.edges <- c(lon - mean(diff(lon)/2), lon[length(lon)] + mean(diff(lon)/2)) # Calculate longitude edges for plotting
+  nc.list <- HADCM3.get.nc(var = var,
+                           file = file,
+                           experiment = experiment,
+                           dims = dims
+                          )
 
-              # Extract depth variable if the data is 3D
-              if(dims == 3){
-                depth <- RNetCDF::var.get.nc(nc, "depth_1") # units: metres
-                depth.edges <- c(0, RNetCDF::var.get.nc(nc, "depth"), (depth[length(depth)]+307.5)) # Calculate depth edges
-              }
 
-              # Extract time variable if present
-              if(time.present == TRUE){
-                time <- RNetCDF::var.get.nc(nc, "t") # units: year mid-point
-              }
+  # Select time step
+  if (year == "default") {
+    # if there are multiple timesteps, this will be the last one
+    # if there is only one (no) timestep[s] this will be NULL becase then it will be a 'random' number, which is then handled in nc.list.to.df()
+    time.step <- dim(nc.list$time)[1]
+  } else {
+    time.step <- which(nc.list$time == year)
+  }
 
-              # Extract the specified variable
-              var.arr <- RNetCDF::var.get.nc(nc, var)
+  # build dataframe from extracted list
+  nc.df <- nc.list.to.df(lat = nc.list$lat,
+                         lat.edges = nc.list$lat.edges,
+                         lon = nc.list$lon,
+                         lon.edges = nc.list$lon.edges,
+                         var = nc.list$var,
+                         depth.level = depth.level,
+                         dims = dims,
+                         time.step = time.step
+  )
 
-              # Adjust longitude values to be within the range of -180 to 180 degrees
-              if(mean(dplyr::between(lon, -180, 180)) < 1){
-                lon.edges[lon.edges > 180] <- lon.edges[lon.edges > 180] - 360
-                lon[lon > 180] <- lon[lon > 180] - 360
-              }
+  return(nc.df)
 
-              # Create a data frame for 3D data
-              if(dims == 3){
-                df <- as.data.frame(cbind(
-                  rep(lon, times = length(lat), each = 1),
-                  rep(lon.edges[1:(length(lon.edges)-1)], times = length(lat), each = 1),
-                  rep(lon.edges[2:(length(lon.edges))], times = length(lat), each = 1),
-                  rep(lat, times = 1, each = length(lon)),
-                  rep(lat.edges[1:(length(lat.edges)-1)], times = 1, each = length(lon)),
-                  rep(lat.edges[2:(length(lat.edges))], times = 1, each = length(lon)),
-                  as.data.frame(reshape2::melt(var.arr[,, depth.level]))$value))
-
-                # Assign column names to the data frame
-                names(df) <- c("lon.mid",
-                               "lon.min",
-                               "lon.max",
-                               "lat.mid",
-                               "lat.min",
-                               "lat.max",
-                               "var"
-                )
-              }
-
-              # Create a data frame for 2D data
-              if(dims == 2){
-                df <- as.data.frame(cbind(
-                  rep(lon, times = length(lat), each = 1),
-                  rep(lon.edges[1:(length(lon.edges)-1)], times = length(lat), each = 1),
-                  rep(lon.edges[2:(length(lon.edges))], times = length(lat), each = 1),
-                  rep(lat, times = 1, each = length(lon)),
-                  rep(lat.edges[1:(length(lat.edges)-1)], times = 1, each = length(lon)),
-                  rep(lat.edges[2:(length(lat.edges))], times = 1, each = length(lon)),
-                  as.data.frame(reshape2::melt(var.arr))$value))
-
-                # Assign column names to the data frame
-                names(df) <- c("lon.mid",
-                               "lon.min",
-                               "lon.max",
-                               "lat.mid",
-                               "lat.min",
-                               "lat.max",
-                               "var"
-                )
-
-                # Special handling for specific file and variable
-                if(file == ".qrparm.orog" & var == "ht"){
-                  df$var <- as.factor(df$var)
-                  df <- dplyr::filter(df, var != "0")
-                  df$var <- as.numeric(paste(df$var))
-                }
-              }
-
-              # Filter the data frame to ensure realistic geographic bounds
-              df <- df %>%
-                dplyr::filter(lon.max <= 180,
-                              lon.min >= -180,
-                              lat.max <= 90,
-                              lat.min >= -90
-                )
-
-              # Return the final data frame
-              return(df)
 }

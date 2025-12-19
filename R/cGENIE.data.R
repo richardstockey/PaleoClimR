@@ -9,9 +9,6 @@
 #' @param year Year to extract data for (default is "default", meaning the last time point).
 #' @param model The model type; defaults to "biogem".
 #' @return A data frame containing the extracted 2D lat-lon data field with corresponding grid information.
-#' @importFrom RNetCDF open.nc var.get.nc
-#' @importFrom dplyr %>%
-#' @importFrom reshape2 melt
 #' @export
 cGENIE.data <- function(var,
                         experiment,
