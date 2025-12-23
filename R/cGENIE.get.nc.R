@@ -44,6 +44,7 @@ cGENIE.get.nc <- function(var, experiment, dims = 3, model = "biogem") {
                  lon = lon,
                  lon.edges = lon.edges,
                  depth = depth,
+                 depth.edges = depth.edges,
                  time = time,
                  var = var.arr)
 

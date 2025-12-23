@@ -196,7 +196,7 @@ cGENIE.points.map <- function(var, experiment,
 
   # Plot map with points
   map.points <- clim.map +
-    ggplot2::geom_sf(data = sf::st_transform(points_spsf, projection), ggplot2::aes(geometry = geometry, fill = matched_climate), shape = 21, size = 6, stroke = 1.0, alpha = 0.6) # WGS 84 / Equal Earth Greenwich
+    ggplot2::geom_sf(data = sf::st_transform(points_spsf, projection), ggplot2::aes(geometry = geometry, fill = .data$matched_climate), shape = 21, size = 6, stroke = 1.0, alpha = 0.6) # WGS 84 / Equal Earth Greenwich
 
   return(map.points)
 
