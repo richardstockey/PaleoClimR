@@ -1,4 +1,4 @@
-#' Extract Data from NetCDF Files
+#' Extract Data from HADCM3 NetCDF Files
 #'
 #' This function extracts data from imported NetCDF (.nc) files, specifically designed for use with HADCM3 model outputs.
 #'

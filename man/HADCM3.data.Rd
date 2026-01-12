@@ -2,7 +2,7 @@
 % Please edit documentation in R/HADCM3.data.R
 \name{HADCM3.data}
 \alias{HADCM3.data}
-\title{Extract Data from NetCDF Files}
+\title{Extract Data from HADCM3 NetCDF Files}
 \usage{
 HADCM3.data(var, file, experiment, depth.level = 1, dims = 3, year = "default")
 }
