@@ -38,12 +38,18 @@ match.climate.coords <- function(clim.dat,
 
   # ---- Haversine distance function ----
   haversine <- function(lat1, lon1, lat2, lon2) {
-    R <- 6371  # Earth radius in km
-    delta_lat <- (lat2 - lat1) * pi / 180
-    delta_lon <- (lon2 - lon1) * pi / 180
-    a <- sin(delta_lat/2)^2 + cos(lat1*pi/180)*cos(lat2*pi/180)*sin(delta_lon/2)^2
-    c <- 2 * atan2(sqrt(a), sqrt(1 - a))
-    R * c
+    R <- 6371
+
+    lat1 <- lat1 * pi / 180
+    lat2 <- lat2 * pi / 180
+
+    dlat <- lat2 - lat1
+    dlon <- ((lon2 - lon1 + 180) %% 360 - 180) * pi / 180
+
+    a <- sin(dlat / 2)^2 +
+      cos(lat1) * cos(lat2) * sin(dlon / 2)^2
+
+    2 * R * atan2(sqrt(a), sqrt(1 - a))
   }
 
   # ---- Initialize result columns ----
@@ -76,24 +82,44 @@ match.climate.coords <- function(clim.dat,
   if(length(na_rows) > 0 && na.method != "keep") {
     valid_idx <- which(!is.na(clim.dat$var))
 
-    if(na.method == "nearest") {
-      # Vectorized Haversine distances
-      lat_mat <- outer(coord.dat[[lat.name]][na_rows], clim.dat$lat.mid[valid_idx], "-")
-      lon_mat <- outer(coord.dat[[lng.name]][na_rows], clim.dat$lon.mid[valid_idx], "-")
-      dist_mat <- haversine(
-        matrix(rep(coord.dat[[lat.name]][na_rows], each = length(valid_idx)), nrow = length(na_rows)),
-        matrix(rep(coord.dat[[lng.name]][na_rows], each = length(valid_idx)), nrow = length(na_rows)),
-        matrix(rep(clim.dat$lat.mid[valid_idx], times = length(na_rows)), nrow = length(na_rows), byrow = TRUE),
-        matrix(rep(clim.dat$lon.mid[valid_idx], times = length(na_rows)), nrow = length(na_rows), byrow = TRUE)
-      )
-      nearest_idx <- apply(dist_mat, 1, which.min)
-      nearest_dist <- apply(dist_mat, 1, min)
-      use_idx <- nearest_dist <= max_dist
-      if(any(use_idx)) {
-        coord.dat$matched_climate[na_rows[use_idx]] <- clim.dat$var[valid_idx[nearest_idx[use_idx]]]
-        coord.dat$lat.bin.mid[na_rows[use_idx]] <- clim.dat$lat.mid[valid_idx[nearest_idx[use_idx]]]
-        coord.dat$lon.bin.mid[na_rows[use_idx]] <- clim.dat$lon.mid[valid_idx[nearest_idx[use_idx]]]
-        moved_distances_km[use_idx] <- nearest_dist[use_idx]
+    if (na.method == "nearest") {
+
+      q_lat <- coord.dat[[lat.name]][na_rows]
+      q_lon <- coord.dat[[lng.name]][na_rows]
+
+      c_lat_all <- clim.dat$lat.mid[valid_idx]
+      c_lon_all <- clim.dat$lon.mid[valid_idx]
+      c_var_all <- clim.dat$var[valid_idx]
+
+      for (i in seq_along(na_rows)) {
+
+        lat0 <- q_lat[i]
+        lon0 <- q_lon[i]
+
+        # Latitude pre-filter (efficient)
+        # 1 degree of latitude ≈ 111 km everywhere on Earth
+        # Exclude climate grid cells that are guaranteed to be farther away than max_dist, based only on latitude.
+        lat_band <- abs(c_lat_all - lat0) <= (max_dist / 111)
+
+
+        if (!any(lat_band)) next
+
+        c_lat <- c_lat_all[lat_band]
+        c_lon <- c_lon_all[lat_band]
+        c_var <- c_var_all[lat_band]
+
+        # Accurate distances only on subset
+        d <- haversine(lat0, lon0, c_lat, c_lon)
+
+        j <- which.min(d)
+
+        if (d[j] <= max_dist) {
+          idx <- na_rows[i]
+          coord.dat$matched_climate[idx] <- c_var[j]
+          coord.dat$lat.bin.mid[idx]     <- c_lat[j]
+          coord.dat$lon.bin.mid[idx]     <- c_lon[j]
+          moved_distances_km[i]          <- d[j]
+        }
       }
     } else if(na.method == "same.lat") {
       for(i in seq_along(na_rows)) {

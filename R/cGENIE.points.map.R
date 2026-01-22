@@ -7,7 +7,7 @@
 #' @param var (character) Variable to visualize (e.g. "ocn_temp", "ocn_sal", "ocn_O2").
 #' @param experiment (character) Path or name of the experiment.
 #' @param depth.level (numeric) Depth layer to visualize (default = 1).
-#' @param dims (numeric) Dimensionality of the data (default NULL; auto-set by var).
+#' @param dims (numeric) Dimensionality of the data (default NULL; can be auto-set by var).
 #' @param year (numeric or character) Time step to visualize (default "default").
 #' @param coord.dat Data frame. A data frame with latitude and longitude columns. cGENIE data will be added to this and returned.
 #' @param lat.name Character. The name of the latitude column in `coord.dat`. Default is "p_lat".

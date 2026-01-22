@@ -8,7 +8,15 @@
 #' @param experiment Character string indicating the path to the cGENIE experiment directory.
 #' @param dims Integer specifying the dimensions of the NetCDF file to read. Default is NULL (returns default grid).
 #' @param model Character string indicating the model type (default "biogem"). Currently only "biogem" is supported.
-#' @return A list containing latitude, longitude, depth (if dims=3), and their respective edges.
+#' @return A list containing the grid data:
+#' \itemize{
+#'   \item \code{lat} - Latitude values (degrees north).
+#'   \item \code{lat.edges} - Latitude edges for grid cells.
+#'   \item \code{lon} - Longitude values (degrees east).
+#'   \item \code{lon.edges} - Longitude edges for grid cells.
+#'   \item \code{depth} - (Only if \code{dims} is 3) Depth values (meters).
+#'   \item \code{depth.edges} - (Only if \code{dims} is 3) Depth edges for grid cells.
+#' }
 #' @details The function adjusts longitude values to be within -180 to 180 and reports if any values were outside this range.
 #'
 #' @importFrom RNetCDF open.nc var.get.nc
