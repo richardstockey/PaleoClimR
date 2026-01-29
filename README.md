@@ -107,6 +107,6 @@ Contributions are welcome! Here are some ways you can contribute to the PaleoCli
 
 ### Code of Conduct
 
-Please note that this project is released with a [Contributor Code of Conduct](CODE_OF_CONDUCT.md). By participating in this project, you agree to abide by its terms. This code of conduct is adapted from the [PaleoVerse Code of Conduct](https://github.com/PaleoVerse/paleoverse/blob/main/CODE_OF_CONDUCT.md) and we are indebted to the work of its authors.
+Please note that this project is released with a [Contributor Code of Conduct](CODE_OF_CONDUCT.md). By participating in this project, you agree to abide by its terms. This code of conduct is adapted from the [PalaeoVerse Code of Conduct](https://github.com/PalaeoVerse/palaeoverse/blob/main/CODE_OF_CONDUCT.md) and we are indebted to the work of its authors.
 
 Thank you for your interest in contributing to PaleoClimR! Your contributions are greatly appreciated.
