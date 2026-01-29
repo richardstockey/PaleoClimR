@@ -3,7 +3,8 @@
 [![Downloads](https://cranlogs.r-pkg.org/badges/grand-total/PaleoClimR)](https://cran.r-project.org/package=PaleoClimR)
 
 
-**PaleoClimR** is an R package for the visualisation, manipulation and analysis of palaeoclimate model simulations. This package facilitates the analysis of climate variables across various depths and geographical locations, making it a valuable tool for researchers in paleoclimatology and related fields.
+**PaleoClimR** is an R package for the visualisation, manipulation and analysis of palaeoclimate model simulations. This package facilitates the analysis of climate variables across various depths and geographical locations, making it a valuable tool for researchers in paleoclimatology and related fields. Currently our package supports model outputs from cGENIE and HadCM3L, with the aim of expanding to other models in the future. 
+
 
 ## Table of Contents
 
