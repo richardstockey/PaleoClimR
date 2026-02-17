@@ -14,7 +14,15 @@ cGENIE.grid(experiment = NULL, dims = NULL, model = "biogem")
 \item{model}{Character string indicating the model type (default "biogem"). Currently only "biogem" is supported.}
 }
 \value{
-A list containing latitude, longitude, depth (if dims=3), and their respective edges.
+A list containing the grid data:
+\itemize{
+\item \code{lat} - Latitude values (degrees north).
+\item \code{lat.edges} - Latitude edges for grid cells.
+\item \code{lon} - Longitude values (degrees east).
+\item \code{lon.edges} - Longitude edges for grid cells.
+\item \code{depth} - (Only if \code{dims} is 3) Depth values (meters).
+\item \code{depth.edges} - (Only if \code{dims} is 3) Depth edges for grid cells.
+}
 }
 \description{
 This function extracts grid-related data (latitude, longitude, and depth)

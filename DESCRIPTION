@@ -1,6 +1,6 @@
 Package: PaleoClimR
 Type: Package
-Title: Extracting, Visualizing, and Analyzing Paleoclimate Data
+Title: Extracting, Visualising, and Analysing Paleoclimate Model Data
 Version: 1.0.0
 Authors@R: c(
     person("Richard G.", "Stockey", email = "r.g.stockey@soton.ac.uk", role = c("aut", "cre")),
@@ -10,8 +10,8 @@ Authors@R: c(
     person("Pedro", "Monarrez", role = "ctb"),
     person("Alison T.", "Cribb", role = "ctb")
   )
-Maintainer: Richard G. Stockey <richard.stockey@example.com>
-Description: An R package designed for extracting, visualizing and analyzing paleoclimate data from palaeoclimate model outputs, with specific emphasis on cGENIE and HADCM3.
+Maintainer: Richard G. Stockey <r.g.stockey@soton.ac.uk>
+Description: An R package designed for extracting, visualising and analysing paleoclimate data from palaeoclimate model outputs, with specific emphasis on cGENIE and HADCM3.
 License: MIT + file LICENSE
 Imports:
     dplyr, 
