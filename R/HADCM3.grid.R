@@ -19,7 +19,6 @@
 #'
 #' @details The function adjusts longitude values to be within -180 to 180 and reports if any values were outside this range.
 #'
-#' @importFrom RNetCDF open.nc var.get.nc
 #' @export
 
 HADCM3.grid <- function(file = NULL,

@@ -28,8 +28,6 @@
 #' This function intentionally uses `sp` internally for compatibility
 #' with existing cGENIE workflows, but returns a modern `sf` object.
 #'
-#' @importFrom sp Polygon Polygons SpatialPolygons SpatialPolygonsDataFrame
-#' @importFrom sf st_as_sf st_crs
 #'
 #' @export
 nc.df.to.sf <- function(df,

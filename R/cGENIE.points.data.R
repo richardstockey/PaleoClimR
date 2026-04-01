@@ -15,9 +15,6 @@
 #'
 #' @return A data frame with the original coordinates and matched climate data from the cGENIE model.
 #'
-#' @import RNetCDF
-#' @import dplyr
-#' @import reshape2
 #' @export
 
 cGENIE.points.data <- function(var = NULL,

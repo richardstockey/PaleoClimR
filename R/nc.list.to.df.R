@@ -31,7 +31,6 @@
 #' or topography fields) are handled internally.
 #'
 #' @keywords internal
-#' @importFrom reshape2 melt
 nc.list.to.df <- function(lat,
                           lat.edges,
                           lon,

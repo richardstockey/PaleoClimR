@@ -23,11 +23,6 @@
 #'   - `depth.min`: Minimum depth boundary.
 #'   - `depth.max`: Maximum depth boundary.
 #'   - `lon.range`: Range of longitude for handling map boundaries.
-#'
-#' @import RNetCDF
-#' @import dplyr
-#' @import reshape2
-#'
 #' @export
 cGENIE.data.3D <- function(var, experiment,
                            year = "default",

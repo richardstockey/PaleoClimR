@@ -10,8 +10,6 @@
 #' @details The function reads a NetCDF file based on the specified experiment and model, extracting latitude, longitude,
 #' depth, time, and the requested variable. It supports both 2D and 3D datasets.
 #'
-#' @importFrom RNetCDF open.nc var.get.nc
-#' @importFrom dplyr %>%
 #' @export
 #'
 HADCM3.get.nc <- function(var,

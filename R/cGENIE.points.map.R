@@ -35,13 +35,6 @@
 #' Default settings are defined for several commonly used variables, and users can specify their own scaling and color settings.
 #' The function also matches specific points from a provided data frame and plots them on the map.
 #'
-#' @import RNetCDF
-#' @import dplyr
-#' @import sf
-#' @import sp
-#' @import ggspatial
-#' @import reshape2
-#' @import ggplot2
 #' @export
 
 cGENIE.points.map <- function(var, experiment,

@@ -9,9 +9,6 @@
 #' @return A list containing latitude, longitude, depth, time, and the specified variable data from the NetCDF file.
 #' @details The function reads a NetCDF file based on the specified experiment and model, extracting latitude, longitude,
 #' depth, time, and the requested variable. It supports both 2D and 3D datasets.
-#'
-#' @importFrom RNetCDF open.nc var.get.nc
-#' @importFrom dplyr %>%
 #' @export
 #'
 cGENIE.get.nc <- function(var, experiment, dims = 3, model = "biogem") {

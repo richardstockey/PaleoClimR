@@ -16,9 +16,6 @@
 #'
 #' @return A data frame with the original coordinates and matched climate data from the HADCM3 model.
 #'
-#' @import RNetCDF
-#' @import dplyr
-#' @import reshape2
 #' @export
 
 HADCM3.points.data <- function(var = NULL,

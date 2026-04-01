@@ -11,7 +11,7 @@
 #' @param na.method How to handle NA climate values: "nearest" (default; nearest neighbor), "same.lat" (nearest at same latitude), "keep" (keep NA). 
 #' @param verbose Logical; if TRUE, print summary statistics (default TRUE).
 #' @return coord.dat with new columns: `matched_climate`, `lat.bin.mid`, `lon.bin.mid`.
-#' @importFrom dplyr filter
+#' 
 #' @export
 match.climate.coords <- function(clim.dat,
                                  grid.dat,

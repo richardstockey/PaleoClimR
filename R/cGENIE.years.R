@@ -3,7 +3,7 @@
 #' @param experiment Directory containing the experiment's netCDF files.
 #' @param model The model type; defaults to "biogem".
 #' @return A data frame containing the extracted 2D lat-lon data field with corresponding grid information.
-#' @importFrom RNetCDF open.nc var.get.nc
+#' 
 #' @export
 
 cGENIE.years <- function(experiment,

@@ -24,9 +24,6 @@
 #'   - `depth.max`: Maximum depth boundary.
 #'   - `lon.range`: Range of longitude for handling map boundaries.
 #'
-#' @import RNetCDF
-#' @import dplyr
-#' @import reshape2
 #'
 #' @export
 HADCM3.data.3D <- function(var, file, experiment,

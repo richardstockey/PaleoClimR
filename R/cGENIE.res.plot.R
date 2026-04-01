@@ -8,9 +8,7 @@
 #' @param x_var Character; column name for x-axis (default = "% time (yr)").
 #' @param plot_type Character; "line", "dots", or "both" (default = "line").
 #' @param base_size Numeric; base font size for theme (default = 14).
-#'
-#' @return ggplot object.
-#' @import ggplot2
+
 #' @export
 cGENIE.res.plot <- function(var,
                             experiment,
