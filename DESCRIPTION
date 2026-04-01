@@ -17,6 +17,7 @@ Imports:
     dplyr, 
     ggplot2, 
     ggspatial,
+    pals,
     readr, 
     reshape2,
     RNetCDF, 

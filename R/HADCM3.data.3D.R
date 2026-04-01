@@ -53,7 +53,8 @@ HADCM3.data.3D <- function(var, file, experiment,
   # Initialize an empty dataframe for all depth levels
   nc.df.depth.sum <- data.frame(lon.mid = double(), lon.min = double(), lon.max = double(),
                        lat.mid = double(), lat.min = double(), lat.max = double(),
-                       var = double(), depth.level = double(), depth = double())
+                       var = double(), depth.level = double(), depth = double(),
+                       depth.min = double(), depth.max = double())
 
   # Loop through all depth levels and build a dataframe
   for (depth.level in seq_along(nc.list$depth)) {

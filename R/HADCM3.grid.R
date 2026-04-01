@@ -54,14 +54,13 @@ HADCM3.grid <- function(file = NULL,
   }
 
   # ---- wrap longitudes to [-180, 180] and report if out-of-range ----
-  wrap_lon <- function(x) ((x + 180) %% 360) - 180
   if (any(lon < -180 | lon > 180)) {
     message("Longitude values outside [-180, 180] detected. Wrapping them.")
-    lon <- wrap_lon(lon)
+    lon <- ((lon + 180) %% 360) - 180
   }
   if (any(lon.edges < -180 | lon.edges > 180)) {
     message("Longitude edges outside [-180, 180] detected. Wrapping them.")
-    lon.edges <- wrap_lon(lon.edges)
+    lon.edges <- ((lon.edges + 180) %% 360) - 180
   }
 
   # Return grid list

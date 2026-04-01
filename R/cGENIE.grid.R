@@ -72,7 +72,7 @@ cGENIE.grid <- function(experiment = NULL,
     }
 
     return(grid)
-  }
+  }else{
 
   # Otherwise, read from NetCDF file
   nc <- RNetCDF::open.nc(paste0(experiment, prefix, dims, "d", ".nc"))
@@ -104,6 +104,6 @@ cGENIE.grid <- function(experiment = NULL,
     list(lat = lat, lat.edges = lat.edges,
          lon = lon, lon.edges = lon.edges)
   }
-
+  }
   return(grid)
 }

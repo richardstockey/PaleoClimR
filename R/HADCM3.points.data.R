@@ -14,7 +14,7 @@
 #' @param max_dist Maximum allowed distance for matching (km, default 1000 km).
 #' @param na.method How to handle NA climate values: "nearest" (default), "same.lat", "keep".
 #'
-#' @return A data frame or 3D array with the original coordinates and matched climate data from the HADCM3 model.
+#' @return A data frame with the original coordinates and matched climate data from the HADCM3 model.
 #'
 #' @import RNetCDF
 #' @import dplyr

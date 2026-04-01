@@ -62,6 +62,7 @@ HADCM3.get.nc <- function(var,
                  lon = lon,
                  lon.edges = lon.edges,
                  depth = depth,
+                 depth.edges = depth.edges,
                  time = time,
                  var = var.arr)
 

@@ -1,6 +1,6 @@
 #' Generate Maps from HADCM3L Model Output with Points Matching
 #'
-#' This function generates maps from imported .nc files, such as those from Valdes et al. 2021. It can handle both 2D and 3D netCDF files and provides options for various customizations including projections, color palettes, and more.
+#' This function generates maps from imported HADCM3L .nc files. It can handle both 2D and 3D netCDF files and provides options for various customizations including projections, color palettes, and more.
 #' Additionally, it matches and plots specific points from a provided data frame.
 #'
 #' @param var A character string specifying the name of the variable to extract from the NetCDF file. (e.g. "insitu_T_ym_dpth")
@@ -68,6 +68,36 @@ HADCM3.points.map <- function(var,
        col.labels = NULL,
        show.NAs = TRUE){
 
+  # --- Default values based on variable ---
+  unit.factor <- if(is.null(unit.factor)) switch(var,
+                                                 "insitu_T_ym_dpth" = 1,
+                                                 1
+  ) else unit.factor
+
+  dims <- if(is.null(dims)) switch(var,
+                                   "insitu_T_ym_dpth" = 3,
+                                   3
+  ) else dims
+
+  min.value <- if(is.null(min.value)) switch(var,
+                                             "insitu_T_ym_dpth" = 0,
+                                             0
+  ) else min.value
+
+  max.value <- if(is.null(max.value)) switch(var,
+                                             "insitu_T_ym_dpth" = 40,
+                                             100
+  ) else max.value
+
+  intervals <- if(is.null(intervals)) switch(var,
+                                             "insitu_T_ym_dpth" = 4,
+                                             10
+  ) else intervals
+
+  scale.label <- if(is.null(scale.label)) switch(var,
+                                                 "insitu_T_ym_dpth" = "Temperature (\u00B0C)",
+                                                 "Variable"
+  ) else scale.label
 
   # Color bar labels
   if(is.null(col.labels)) col.labels <- seq(min.value, max.value, intervals)

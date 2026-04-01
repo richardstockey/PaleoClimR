@@ -26,13 +26,22 @@ cGENIE.get.nc <- function(var, experiment, dims = 3, model = "biogem") {
   # Open the NetCDF file
   nc <- RNetCDF::open.nc(paste0(experiment, prefix, dims, "d", ".nc"))
 
-  # Extract general variables
+  # Extract latitude and longitude variables
   lat <- RNetCDF::var.get.nc(nc, "lat")          # units: degrees north
   lat.edges <- RNetCDF::var.get.nc(nc, "lat_edges")
   lon <- RNetCDF::var.get.nc(nc, "lon")          # units: degrees east
   lon.edges <- RNetCDF::var.get.nc(nc, "lon_edges")
+
+  # Extract depth variable if the data is 3D
+  if(dims == 3){
   depth <- RNetCDF::var.get.nc(nc, "zt")         # units: metres
   depth.edges <- RNetCDF::var.get.nc(nc, "zt_edges") # units: metres
+  }
+  else{
+    depth <- NULL
+    depth.edges <- NULL
+  }
+  # extract time variable (should always exist in cGENIE outputs)
   time <- RNetCDF::var.get.nc(nc, "time")        # units: year mid-point
 
   # Extract the specified variable

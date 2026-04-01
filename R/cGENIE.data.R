@@ -1,6 +1,6 @@
-#' Extract 2D Data Fields from 3D or 2D netCDF Files
+#' Extract 2D Data Fields from 3D or 2D cGENIE netCDF Files
 #'
-#' This function extracts 2D latitude-longitude data fields from 3D or 2D netCDF (.nc) files.
+#' This function extracts 2D latitude-longitude data fields from 3D or 2D cGENIE netCDF (.nc) files.
 #'
 #' @param var The variable name to extract from the .nc file.
 #' @param experiment Directory containing the experiment's netCDF files.
@@ -38,7 +38,7 @@ cGENIE.data <- function(var,
                          depth.level = depth.level,
                          dims = dims,
                          time.step = time.step
-                           )
+    )
   return(nc.df)
 
 }

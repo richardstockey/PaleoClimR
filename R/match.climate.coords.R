@@ -8,7 +8,7 @@
 #' @param lat.name Name of latitude column in coord.dat (default "p_lat").
 #' @param lng.name Name of longitude column in coord.dat (default "p_lng").
 #' @param max_dist Maximum allowed distance for matching (km, default 1000 km).
-#' @param na.method How to handle NA climate values: "nearest" (default), "same.lat", "keep".
+#' @param na.method How to handle NA climate values: "nearest" (default; nearest neighbor), "same.lat" (nearest at same latitude), "keep" (keep NA). 
 #' @param verbose Logical; if TRUE, print summary statistics (default TRUE).
 #' @return coord.dat with new columns: `matched_climate`, `lat.bin.mid`, `lon.bin.mid`.
 #' @importFrom dplyr filter
