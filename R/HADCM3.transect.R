@@ -5,8 +5,9 @@
 #' @param var A character string specifying the name of the variable to extract from the NetCDF file. (e.g. "insitu_T_ym_dpth")
 #' @param file A character string indicating the name of the NetCDF file (without the .nc extension).
 #' @param experiment A character string indicating the path to the HADCM3 experiment directory.
-#' @param depth.level (numeric) Depth layer to visualize (default = 1).
-#' @param dims (numeric) Dimensionality of the data (default NULL; auto-set by var).
+#' @param orientation Character. Whether the transect is oriented along latitude ("lat") or longitude ("lon"). Default is "lat".
+#' @param degrees Numeric. The degree band of the specified latitude or longitude to include in the transect (default 0, meaning the equator/dateline). Will plot the nearest band to your chosen value. 
+#' @param dims (numeric) Dimensionality of the data (almost certainly 3 if you're plotting a transect, set to 3 as default).
 #' @param year (numeric or character) Time step to visualize (default "default").
 #' @param unit.factor (numeric) Scaling factor for variable (default NULL; auto-set by var).
 #' @param min.value,max.value (numeric) Color scale limits (default NULL; auto-set by var).
@@ -37,7 +38,7 @@ HADCM3.transect <- function(var, file,
         intervals = 5,
         continents.outlined,
         scale.label = NULL,
-        model = "biogem",
+        line.thickness = 1,
         palette_name = pals::parula(1000),
         projection = 'ESRI:54012',
         darkmode = FALSE,
@@ -142,7 +143,8 @@ HADCM3.transect <- function(var, file,
     custom.fg = custom.fg,
     upper.bound = upper.bound,
     scale.label = scale.label,
-    title_text = title_text
+    title_text = title_text, 
+    line.thickness = line.thickness
   )
     # Return the plot
   transect

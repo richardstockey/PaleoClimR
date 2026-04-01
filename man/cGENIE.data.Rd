@@ -2,7 +2,7 @@
 % Please edit documentation in R/cGENIE.data.R
 \name{cGENIE.data}
 \alias{cGENIE.data}
-\title{Extract 2D Data Fields from 3D or 2D netCDF Files}
+\title{Extract 2D Data Fields from 3D or 2D cGENIE netCDF Files}
 \usage{
 cGENIE.data(
   var,
@@ -30,5 +30,5 @@ cGENIE.data(
 A data frame containing the extracted 2D lat-lon data field with corresponding grid information.
 }
 \description{
-This function extracts 2D latitude-longitude data fields from 3D or 2D netCDF (.nc) files.
+This function extracts 2D latitude-longitude data fields from 3D or 2D cGENIE netCDF (.nc) files.
 }

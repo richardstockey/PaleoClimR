@@ -85,7 +85,7 @@ HADCM3.points.map(
 A ggplot object representing the map with matched points.
 }
 \description{
-This function generates maps from imported .nc files, such as those from Valdes et al. 2021. It can handle both 2D and 3D netCDF files and provides options for various customizations including projections, color palettes, and more.
+This function generates maps from imported HADCM3L .nc files. It can handle both 2D and 3D netCDF files and provides options for various customizations including projections, color palettes, and more.
 Additionally, it matches and plots specific points from a provided data frame.
 }
 \details{

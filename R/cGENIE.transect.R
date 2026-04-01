@@ -4,8 +4,9 @@
 #' 
 #' @param var (character) Variable to visualize (e.g. "ocn_temp", "ocn_sal", "ocn_O2").
 #' @param experiment (character) Path or name of the experiment.
-#' @param depth.level (numeric) Depth layer to visualize (default = 1).
-#' @param dims (numeric) Dimensionality of the data (default NULL; auto-set by var).
+#' @param orientation Character. Whether the transect is oriented along latitude ("lat") or longitude ("lon"). Default is "lat".
+#' @param degrees Numeric. The degree band of the specified latitude or longitude to include in the transect (default 0, meaning the equator/dateline). Will plot the nearest band to your chosen value. 
+#' @param dims (numeric) Dimensionality of the data (almost certainly 3 if you're plotting a transect, set to 3 as default).
 #' @param year (numeric or character) Time step to visualize (default "default").
 #' @param unit.factor (numeric) Scaling factor for variable (default NULL; auto-set by var).
 #' @param min.value,max.value (numeric) Color scale limits (default NULL; auto-set by var).
@@ -37,6 +38,7 @@ cGENIE.transect <- function(experiment, var,
         continents.outlined,
         scale.label = NULL,
         model = "biogem",
+        line.thickness = 1,
         palette_name = pals::parula(1000),
         projection = 'ESRI:54012',
         darkmode = FALSE,
@@ -171,7 +173,8 @@ cGENIE.transect <- function(experiment, var,
     custom.fg = custom.fg,
     upper.bound = upper.bound,
     scale.label = scale.label,
-    title_text = title_text
+    title_text = title_text, 
+    line.thickness = line.thickness
   )
     # Return the plot
   transect

@@ -16,6 +16,7 @@
 #' @param upper.bound Upper y-axis bound.
 #' @param scale.label Legend label.
 #' @param title_text Plot title.
+#' @param line.thickness Thickness of land outline and box borders. (land outline half of box borders by default)
 #'
 #' @return ggplot object
 #' @export
@@ -31,7 +32,8 @@ paleo.transect <- function(df.slice,
                            custom.fg,
                            upper.bound,
                            scale.label,
-                           title_text) {
+                           title_text,
+                           line.thickness) {
 
   if (!orientation %in% c("lat", "lon")) {
     stop("orientation must be 'lat' or 'lon'")
@@ -73,7 +75,7 @@ paleo.transect <- function(df.slice,
         ymax = .data[["ymax"]]
       ),
       color = custom.fg,
-      linewidth = 1,
+      linewidth = line.thickness,
       fill = NA,
       inherit.aes = FALSE
     ) +
@@ -86,7 +88,7 @@ paleo.transect <- function(df.slice,
         yend = .data[["yend"]]
       ),
       color = custom.fg,
-      linewidth = 0.5,
+      linewidth = line.thickness/2,
       inherit.aes = FALSE
     ) +
     ggplot2::scale_fill_stepsn(

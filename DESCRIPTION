@@ -16,8 +16,7 @@ License: MIT + file LICENSE
 Imports:
     dplyr, 
     ggplot2, 
-    ggspatial,
-    pals,
+    magrittr,
     readr, 
     reshape2,
     RNetCDF, 
@@ -25,6 +24,7 @@ Imports:
     sp, 
     stringr
 Suggests:
+    pals,
     knitr,
     rmarkdown
 VignetteBuilder: knitr

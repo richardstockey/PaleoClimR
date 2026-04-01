@@ -18,12 +18,13 @@ HADCM3.transect(
   intervals = 5,
   continents.outlined,
   scale.label = NULL,
-  model = "biogem",
+  line.thickness = 1,
   palette_name = pals::parula(1000),
   projection = "ESRI:54012",
   darkmode = FALSE,
   custom.bg = NULL,
   custom.fg = NULL,
+  col.labels = NULL,
   upper.bound = -20,
   lower.bound = "default"
 )
@@ -35,37 +36,37 @@ HADCM3.transect(
 
 \item{experiment}{A character string indicating the path to the HADCM3 experiment directory.}
 
-\item{degrees}{The latitude or longitude at which to extract from the data. Defaults to 0.}
+\item{degrees}{Numeric. The degree band of the specified latitude or longitude to include in the transect (default 0, meaning the equator/dateline). Will plot the nearest band to your chosen value.}
 
-\item{dims}{Number of dimensions in the netCDF file. Defaults to 3.}
+\item{dims}{(numeric) Dimensionality of the data (almost certainly 3 if you're plotting a transect, set to 3 as default).}
 
-\item{orientation}{Whether to create a transect along latitude or longitude. Defaults to "lat".}
+\item{orientation}{Character. Whether the transect is oriented along latitude ("lat") or longitude ("lon"). Default is "lat".}
 
-\item{year}{Year to extract data for (default is "default", meaning the last time point).}
+\item{year}{(numeric or character) Time step to visualize (default "default").}
 
-\item{unit.factor}{Factor to convert units. Defaults to 1.}
+\item{unit.factor}{(numeric) Scaling factor for variable (default NULL; auto-set by var).}
 
-\item{min.value}{Minimum value for the color scale. Defaults to 0.}
+\item{min.value, max.value}{(numeric) Color scale limits (default NULL; auto-set by var).}
 
-\item{max.value}{Maximum value for the color scale. Defaults to 40.}
+\item{intervals}{(numeric) Color scale intervals (default NULL; auto-set by var).}
 
-\item{intervals}{Number of intervals for the color scale. Defaults to 5.}
+\item{continents.outlined}{(logical) Whether to outline continents (default TRUE).}
 
-\item{continents.outlined}{Logical indicating whether to outline continents. Defaults to NULL.}
+\item{scale.label}{(character) Label for color scale (default NULL; auto-set by var).}
 
-\item{scale.label}{Label for the color scale. Defaults to NULL.}
+\item{line.thickness}{(numeric) Thickness of continent outlines (default 1).}
 
-\item{model}{The model type; defaults to "biogem".}
+\item{palette_name}{(character) Color palette for the plot (default pals::parula(1000)).}
 
-\item{palette_name}{Color palette to use for the plot. Defaults to "pals::parula(1000)".}
+\item{projection}{(character) Map projection (default 'ESRI:54012').}
 
-\item{projection}{Projection to use for the plot. Defaults to "ESRI:54012".}
+\item{darkmode}{(logical) Enable dark mode (default FALSE).}
 
-\item{darkmode}{Logical indicating whether to use a dark mode color scheme. Defaults to FALSE.}
+\item{custom.bg}{(character) Background color for dark mode (default NULL; auto-set if darkmode = TRUE).}
 
-\item{custom.bg}{Custom background color for dark mode. Defaults to NULL (auto-set if darkmode = TRUE).}
+\item{custom.fg}{(character) Foreground color for dark mode (default NULL; auto-set if darkmode = TRUE).}
 
-\item{custom.fg}{Custom foreground color for dark mode. Defaults to NULL (auto-set if darkmode = TRUE).}
+\item{col.labels}{(numeric) Labels for the color bar ticks.}
 
 \item{upper.bound}{Numeric value indicating the upper bound for the y axis. Defaults to -20 to avoid floating y axis ticks. Can be tweaked for aesthetics.}
 

@@ -39,7 +39,7 @@ cGENIE.points.data(
 \item{na.method}{How to handle NA climate values: "nearest" (default), "same.lat", "keep".}
 }
 \value{
-A data frame or 3D array with the original coordinates and matched climate data from the cGENIE model.
+A data frame with the original coordinates and matched climate data from the cGENIE model.
 }
 \description{
 This function matches palaeocoordinates to cGENIE model data.

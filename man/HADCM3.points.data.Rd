@@ -42,7 +42,7 @@ HADCM3.points.data(
 \item{na.method}{How to handle NA climate values: "nearest" (default), "same.lat", "keep".}
 }
 \value{
-A data frame or 3D array with the original coordinates and matched climate data from the HADCM3 model.
+A data frame with the original coordinates and matched climate data from the HADCM3 model.
 }
 \description{
 This function matches palaeocoordinates to HADCM3L model data.

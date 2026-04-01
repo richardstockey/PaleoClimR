@@ -17,7 +17,8 @@ paleo.transect(
   custom.fg,
   upper.bound,
   scale.label,
-  title_text
+  title_text,
+  line.thickness
 )
 }
 \arguments{
@@ -46,6 +47,8 @@ paleo.transect(
 \item{scale.label}{Legend label.}
 
 \item{title_text}{Plot title.}
+
+\item{line.thickness}{Thickness of land outline and box borders. (land outline half of box borders by default)}
 }
 \value{
 ggplot object

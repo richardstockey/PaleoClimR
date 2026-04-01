@@ -26,9 +26,6 @@ cGENIE.res.plot(
 
 \item{base_size}{Numeric; base font size for theme (default = 14).}
 }
-\value{
-ggplot object.
-}
 \description{
 Imports .res files, converts to data frame, and plots as a time series or custom x/y variable.
 }

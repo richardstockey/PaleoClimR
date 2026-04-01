@@ -28,7 +28,7 @@ match.climate.coords(
 
 \item{max_dist}{Maximum allowed distance for matching (km, default 1000 km).}
 
-\item{na.method}{How to handle NA climate values: "nearest" (default), "same.lat", "keep".}
+\item{na.method}{How to handle NA climate values: "nearest" (default; nearest neighbor), "same.lat" (nearest at same latitude), "keep" (keep NA).}
 
 \item{verbose}{Logical; if TRUE, print summary statistics (default TRUE).}
 }
