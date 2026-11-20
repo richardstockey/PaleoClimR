@@ -37,7 +37,7 @@ cGENIE.bw.redox <- function(experiment,
   # extract 2D bottom-water O2 field
   bw.O2 <- cGENIE.data(experiment = experiment,
                        var = "ocn_ben_O2",
-                       dims = 2)
+                       dims = 2, year = "default")
   
   # classify each cell
   bw.redox <- bw.O2 %>%
