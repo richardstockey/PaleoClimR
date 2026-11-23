@@ -34,7 +34,8 @@
 #'   orientation = "lon",
 #'   unit.factor = 1e6,
 #'   min.value = 0,
-#'   max.value = 300
+#'   max.value = 320,
+#'   intervals = 40
 #' )
 cGENIE.transect <- function(experiment, var,
         degrees = 0,

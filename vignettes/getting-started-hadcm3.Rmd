@@ -32,11 +32,13 @@ occurrence points.
 
 The package includes a reduced HadCM3L example file containing the
 `insitu_T_ym_dpth` temperature field and the coordinates needed to interpret
-its grid. The simulation (`tfkSy_252`) represents the late Permian at 252 Ma,
-consistent with the cGENIE example in the companion vignette
-(`vignette("getting-started-cgenie", package = "PaleoClimR")`) and the PBDB
-data example. The file was contributed by Dan Lunt (University of Bristol); see
-Judd et al. (2024) for further details on this and related HadCM3L simulations.
+its grid. It contains one saved timestep. The simulation (`tfkSy`)
+represents the late Permian at 252 Ma.
+The cGENIE output in the companion vignette is directly related to this HADCM3 output, so 
+plate configurations are consistent. The PBDB example contains broadly coeval
+Changhsingian occurrences. The file was contributed by Dan Lunt (University of
+Bristol); see Judd et al. (2024) for further details on this and related
+HadCM3L simulations.
 
 ```{r example-file}
 hadcm3_exp_path <- PaleoClimR.example("HADCM3.permian.example")
@@ -137,7 +139,7 @@ head(temperature_3d[!is.na(temperature_3d$var), ])
 ## Mapping HADCM3 fields
 
 `HADCM3.map()` maps a selected depth level. The bundled temperature values are
-in degrees Celsius (approximately -1 to 34 °C), so this example displays a
+in degrees Celsius, and this example displays a
 colour range of -4 to 36 °C.
 
 ```{r map}
@@ -182,7 +184,7 @@ HADCM3.transect(
 
 The bundled `PBDB.permian.example` data include palaeogeographic coordinates
 in `p_lng` and `p_lat`, which were generated with the PALEOMAP plate model of
-Scotese. The HadCM3L simulation uses the same plate model, so the occurrences
+Scotese. The HadCM3L simulation uses the same plate model family, so the occurrences
 and the model grid share a consistent palaeogeography.
 `HADCM3.points.data()` matches each occurrence to the model grid cell it falls
 in, and returns the matched climate value and model grid coordinates with the
@@ -235,11 +237,12 @@ HADCM3.points.map(
 
 ## Summary
 
-The main HADCM3 workflow is to identify a file and experiment directory,
-inspect the grid with `HADCM3.grid()`, extract data with `HADCM3.data()` or
-`HADCM3.data.3D()`, and visualise it with `HADCM3.map()` or
-`HADCM3.transect()`. Use the point functions to associate palaeogeographic
-occurrences with model values and plot the matched records.
+The core HADCM3 workflow that is expected to be useful to general users is
+to identify a file and experiment directory, inspect the grid with `HADCM3.grid()` 
+if needed, extract data with `HADCM3.data()` or `HADCM3.data.3D()`, and visualise it 
+with `HADCM3.map()` or `HADCM3.transect()`. Use the point functions to associate 
+(already rotated) palaeogeographic occurrences with model values and plot the 
+matched records.
 
 
 ## References

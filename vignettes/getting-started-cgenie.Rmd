@@ -22,15 +22,42 @@ library(PaleoClimR)
 
 PaleoClimR reads cGENIE NetCDF output, prepares gridded data for model
 analysis, and creates maps and transect plots. It also includes helpers for
-matching palaeogeographic points, identifying shelf cells, summarizing oxygen
-conditions, and reading cGENIE `.res` time series.
+matching palaeogeographic points, identifying shelf cells, summarizing global ocean 
+oxygenation features, and reading cGENIE `.res` time series.
 
 The package includes a small cGENIE experiment for examples. The functions
 expect the path to the experiment directory; the NetCDF files are in its
 `biogem` subdirectory, as would be produced by the model itself.
 
+The reduced cGENIE output bundled with PaleoClimR uses a currently unpublished configuration 
+derived from HADCM3 output used in the companion HADCM3 vignette.
+The bundled NetCDF files are reduced examples: the 3D file retains
+`ocn_temp` and `ocn_O2`, while the 2D file retains `ocn_ben_temp` and
+`ocn_ben_O2`; each contains only the final saved timestep. The bundled `.res`
+file is a separate time-series example. 
+
+PLEASE NOTE: This example model output is provided for illustrative 
+example purposes only and is not appropriate for detailed scientific analyses of Permian
+marine environments. 
+
 ```{r example-path}
 cGENIE_exp_path <- PaleoClimR.example("cGENIE.permian.example")
+```
+
+## Using your own files
+
+For your own cGENIE experiment, set the experiment path to its directory. The
+directory should contain the model's `biogem` subdirectory and the relevant
+NetCDF files. Replace `cGENIE_exp_path` with that path in the examples below.
+
+```{r own-data, eval = FALSE}
+cGENIE_exp_path <- "/path/to/your/cGENIE/experiment"
+
+oxygen <- cGENIE.data(
+  var = "ocn_O2",
+  experiment = cGENIE_exp_path,
+  depth.level = 2
+)
 ```
 
 ## Inspecting the grid and NetCDF data
@@ -73,8 +100,8 @@ cGENIE.years(experiment = cGENIE_exp_path)
 ## Extracting 2D and 3D fields
 
 Use `cGENIE.data()` to extract one horizontal slice. For a 3D field, choose a
-depth level. The result includes cell bounds and a `var` column that can be
-used by mapping and point-matching functions.
+depth level. The result includes cell bounds and a `var` column containing your
+selected environmental variable. 
 
 ```{r data-2d}
 oxygen_surface <- cGENIE.data(
@@ -140,7 +167,8 @@ cGENIE.transect(
   continents.outlined = TRUE,
   unit.factor = 1e6,
   min.value = 0,
-  max.value = 300,
+  max.value = 320,
+  intervals = 40,
   scale.label = "Oxygen (µmol/kg)"
 )
 ```
@@ -148,7 +176,7 @@ cGENIE.transect(
 ## Identifying shelf cells
 
 `cGENIE.adjacent.land()` marks ocean cells next to cells with `NA` values in a
-single horizontal slice. At depth level 2, these missing cells include land
+single horizontal slice. Below the surface, these missing cells include land
 and locations where the seafloor is shallower than that depth.
 
 ```{r adjacent-land}
@@ -251,7 +279,8 @@ cGENIE.omz.map(experiment = cGENIE_exp_path)
 ```
 
 For bottom-water redox, `cGENIE.bw.redox()` classifies ocean cells as anoxic,
-suboxic, or oxic and returns the fraction in each class:
+suboxic, or oxic and returns the fraction in each class. Thresholds for these
+classifications can be varied, as documented in the manual.
 
 ```{r bottom-redox}
 cGENIE.bw.redox(experiment = cGENIE_exp_path)
@@ -259,7 +288,7 @@ cGENIE.bw.redox(experiment = cGENIE_exp_path)
 
 ## Reading cGENIE `.res` files
 
-Some cGENIE experiments include `.res` files with time-series diagnostics.
+Real-world cGENIE experiments include `.res` files with time-series diagnostics.
 `cGENIE.res.import()` reads one into a data frame, and `cGENIE.res.plot()`
 creates a time-series plot. This example file contains global oxygen
 diagnostics.
@@ -282,7 +311,8 @@ cGENIE.res.plot(
 
 ## Summary
 
-The main cGENIE workflow is to locate an experiment with
-`PaleoClimR.example()` or supply a user experiment path, extract fields with
-`cGENIE.data()` or `cGENIE.data.3D()`, and use the cGENIE mapping, transect,
+The key cGENIE workflow that is expected to be applied by general users 
+is to locate an experiment with `PaleoClimR.example()` (illustrative examples only) 
+or supply a user experiment path (real-world users), extract fields with
+`cGENIE.data()` or `cGENIE.data.3D()`, and/or use the cGENIE mapping, transect,
 point-matching, shelf, and oxygen-analysis functions for downstream work.

@@ -14,7 +14,7 @@ cGENIE.omz.map(
   continents.outlined = TRUE,
   scale.label = "OMZ thickness (m)",
   line.thickness = 1,
-  palette_name = pals::parula(1000),
+  palette_name = pals::brewer.pubu(30),
   projection = "ESRI:54012",
   darkmode = FALSE,
   custom.bg = NULL,
