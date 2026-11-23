@@ -23,6 +23,11 @@
 #' @param col.labels (numeric) Labels for the color bar ticks.
 #' @return A ggplot object representing the map.
 #' @export
+#' @examples
+#' cGENIE_exp_path <- PaleoClimR.example("cGENIE.permian.example")
+#' cGENIE.omz.map(
+#'   experiment = cGENIE_exp_path,
+#' )
 cGENIE.omz.map <- function(experiment,
                            OMZ.thresh = 58.54e-6,
                            year = "default",
@@ -38,7 +43,7 @@ cGENIE.omz.map <- function(experiment,
                            custom.bg = NULL,
                            custom.fg = NULL,
                            col.labels = NULL) {
-  
+
   # --- OMZ thickness for each lat/lon column ---
   df <- cGENIE.omz.thickness(experiment = experiment,
                              OMZ.thresh = OMZ.thresh,
@@ -47,7 +52,7 @@ cGENIE.omz.map <- function(experiment,
   df$var <- df$omz.thickness                 # paleo.map plots the "var" column
   df <- df[order(df$lat.mid, df$lon.mid), ]  # lat-major order, as in the cGENIE.data output
   rownames(df) <- NULL
-  
+
   # Color scale defaults from the data
   data.max <- suppressWarnings(max(df$var, na.rm = TRUE))
   if (!is.finite(data.max) || data.max <= 0) {
@@ -56,10 +61,10 @@ cGENIE.omz.map <- function(experiment,
   }
   if (is.null(intervals)) intervals <- diff(pretty(c(min.value, data.max), n = 8))[1]
   if (is.null(max.value)) max.value <- ceiling(data.max / intervals) * intervals
-  
+
   # Color bar labels
   if (is.null(col.labels)) col.labels <- seq(min.value, max.value, intervals)
-  
+
   # Dark mode defaults
   if (darkmode) {
     if (is.null(custom.bg)) custom.bg <- "black"
@@ -68,7 +73,7 @@ cGENIE.omz.map <- function(experiment,
     if (is.null(custom.bg)) custom.bg <- "white"
     if (is.null(custom.fg)) custom.fg <- "black"
   }
-  
+
   # --- Clean data & build spatial layers ---
   df <- clean.nc.df(df = df)
   SpDfSf <- nc.df.to.sf(df)
@@ -76,10 +81,10 @@ cGENIE.omz.map <- function(experiment,
   continents_proj <- if (continents.outlined) {
     sf::st_transform(gen.continents.sf(df), projection)
   } else NULL
-  
+
   data_proj  <- sf::st_transform(SpDfSf, projection)
   frame_proj <- sf::st_transform(SLs1dfSf, projection)
-  
+
   # --- Generate map ---
   map <- paleo.map(
     data_sf = data_proj,
@@ -99,12 +104,12 @@ cGENIE.omz.map <- function(experiment,
     axis_color = custom.fg,
     legend_text_color = custom.fg
   )
-  
+
   # Apply darkmode background
   map <- map + ggplot2::theme(
     panel.background = ggplot2::element_rect(fill = custom.bg),
     plot.background  = ggplot2::element_rect(fill = custom.bg)
   )
-  
+
   return(map)
 }

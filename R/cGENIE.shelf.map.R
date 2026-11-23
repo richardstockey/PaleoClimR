@@ -17,12 +17,19 @@
 #' @param darkmode (logical) Enable dark mode (default FALSE).
 #' @param custom.bg (character) Background color for dark mode (default NULL; auto-set if darkmode = TRUE).
 #' @param custom.fg (character) Foreground color for dark mode (default NULL; auto-set if darkmode = TRUE).
-#' @param col.labels (numeric) Labels for the color bar ticks.#' 
+#' @param col.labels (numeric) Labels for the color bar ticks.#'
 #' @param wrap.lon Logical; treat longitude as cyclic? Default \code{TRUE}.
 #' @param digits Number of decimal places used when matching cell midpoints,
 #'   to guard against floating point differences. Default 6.
 #' @return A ggplot object representing the map.
 #' @export
+#' @examples
+#' cGENIE_exp_path <- PaleoClimR.example("cGENIE.permian.example")
+#' cGENIE.shelf.map(
+#'   var = "ocn_O2",
+#'   experiment = cGENIE_exp_path,
+#'   depth.level = 2
+#' )
 cGENIE.shelf.map <- function(var, experiment,
                        depth.level = 1,
                        dims = NULL,
@@ -40,8 +47,8 @@ cGENIE.shelf.map <- function(var, experiment,
                        darkmode = FALSE,
                        custom.bg = NULL,
                        custom.fg = NULL,
-                       col.labels = NULL, 
-                       wrap.lon = TRUE, 
+                       col.labels = NULL,
+                       wrap.lon = TRUE,
                        digits = 6) {
 
   # Set default values based on variable
@@ -123,9 +130,9 @@ cGENIE.shelf.map <- function(var, experiment,
                           depth.level = depth.level,
                           dims = dims,
                           year = year,
-                          model = model, 
-                          wrap.lon = wrap.lon, 
-                          digits = digits, 
+                          model = model,
+                          wrap.lon = wrap.lon,
+                          digits = digits,
                           keep.nas = TRUE)
 
   df <- clean.nc.df(df = df)

@@ -29,67 +29,104 @@ HADCM3.points.map(
   custom.bg = NULL,
   custom.fg = NULL,
   col.labels = NULL,
-  show.NAs = TRUE
+  show.NAs = TRUE,
+  points.col = NULL,
+  points.scale.type = c("auto", "continuous", "categorical"),
+  points.levels = NULL,
+  points.palette = NULL,
+  points.scale.label = NULL,
+  points.min.value = NULL,
+  points.max.value = NULL,
+  points.intervals = NULL,
+  points.legend.box = c("vertical", "horizontal")
 )
 }
 \arguments{
-\item{var}{A character string specifying the name of the variable to extract from the NetCDF file. (e.g. "insitu_T_ym_dpth")}
+\item{var}{A character string specifying the NetCDF variable (e.g. "insitu_T_ym_dpth").}
 
-\item{file}{A character string indicating the name of the NetCDF file (without the .nc extension).}
+\item{file}{NetCDF file name without the .nc extension.}
 
-\item{experiment}{A character string indicating the path to the HADCM3 experiment directory.}
+\item{experiment}{Path to the HADCM3 experiment directory.}
 
-\item{depth.level}{(numeric) Depth layer to visualize (default = 1).}
+\item{depth.level}{Numeric depth layer to visualize (default = 1).}
 
-\item{dims}{(numeric) Dimensionality of the data (default NULL).}
+\item{dims}{Numeric dimensionality of the data (default NULL; auto-set by var).}
 
-\item{year}{(numeric or character) Time step to visualize (default "default").}
+\item{year}{Numeric or character time step (default "default").}
 
-\item{coord.dat}{Data frame. A data frame with latitude and longitude columns. cGENIE data will be added to this and returned.}
+\item{coord.dat}{Data frame containing the point coordinates and optional point-colouring data.}
 
-\item{lat.name}{Character. The name of the latitude column in \code{coord.dat}. Default is "p_lat".}
+\item{lat.name}{Name of the latitude column in \code{coord.dat} (default "p_lat").}
 
-\item{lng.name}{Character. The name of the longitude column in \code{coord.dat}. Default is "p_lng".}
+\item{lng.name}{Name of the longitude column in \code{coord.dat} (default "p_lng").}
 
-\item{max_dist}{Maximum allowed distance for matching (km, default 1000 km).}
+\item{max_dist}{Maximum matching distance in km (default 1000).}
 
-\item{na.method}{How to handle NA climate values: "nearest" (default), "same.lat", "keep".}
+\item{na.method}{How to handle missing climate values: "nearest", "same.lat", or "keep".}
 
-\item{unit.factor}{(numeric) Scaling factor for variable (default NULL).}
+\item{unit.factor}{Numeric scaling factor for the mapped variable (default NULL).}
 
-\item{min.value, max.value}{(numeric) Color scale limits (default NULL).}
+\item{min.value, max.value}{Numeric limits for the map colour scale (default NULL).}
 
-\item{intervals}{(numeric) Color scale intervals (default NULL).}
+\item{intervals}{Numeric interval for map colour breaks (default NULL).}
 
-\item{continents.outlined}{(logical) Whether to outline continents (default TRUE).}
+\item{continents.outlined}{Logical; outline continents (default TRUE).}
 
-\item{scale.label}{(character) Label for color scale (default NULL).}
+\item{scale.label}{Label for the map colour scale (default NULL).}
 
-\item{line.thickness}{(numeric) Thickness of continent outlines (default 1).}
+\item{line.thickness}{Thickness of continent outlines (default 1).}
 
-\item{palette_name}{(character) Color palette for the plot (default pals::parula(1000)).}
+\item{palette_name}{Colour palette for the map (default \code{pals::parula(1000)}).}
 
-\item{projection}{(character) Map projection (default 'ESRI:54012').}
+\item{projection}{Map projection (default "ESRI:54012").}
 
-\item{darkmode}{(logical) Enable dark mode (default FALSE).}
+\item{darkmode}{Logical; use dark mode (default FALSE).}
 
-\item{custom.bg}{(character) Background color for dark mode (default NULL; auto-set if darkmode = TRUE).}
+\item{custom.bg, custom.fg}{Optional background and foreground colours.}
 
-\item{custom.fg}{(character) Foreground color for dark mode (default NULL; auto-set if darkmode = TRUE).}
+\item{col.labels}{Numeric labels for the map colour bar (default NULL).}
 
-\item{col.labels}{(numeric) Labels for the color bar ticks.}
+\item{show.NAs}{Logical; show points with missing values (default TRUE).}
 
-\item{show.NAs}{(logical) Whether to show NA values on the map (default FALSE).}
+\item{points.col}{Optional name of a column in \code{coord.dat} for an independent point colour scale.}
+
+\item{points.scale.type}{Point scale type: "auto", "continuous", or "categorical".}
+
+\item{points.levels}{Optional category order for a categorical point scale.}
+
+\item{points.palette}{Colours for the point scale. Continuous scales take a colour vector;
+categorical scales take a colour vector, preferably named by category.}
+
+\item{points.scale.label}{Legend title for the point scale (default is \code{points.col}).}
+
+\item{points.min.value, points.max.value}{Limits for a continuous point scale (default data range).}
+
+\item{points.intervals}{Tick spacing for a continuous point scale (default automatic).}
+
+\item{points.legend.box}{Layout for the legends: "vertical" or "horizontal".}
 }
 \value{
 A ggplot object representing the map with matched points.
 }
 \description{
-This function generates maps from imported HADCM3L .nc files. It can handle both 2D and 3D netCDF files and provides options for various customizations including projections, color palettes, and more.
-Additionally, it matches and plots specific points from a provided data frame.
+This function generates maps from imported HADCM3L .nc files. It can handle
+2D and 3D NetCDF files and can match and plot points from a provided data
+frame. Points can be coloured using the matched HADCM3 value or an independent
+continuous or categorical variable from the point data.
 }
 \details{
-This function reads 2D or 3D data from HADCM3L model output NetCDF files and produces a map visualization.
-Users can specify their own scaling and color settings.
-The function also matches specific points from a provided data frame and plots them on the map.
+With \code{points.col = NULL}, points use the matched HADCM3 values and the map's
+colour scale. Setting \code{points.col} adds a separate continuous or categorical
+point colour scale.
+}
+\examples{
+HADCM3_exp_path <- PaleoClimR.example("HADCM3.permian.example")
+data("PBDB.permian.example", package = "PaleoClimR")
+HADCM3.points.map(
+  var = "insitu_T_ym_dpth",
+  file = "tfkSy_252o.pgclann",
+  experiment = HADCM3_exp_path,
+  depth.level = 1,
+  coord.dat = PBDB.permian.example
+)
 }

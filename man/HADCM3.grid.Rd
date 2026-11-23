@@ -31,3 +31,18 @@ It handles both 2D and 3D grid data based on the specified dimensions.
 \details{
 The function adjusts longitude values to be within -180 to 180 and reports if any values were outside this range.
 }
+\examples{
+HADCM3_exp_path <- PaleoClimR.example("HADCM3.permian.example")
+
+grid <- HADCM3.grid(
+  file = "tfkSy_252o.pgclann",
+  experiment = HADCM3_exp_path,
+  dims = 3
+)
+
+c(
+  longitude_cells = length(grid$lon),
+  latitude_cells = length(grid$lat),
+  depth_levels = length(grid$depth)
+)
+}

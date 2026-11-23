@@ -16,6 +16,17 @@
 #' @return A data frame with the original coordinates and matched climate data from the cGENIE model.
 #'
 #' @export
+#' @examples
+#' cGENIE_exp_path <- PaleoClimR.example("cGENIE.permian.example")
+#' data("PBDB.permian.example", package = "PaleoClimR")
+#' cGENIE.points.data(
+#'   var = "ocn_O2",
+#'   experiment = cGENIE_exp_path,
+#'   depth.level = 2,
+#'   coord.dat = PBDB.permian.example
+#' )
+
+
 
 cGENIE.points.data <- function(var = NULL,
                                   experiment = NULL,

@@ -45,6 +45,39 @@
 #' typically do not affect plotting but could be removed with post-processing
 #' if needed.
 #' @export
+#' @examples
+#' cGENIE_exp_path <- PaleoClimR.example("cGENIE.permian.example")
+#'
+#' oxygen <- cGENIE.data.3D(
+#'   var = "ocn_O2",
+#'   experiment = cGENIE_exp_path
+#' )
+#'
+#' oxygen <- clean.nc.df(oxygen)
+#'
+#' transect <- gen.transect.slice(
+#'   df = oxygen,
+#'   degrees = 0,
+#'   orientation = "lat",
+#'   upper.bound = 0,
+#'   lower.bound = max(oxygen$depth.max, na.rm = TRUE)
+#' )
+#'
+#' land_segments <- gen.continents.transect(
+#'   df = transect$df.slice,
+#'   var = "var",
+#'   orientation = "lat"
+#' )
+#'
+#' ggplot2::ggplot(land_segments) +
+#'   ggplot2::geom_segment(
+#'     ggplot2::aes(x = x, y = y, xend = xend, yend = yend),
+#'     colour = "#405a40"
+#'   ) +
+#'   ggplot2::theme_minimal()+
+#'   ggplot2::scale_y_reverse() +
+#'   ggplot2::labs(x = "Latitude", y = "Depth (m)")
+#'
 gen.continents.transect <- function(df, var, orientation = "lat") {
 
   if (!is.data.frame(df)) {

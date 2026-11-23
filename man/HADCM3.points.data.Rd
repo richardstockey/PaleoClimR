@@ -47,3 +47,14 @@ A data frame with the original coordinates and matched climate data from the HAD
 \description{
 This function matches palaeocoordinates to HADCM3L model data.
 }
+\examples{
+HADCM3_exp_path <- PaleoClimR.example("HADCM3.permian.example")
+data("PBDB.permian.example", package = "PaleoClimR")
+HADCM3.points.data(
+  var = "insitu_T_ym_dpth",
+  file = "tfkSy_252o.pgclann",
+  experiment = HADCM3_exp_path,
+  depth.level = 1,
+  coord.dat = PBDB.permian.example
+)
+}

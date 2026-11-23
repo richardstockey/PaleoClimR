@@ -10,6 +10,13 @@
 #' @param model The model type; defaults to "biogem".
 #' @return A data frame containing the extracted 2D lat-lon data field with corresponding grid information.
 #' @export
+#' @examples
+#' cGENIE_exp_path <- PaleoClimR.example("cGENIE.permian.example")
+#' cGENIE.data(
+#'   var = "ocn_O2",
+#'   experiment = cGENIE_exp_path,
+#'   depth.level = 2
+#' )
 cGENIE.data <- function(var,
                         experiment,
                         depth.level = NULL,

@@ -20,6 +20,14 @@
 #' @param col.labels (numeric) Labels for the color bar ticks.
 #' @return A ggplot object representing the map.
 #' @export
+#' @examples
+#' HADCM3_exp_path <- PaleoClimR.example("HADCM3.permian.example")
+#' HADCM3.map(
+#'   var = "insitu_T_ym_dpth",
+#'   file = "tfkSy_252o.pgclann",
+#'   experiment = HADCM3_exp_path,
+#'   depth.level = 1
+#' )
 HADCM3.map <- function(var, file,
                        experiment,
                        depth.level = 1,

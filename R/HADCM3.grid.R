@@ -20,13 +20,28 @@
 #' @details The function adjusts longitude values to be within -180 to 180 and reports if any values were outside this range.
 #'
 #' @export
+#' @examples
+#' HADCM3_exp_path <- PaleoClimR.example("HADCM3.permian.example")
+#'
+#' grid <- HADCM3.grid(
+#'   file = "tfkSy_252o.pgclann",
+#'   experiment = HADCM3_exp_path,
+#'   dims = 3
+#' )
+#'
+#' c(
+#'   longitude_cells = length(grid$lon),
+#'   latitude_cells = length(grid$lat),
+#'   depth_levels = length(grid$depth)
+#' )
 
 HADCM3.grid <- function(file = NULL,
                         experiment = NULL,
                         dims = NULL){
 
   # Open the NetCDF file using the specified experiment path and file name
-  nc <- RNetCDF::open.nc(paste0(experiment, file, ".nc"))
+  nc <- RNetCDF::open.nc(file.path(experiment, paste0(file, ".nc")))
+  on.exit(RNetCDF::close.nc(nc), add = TRUE)
 
   # Extract latitude values from the NetCDF file
   lat <- RNetCDF::var.get.nc(nc, "latitude") # units: degrees north

@@ -65,3 +65,30 @@ ggplot object representing the map
 \description{
 Creates a ggplot2 map from model data and optional continent outlines.
 }
+\examples{
+cGENIE_exp_path <- PaleoClimR.example("cGENIE.permian.example")
+
+oxygen <- cGENIE.data(
+  var = "ocn_O2",
+  experiment = cGENIE_exp_path,
+  depth.level = 2
+)
+
+oxygen <- clean.nc.df(oxygen)
+oxygen_sf <- nc.df.to.sf(oxygen)
+continents_sf <- gen.continents.sf(oxygen)
+frame_sf <- gen.map.frame.sf()
+
+paleo.map(
+  data_sf = oxygen_sf,
+  var_name = "var",
+  unit_factor = 1e6,
+  frame_sf = frame_sf,
+  continents_sf = continents_sf,
+  fill_palette = pals::parula(1000),
+  min_value = 0,
+  max_value = 300,
+  intervals = 25,
+  scale_label = "Oxygen (\u00B5mol/kg)"
+)
+}

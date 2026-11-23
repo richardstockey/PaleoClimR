@@ -38,3 +38,11 @@ based on latitude, longitude, depth, and time. It converts the 3D array into a
 2D dataframe with geographical coordinates and depth levels, making the data
 easier to visualize or further process.
 }
+\examples{
+cGENIE_exp_path <- PaleoClimR.example("cGENIE.permian.example")
+cGENIE.data.3D(
+  var = "ocn_O2",
+  experiment = cGENIE_exp_path
+)
+
+}

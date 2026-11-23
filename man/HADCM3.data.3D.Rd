@@ -38,3 +38,12 @@ based on latitude, longitude, depth, and time. It converts the 3D array into a
 2D dataframe with geographical coordinates and depth levels, making the data
 easier to visualize or further process.
 }
+\examples{
+HADCM3_exp_path <- PaleoClimR.example("HADCM3.permian.example")
+HADCM3.data.3D(
+  var = "insitu_T_ym_dpth",
+  file = "tfkSy_252o.pgclann",
+  experiment = HADCM3_exp_path
+)
+
+}

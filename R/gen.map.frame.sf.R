@@ -8,6 +8,17 @@
 #' @param n.steps Numeric. Number of steps along the edges for smooth frame (default 1800).
 #' @return An `sf` object representing the frame polygon.
 #' @export
+#' @examples
+#' map_frame <- gen.map.frame.sf(n.steps = 90)
+#'
+#' ggplot2::ggplot(map_frame) +
+#'   ggplot2::geom_sf(
+#'     fill = NA,
+#'     colour = "#405a40",
+#'     linewidth = 0.6
+#'   ) +
+#'   ggplot2::theme_minimal() +
+#'   ggplot2::labs(title = "Global map frame")
 gen.map.frame.sf <- function(lon.range = c(-180, 180), lat.range = c(-90, 90), n.steps = 1800) {
 
   # Create coordinates tracing the outer rectangle

@@ -6,7 +6,7 @@
 #' @param file A character string indicating the name of the NetCDF file (without the .nc extension).
 #' @param experiment A character string indicating the path to the HADCM3 experiment directory.
 #' @param orientation Character. Whether the transect is oriented along latitude ("lat") or longitude ("lon"). Default is "lat".
-#' @param degrees Numeric. The degree band of the specified latitude or longitude to include in the transect (default 0, meaning the equator/dateline). Will plot the nearest band to your chosen value. 
+#' @param degrees Numeric. The degree band of the specified latitude or longitude to include in the transect (default 0, meaning the equator/dateline). Will plot the nearest band to your chosen value.
 #' @param dims (numeric) Dimensionality of the data (almost certainly 3 if you're plotting a transect, set to 3 as default).
 #' @param year (numeric or character) Time step to visualize (default "default").
 #' @param unit.factor (numeric) Scaling factor for variable (default NULL; auto-set by var).
@@ -25,7 +25,19 @@
 #' @param lower.bound Numeric value indicating the lower bound for the y axis. Defaults to "default", which sets it to the maximum depth in the data.
 #' @return A ggplot object representing the transect plot.
 #' @export
-
+#' @examples
+#' HADCM3_exp_path <- PaleoClimR.example("HADCM3.permian.example")
+#' HADCM3.transect(
+#'   var = "insitu_T_ym_dpth",
+#'   file = "tfkSy_252o.pgclann",
+#'   experiment = HADCM3_exp_path,
+#'   degrees = 0,
+#'   orientation = "lon",
+#'   unit.factor = 1,
+#'   min.value = 0,
+#'   max.value = 40
+#' )
+#'
 HADCM3.transect <- function(var, file,
                             experiment,
         degrees = 0,
@@ -143,7 +155,7 @@ HADCM3.transect <- function(var, file,
     custom.fg = custom.fg,
     upper.bound = upper.bound,
     scale.label = scale.label,
-    title_text = title_text, 
+    title_text = title_text,
     line.thickness = line.thickness
   )
     # Return the plot

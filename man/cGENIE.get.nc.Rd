@@ -25,3 +25,10 @@ This function imports specified variables from cGENIE NetCDF files and extracts 
 The function reads a NetCDF file based on the specified experiment and model, extracting latitude, longitude,
 depth, time, and the requested variable. It supports both 2D and 3D datasets.
 }
+\examples{
+cGENIE_exp_path <- PaleoClimR.example("cGENIE.permian.example")
+cGENIE.get.nc(
+  var = "ocn_O2",
+  experiment = cGENIE_exp_path
+)
+}

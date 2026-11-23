@@ -29,7 +29,16 @@ cGENIE.points.map(
   custom.bg = NULL,
   custom.fg = NULL,
   col.labels = NULL,
-  show.NAs = TRUE
+  show.NAs = TRUE,
+  points.col = NULL,
+  points.scale.type = c("auto", "continuous", "categorical"),
+  points.levels = NULL,
+  points.palette = NULL,
+  points.scale.label = NULL,
+  points.min.value = NULL,
+  points.max.value = NULL,
+  points.intervals = NULL,
+  points.legend.box = c("vertical", "horizontal")
 )
 }
 \arguments{
@@ -80,6 +89,31 @@ cGENIE.points.map(
 \item{col.labels}{(numeric) Labels for the color bar ticks.}
 
 \item{show.NAs}{(logical) Whether to show NA values on the map (default FALSE).}
+
+\item{points.col}{(character) Name of a column in \code{coord.dat} used to colour the points on a second,
+independent colour scale. Default NULL: points are coloured by the matched cGENIE value on the map's scale.}
+
+\item{points.scale.type}{(character) "auto" (default; numeric columns are continuous, everything else
+categorical), "continuous" or "categorical". Use "categorical" to force e.g. 0/1 codes to be treated as categories.}
+
+\item{points.levels}{(character) Categories of a categorical second scale, in the order they should appear
+in the legend. Default NULL: the levels of the column if it is a factor, otherwise the order of first
+appearance in \code{coord.dat}. All categories are always shown in the legend, even if no plotted point has
+that value.}
+
+\item{points.palette}{Colours for the second scale. Continuous: a vector of colours (default pals::viridis(1000)).
+Categorical: a (preferably named) vector with a colour for every category, e.g.
+c(oxic = "steelblue", anoxic = "firebrick") (default: evenly spaced hues in the order of the levels).}
+
+\item{points.scale.label}{(character) Legend title for the second scale (default: \code{points.col}).}
+
+\item{points.min.value, points.max.value}{(numeric) Limits of a continuous second scale (default: range of the data).
+Values outside the limits are shown in the end colours.}
+
+\item{points.intervals}{(numeric) Tick spacing for a continuous second scale (default NULL: automatic).}
+
+\item{points.legend.box}{(character) "vertical" (default; second scale below the map's scale) or
+"horizontal" (side by side).}
 }
 \value{
 A ggplot object representing the generated map with the specified variable visualized across geographical coordinates.
@@ -93,4 +127,14 @@ Additionally, it matches and plots specific points from a provided data frame.
 This function reads 2D or 3D data from cGENIE model output NetCDF files and produces a map visualization.
 Default settings are defined for several commonly used variables, and users can specify their own scaling and color settings.
 The function also matches specific points from a provided data frame and plots them on the map.
+}
+\examples{
+cGENIE_exp_path <- PaleoClimR.example("cGENIE.permian.example")
+data("PBDB.permian.example", package = "PaleoClimR")
+cGENIE.points.map(
+  var = "ocn_O2",
+  experiment = cGENIE_exp_path,
+  depth.level = 2,
+  coord.dat = PBDB.permian.example
+)
 }

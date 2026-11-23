@@ -35,6 +35,17 @@
 #' longitude intervals on either side of the dateline.
 #'
 #' @export
+#' @examples
+#' cGENIE_exp_path <- PaleoClimR.example("cGENIE.permian.example")
+#'
+#' oxygen <- cGENIE.data(
+#'   var = "ocn_O2",
+#'   experiment = cGENIE_exp_path,
+#'   depth.level = 2
+#' )
+#'
+#' oxygen_clean <- clean.nc.df(oxygen)
+#' head(oxygen_clean)
 clean.nc.df <- function(df,
                         lon.range = c(-180, 180),
                         lat.range = c(-90, 90),

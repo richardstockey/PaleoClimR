@@ -29,16 +29,21 @@
 #' @import dplyr
 #' @importFrom rlang .data
 #' @export
+#' @examples
+#' cGENIE_exp_path <- PaleoClimR.example("cGENIE.permian.example")
+#' cGENIE.bw.redox(
+#'   experiment = cGENIE_exp_path
+#' )
 cGENIE.bw.redox <- function(experiment,
                             anox.thresh = 0,
                             subox.thresh = 4.8e-6,
                             lower.lims = TRUE) {
-  
+
   # extract 2D bottom-water O2 field
   bw.O2 <- cGENIE.data(experiment = experiment,
                        var = "ocn_ben_O2",
                        dims = 2, year = "default")
-  
+
   # classify each cell
   bw.redox <- bw.O2 %>%
     mutate(redox.class = case_when(
@@ -48,36 +53,36 @@ cGENIE.bw.redox <- function(experiment,
     )) %>%
     mutate(redox.class = factor(.data$redox.class,
                                 levels = c("anoxic", "suboxic", "oxic")))
-  
+
   # fraction of ocean cells in each class
   bw.redox.sum <- bw.redox %>%
     filter(!is.na(.data$redox.class)) %>%         # drop land / NA cells
     count(.data$redox.class, .drop = FALSE) %>%   # .drop = FALSE keeps classes with zero cells
     mutate(f.sink = .data$n / sum(.data$n))
-  
+
   # extract individual outputs
   f.anox  <- bw.redox.sum$f.sink[bw.redox.sum$redox.class == "anoxic"]
   f.subox <- bw.redox.sum$f.sink[bw.redox.sum$redox.class == "suboxic"]
   f.ox    <- bw.redox.sum$f.sink[bw.redox.sum$redox.class == "oxic"]
-  
+
   # Apply a lower limit to all seafloor fractions (0.01%) if `lower.lims` is TRUE,
   # then take the excess off the largest sink so the fractions still sum to 1
   if (lower.lims == TRUE) {
     f.min <- 0.0001
     f <- pmax(c(anox = f.anox, subox = f.subox, ox = f.ox), f.min)
-    
+
     largest <- which.max(f)
     f[largest] <- f[largest] - (sum(f) - 1)
-    
+
     f.anox  <- f[["anox"]]
     f.subox <- f[["subox"]]
     f.ox    <- f[["ox"]]
-    
+
     stopifnot(isTRUE(all.equal(f.anox + f.subox + f.ox, 1)))
   }
-  
+
   # Create a list to store and return the redox summary
   bw.redox.sum <- list(f.anox = f.anox, f.subox = f.subox, f.ox = f.ox)
-  
+
   return(bw.redox.sum)
 }

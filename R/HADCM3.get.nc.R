@@ -11,7 +11,16 @@
 #' depth, time, and the requested variable. It supports both 2D and 3D datasets.
 #'
 #' @export
+#' @examples
+#' HADCM3_exp_path <- PaleoClimR.example("HADCM3.permian.example")
 #'
+#' hadcm3_data <- HADCM3.get.nc(
+#'   var = "insitu_T_ym_dpth",
+#'   file = "tfkSy_252o.pgclann",
+#'   experiment = HADCM3_exp_path
+#' )
+#'
+#' dim(hadcm3_data$var)
 HADCM3.get.nc <- function(var,
                           file,
                           experiment,
@@ -19,7 +28,7 @@ HADCM3.get.nc <- function(var,
 
 
   # Open the NetCDF file
-  nc <- RNetCDF::open.nc(paste0(experiment, file, ".nc"))
+  nc <- RNetCDF::open.nc(paste0(experiment, "/", file, ".nc"))
 
   # Extract latitude and longitude variables
   lat <- RNetCDF::var.get.nc(nc, "latitude") # units: degrees north

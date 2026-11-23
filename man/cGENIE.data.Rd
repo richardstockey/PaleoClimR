@@ -32,3 +32,11 @@ A data frame containing the extracted 2D lat-lon data field with corresponding g
 \description{
 This function extracts 2D latitude-longitude data fields from 3D or 2D cGENIE netCDF (.nc) files.
 }
+\examples{
+cGENIE_exp_path <- PaleoClimR.example("cGENIE.permian.example")
+cGENIE.data(
+  var = "ocn_O2",
+  experiment = cGENIE_exp_path,
+  depth.level = 2
+)
+}

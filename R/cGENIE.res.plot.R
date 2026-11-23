@@ -10,6 +10,12 @@
 #' @param base_size Numeric; base font size for theme (default = 14).
 
 #' @export
+#' @examples
+#' cGENIE_exp_path <- PaleoClimR.example("cGENIE.permian.example")
+#' cGENIE.res.plot(
+#'   var = "ocn_O2",
+#'   experiment = cGENIE_exp_path,
+#' )
 cGENIE.res.plot <- function(var,
                             experiment,
                             var_col_no = 2,

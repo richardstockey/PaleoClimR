@@ -38,3 +38,27 @@ coord.dat with new columns: \code{matched_climate}, \code{lat.bin.mid}, \code{lo
 \description{
 Efficiently matches gridded climate data to a set of coordinates, handling NA cells.
 }
+\examples{
+cGENIE_exp_path <- PaleoClimR.example("cGENIE.permian.example")
+data("PBDB.permian.example", package = "PaleoClimR")
+
+oxygen <- cGENIE.data(
+  var = "ocn_O2",
+  experiment = cGENIE_exp_path,
+  depth.level = 2
+)
+
+grid <- cGENIE.grid(
+  experiment = cGENIE_exp_path,
+  dims = 3
+)
+
+matched <- match.climate.coords(
+  clim.dat = oxygen,
+  grid.dat = grid,
+  coord.dat = PBDB.permian.example,
+  verbose = FALSE
+)
+
+head(matched[, c("p_lat", "p_lng", "matched_climate")])
+}

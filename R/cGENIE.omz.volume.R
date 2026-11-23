@@ -16,24 +16,28 @@
 #' @return A numeric value representing the proportion of the ocean volume that is classified as an
 #'   OMZ (between 0 and 1).
 #' @export
-#'
+#' @examples
+#' cGENIE_exp_path <- PaleoClimR.example("cGENIE.permian.example")
+#' cGENIE.omz.volume(
+#'   experiment = cGENIE_exp_path,
+#' )
 
 cGENIE.omz.volume <- function(experiment,
                               OMZ.thresh = 58.54e-6,
                               year = "default") {
-  
+
   omz.df <- cGENIE.omz(experiment = experiment,
                        OMZ.thresh = OMZ.thresh,
                        year = year)
-  
+
   # thickness-weighted fraction of ocean volume in each class
   omz.sum <- omz.df %>%
     filter(!is.na(.data$OMZ.cell)) %>%                                   # drop land / NA cells
     count(.data$omz.class, wt = .data$cell.thickness, .drop = FALSE) %>% # sum thickness, not cell count
     mutate(vol = .data$n / sum(.data$n))
-  
+
   # proportion of total ocean volume that is OMZ (between 0 and 1)
   omz.volume <- omz.sum$vol[omz.sum$omz.class == "OMZ"]
-  
+
   return(omz.volume)
 }

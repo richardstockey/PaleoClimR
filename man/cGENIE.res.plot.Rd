@@ -29,3 +29,10 @@ cGENIE.res.plot(
 \description{
 Imports .res files, converts to data frame, and plots as a time series or custom x/y variable.
 }
+\examples{
+cGENIE_exp_path <- PaleoClimR.example("cGENIE.permian.example")
+cGENIE.res.plot(
+  var = "ocn_O2",
+  experiment = cGENIE_exp_path,
+)
+}

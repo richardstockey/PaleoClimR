@@ -1,0 +1,289 @@
+---
+title: "Working with cGENIE output in PaleoClimR"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Working with cGENIE output in PaleoClimR}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 8,
+  fig.height = 5,
+  out.width = "100%"
+)
+library(PaleoClimR)
+```
+
+## Introduction
+
+PaleoClimR reads cGENIE NetCDF output, prepares gridded data for model
+analysis, and creates maps and transect plots. It also includes helpers for
+matching palaeogeographic points, identifying shelf cells, summarizing oxygen
+conditions, and reading cGENIE `.res` time series.
+
+The package includes a small cGENIE experiment for examples. The functions
+expect the path to the experiment directory; the NetCDF files are in its
+`biogem` subdirectory, as would be produced by the model itself.
+
+```{r example-path}
+cGENIE_exp_path <- PaleoClimR.example("cGENIE.permian.example")
+cGENIE_exp_path
+```
+
+## Inspecting the grid and NetCDF data
+
+`cGENIE.grid()` returns the horizontal grid coordinates and cell edges. For a
+3D field it also returns depth levels and depth edges.
+
+```{r grid}
+cgenie_grid <- cGENIE.grid(
+  experiment = cGENIE_exp_path,
+  dims = 3
+)
+
+c(
+  longitude_cells = length(cgenie_grid$lon),
+  latitude_cells = length(cgenie_grid$lat),
+  depth_levels = length(cgenie_grid$depth)
+)
+```
+
+`cGENIE.get.nc()` reads a named field and its coordinates into a list. The
+field remains an array, with longitude, latitude, depth, and time dimensions.
+
+```{r get-netcdf}
+o2_array <- cGENIE.get.nc(
+  var = "ocn_O2",
+  experiment = cGENIE_exp_path,
+  dims = 3
+)
+
+dim(o2_array$var)
+```
+
+`cGENIE.years()` reads the saved time values from the experiment:
+
+```{r years}
+cGENIE.years(experiment = cGENIE_exp_path)
+```
+
+## Extracting 2D and 3D fields
+
+Use `cGENIE.data()` to extract one horizontal slice. For a 3D field, choose a
+depth level. The result includes cell bounds and a `var` column that can be
+used by mapping and point-matching functions.
+
+```{r data-2d}
+oxygen_surface <- cGENIE.data(
+  var = "ocn_O2",
+  experiment = cGENIE_exp_path,
+  depth.level = 2
+)
+
+head(oxygen_surface)
+```
+
+Use `cGENIE.data.3D()` to return the field across all depth levels, with depth
+midpoints and bounds attached to each cell:
+
+```{r data-3d}
+oxygen_3d <- cGENIE.data.3D(
+  var = "ocn_O2",
+  experiment = cGENIE_exp_path
+)
+
+head(oxygen_3d)
+```
+
+The 2D cGENIE file also contains bottom-water variables. Pass `dims = 2` for
+these horizontally gridded fields:
+
+```{r bottom-water-data}
+bottom_oxygen <- cGENIE.data(
+  var = "ocn_ben_O2",
+  experiment = cGENIE_exp_path,
+  dims = 2
+)
+
+head(bottom_oxygen)
+```
+
+## Mapping cGENIE fields
+
+`cGENIE.map()` creates a map for a selected variable and depth level. The
+function applies defaults for common variables, including oxygen scaling and
+colour-bar labels.
+
+```{r map-oxygen}
+cGENIE.map(
+  var = "ocn_O2",
+  experiment = cGENIE_exp_path,
+  depth.level = 2
+)
+```
+
+## Creating transect plots
+
+`cGENIE.transect()` extracts the nearest latitude or longitude band and plots
+the selected field against depth. Here, `orientation = "lon"` selects the
+latitude band nearest 0° and plots a longitude–depth section.
+
+```{r transect}
+cGENIE.transect(
+  var = "ocn_O2",
+  experiment = cGENIE_exp_path,
+  degrees = 0,
+  orientation = "lon",
+  continents.outlined = TRUE,
+  unit.factor = 1e6,
+  min.value = 0,
+  max.value = 300,
+  scale.label = "Oxygen (µmol/kg)"
+)
+```
+
+## Identifying shelf cells
+
+`cGENIE.adjacent.land()` marks ocean cells next to cells with `NA` values in a
+single horizontal slice. At depth level 2, these missing cells include land
+and locations where the seafloor is shallower than that depth.
+
+```{r adjacent-land}
+adjacent_oxygen <- cGENIE.adjacent.land(oxygen_surface)
+table(adjacent_oxygen$adj.land)
+```
+
+`cGENIE.shelf.data()` applies this neighbour check to model output and returns
+the cells adjacent to land or missing ocean cells. Set `keep.nas = FALSE` to
+return only cells with data.
+
+```{r shelf-data}
+shelf_oxygen <- cGENIE.shelf.data(
+  var = "ocn_O2",
+  experiment = cGENIE_exp_path,
+  depth.level = 2,
+  keep.nas = FALSE
+)
+
+head(shelf_oxygen[, c("lon.mid", "lat.mid", "var", "adj.land")])
+```
+
+`cGENIE.shelf.map()` maps the same shelf subset:
+
+```{r shelf-map}
+cGENIE.shelf.map(
+  var = "ocn_O2",
+  experiment = cGENIE_exp_path,
+  depth.level = 2
+)
+```
+
+## Matching palaeogeographic points
+
+The bundled occurrence data include palaeogeographic coordinates in `p_lng`
+and `p_lat`. `cGENIE.points.data()` assigns each occurrence a model value. By
+default, points falling on land or outside the valid model field are matched
+to a nearby valid cell within `max_dist` kilometres.
+
+```{r points-data}
+data("PBDB.permian.example", package = "PaleoClimR")
+
+matched_occurrences <- cGENIE.points.data(
+  var = "ocn_O2",
+  experiment = cGENIE_exp_path,
+  depth.level = 2,
+  coord.dat = PBDB.permian.example
+)
+
+head(matched_occurrences[, c(
+  "p_lng", "p_lat", "matched_climate", "lat.bin.mid", "lon.bin.mid"
+)])
+```
+
+`cGENIE.points.map()` overlays the matched points on the climate map. The
+following example colours points by phylum on a separate categorical scale:
+
+```{r points-map}
+cGENIE.points.map(
+  var = "ocn_O2",
+  experiment = cGENIE_exp_path,
+  depth.level = 2,
+  coord.dat = PBDB.permian.example,
+  points.col = "phylum",
+  points.scale.type = "categorical",
+  points.scale.label = "Phylum"
+)
+```
+
+To keep the point scale matched to the map's oxygen scale, omit `points.col`.
+The matching options `na.method` and `max_dist` can be changed when calling
+either point function.
+
+## Oxygen and redox summaries
+
+`cGENIE.omz()` classifies 3D ocean cells as OMZ or oxygenated using an oxygen
+threshold. The default threshold is 58.54 µmol/kg, expressed in the model's
+mol/kg units.
+
+```{r omz-cells}
+omz_cells <- cGENIE.omz(experiment = cGENIE_exp_path)
+head(omz_cells[, c("lon.mid", "lat.mid", "depth", "var", "OMZ.cell")])
+```
+
+`cGENIE.omz.thickness()` sums OMZ thickness within each water column, while
+`cGENIE.omz.volume()` returns the thickness-weighted proportion of ocean
+volume classified as OMZ.
+
+```{r omz-summary}
+omz_thickness <- cGENIE.omz.thickness(experiment = cGENIE_exp_path)
+head(omz_thickness[, c("lon.mid", "lat.mid", "ocean.thickness", "omz.thickness", "omz.fraction")])
+
+cGENIE.omz.volume(experiment = cGENIE_exp_path)
+```
+
+`cGENIE.omz.map()` maps the OMZ thickness by water column:
+
+```{r omz-map}
+cGENIE.omz.map(experiment = cGENIE_exp_path)
+```
+
+For bottom-water redox, `cGENIE.bw.redox()` classifies ocean cells as anoxic,
+suboxic, or oxic and returns the fraction in each class:
+
+```{r bottom-redox}
+cGENIE.bw.redox(experiment = cGENIE_exp_path)
+```
+
+## Reading cGENIE `.res` files
+
+Some cGENIE experiments include `.res` files with time-series diagnostics.
+`cGENIE.res.import()` reads one into a data frame, and `cGENIE.res.plot()`
+creates a time-series plot. This example file contains global oxygen
+diagnostics.
+
+```{r res-import}
+oxygen_series <- cGENIE.res.import(
+  var = "ocn_O2",
+  experiment = cGENIE_exp_path
+)
+
+head(oxygen_series)
+```
+
+```{r res-plot}
+cGENIE.res.plot(
+  var = "ocn_O2",
+  experiment = cGENIE_exp_path
+)
+```
+
+## Summary
+
+The main cGENIE workflow is to locate an experiment with
+`PaleoClimR.example()` or supply a user experiment path, extract fields with
+`cGENIE.data()` or `cGENIE.data.3D()`, and use the cGENIE mapping, transect,
+point-matching, shelf, and oxygen-analysis functions for downstream work.

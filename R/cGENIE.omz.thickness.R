@@ -15,18 +15,22 @@
 #'   \code{ocean.thickness} (total water depth, m), \code{omz.thickness} (summed OMZ thickness, m;
 #'   NA for land columns) and \code{omz.fraction} (omz.thickness / ocean.thickness).
 #' @export
-#'
+#' @examples
+#' cGENIE_exp_path <- PaleoClimR.example("cGENIE.permian.example")
+#' cGENIE.omz.thickness(
+#'   experiment = cGENIE_exp_path,
+#' )
 
 cGENIE.omz.thickness <- function(experiment,
                                  OMZ.thresh = 58.54e-6,
                                  year = "default") {
-  
+
   omz.df <- cGENIE.omz(experiment = experiment,
                        OMZ.thresh = OMZ.thresh,
                        year = year)
-  
+
   grid.cols <- c("lon.mid", "lon.min", "lon.max", "lat.mid", "lat.min", "lat.max")
-  
+
   omz.thickness <- omz.df %>%
     group_by(across(all_of(grid.cols))) %>%
     summarise(
@@ -38,6 +42,6 @@ cGENIE.omz.thickness <- function(experiment,
       omz.thickness = if_else(.data$ocean.thickness == 0, NA_real_, .data$omz.thickness),
       omz.fraction  = .data$omz.thickness / .data$ocean.thickness
     )
-  
+
   return(omz.thickness)
 }

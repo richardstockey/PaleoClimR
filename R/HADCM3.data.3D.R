@@ -26,6 +26,14 @@
 #'
 #'
 #' @export
+#' @examples
+#' HADCM3_exp_path <- PaleoClimR.example("HADCM3.permian.example")
+#' HADCM3.data.3D(
+#'   var = "insitu_T_ym_dpth",
+#'   file = "tfkSy_252o.pgclann",
+#'   experiment = HADCM3_exp_path
+#' )
+#'
 HADCM3.data.3D <- function(var, file, experiment,
                            year = "default") {
 

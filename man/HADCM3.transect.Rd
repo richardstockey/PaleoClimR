@@ -78,3 +78,17 @@ A ggplot object representing the transect plot.
 \description{
 This function creates transect plots from HADCM3 model output .nc files.
 }
+\examples{
+HADCM3_exp_path <- PaleoClimR.example("HADCM3.permian.example")
+HADCM3.transect(
+  var = "insitu_T_ym_dpth",
+  file = "tfkSy_252o.pgclann",
+  experiment = HADCM3_exp_path,
+  degrees = 0,
+  orientation = "lon",
+  unit.factor = 1,
+  min.value = 0,
+  max.value = 40
+)
+
+}

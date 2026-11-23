@@ -69,3 +69,12 @@ A ggplot object representing the map.
 \description{
 Generate Maps from HADCM3 Model Output (as formatted by the BRIDGE Group)
 }
+\examples{
+HADCM3_exp_path <- PaleoClimR.example("HADCM3.permian.example")
+HADCM3.map(
+  var = "insitu_T_ym_dpth",
+  file = "tfkSy_252o.pgclann",
+  experiment = HADCM3_exp_path,
+  depth.level = 1
+)
+}

@@ -17,3 +17,22 @@ An \code{sf} object representing continental outlines
 Converts grid cells with NA values (assumed land) into a single
 \code{sf} object representing continental outlines.
 }
+\examples{
+cGENIE_exp_path <- PaleoClimR.example("cGENIE.permian.example")
+
+oxygen <- cGENIE.data(
+  var = "ocn_O2",
+  experiment = cGENIE_exp_path,
+  depth.level = 2
+)
+
+oxygen <- clean.nc.df(oxygen)
+continents <- gen.continents.sf(oxygen)
+ggplot2::ggplot() +
+  ggplot2::geom_sf(
+    data = continents,
+    fill = "#c8d8b0",
+    colour = "#405a40"
+  ) +
+  ggplot2::theme_minimal()
+}

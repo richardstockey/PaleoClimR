@@ -37,3 +37,35 @@ A list containing:
 Utility function to extract the nearest latitude or longitude slice
 from gridded data and define plotting bounds for transect plots.
 }
+\examples{
+cGENIE_exp_path <- PaleoClimR.example("cGENIE.permian.example")
+
+oxygen <- cGENIE.data.3D(
+  var = "ocn_O2",
+  experiment = cGENIE_exp_path
+)
+
+transect <- gen.transect.slice(
+  df = oxygen,
+  degrees = 0,
+  orientation = "lon",
+  upper.bound = 0,
+  lower.bound = max(oxygen$depth.max, na.rm = TRUE)
+)
+
+ggplot2::ggplot(
+  transect$df.slice,
+  ggplot2::aes(x = lon.mid, y = depth, fill = var)
+) +
+  ggplot2::geom_tile() +
+  ggplot2::scale_y_reverse() +
+  ggplot2::scale_fill_gradient(low = "#f7fbff", high = "#084594") +
+  ggplot2::coord_cartesian(xlim = transect$xlims) +
+  ggplot2::labs(
+    title = paste("Longitude-depth transect near latitude", transect$band.label),
+    x = "Longitude",
+    y = "Depth (m)",
+    fill = "Oxygen"
+  ) +
+  ggplot2::theme_minimal()
+}

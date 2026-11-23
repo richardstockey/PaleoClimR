@@ -53,3 +53,15 @@ plotting range are interpreted as crossing the dateline. When
 \code{split.dateline = TRUE}, these cells are split into two valid
 longitude intervals on either side of the dateline.
 }
+\examples{
+cGENIE_exp_path <- PaleoClimR.example("cGENIE.permian.example")
+
+oxygen <- cGENIE.data(
+  var = "ocn_O2",
+  experiment = cGENIE_exp_path,
+  depth.level = 2
+)
+
+oxygen_clean <- clean.nc.df(oxygen)
+head(oxygen_clean)
+}

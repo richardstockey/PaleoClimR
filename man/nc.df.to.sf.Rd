@@ -39,3 +39,24 @@ attached to the resulting spatial object.
 This function intentionally uses \code{sp} internally for compatibility
 with existing cGENIE workflows, but returns a modern \code{sf} object.
 }
+\examples{
+cGENIE_exp_path <- PaleoClimR.example("cGENIE.permian.example")
+
+oxygen <- cGENIE.data(
+  var = "ocn_O2",
+  experiment = cGENIE_exp_path,
+  depth.level = 2
+)
+
+oxygen <- clean.nc.df(oxygen)
+oxygen_sf <- nc.df.to.sf(oxygen)
+
+ggplot2::ggplot(oxygen_sf) +
+  ggplot2::geom_sf(ggplot2::aes(fill = var), colour = NA) +
+  ggplot2::scale_fill_gradient(low = "#f7fbff", high = "#084594") +
+  ggplot2::labs(
+    title = "cGENIE oxygen by grid cell",
+    fill = "Oxygen"
+  ) +
+  ggplot2::theme_minimal()
+}

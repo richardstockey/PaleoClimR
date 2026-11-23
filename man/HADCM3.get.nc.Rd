@@ -25,3 +25,14 @@ This function imports specified variables from HADCM3 NetCDF files (as formatted
 The function reads a NetCDF file based on the specified experiment and model, extracting latitude, longitude,
 depth, time, and the requested variable. It supports both 2D and 3D datasets.
 }
+\examples{
+HADCM3_exp_path <- PaleoClimR.example("HADCM3.permian.example")
+
+hadcm3_data <- HADCM3.get.nc(
+  var = "insitu_T_ym_dpth",
+  file = "tfkSy_252o.pgclann",
+  experiment = HADCM3_exp_path
+)
+
+dim(hadcm3_data$var)
+}

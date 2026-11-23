@@ -24,6 +24,13 @@
 #'   - `depth.max`: Maximum depth boundary.
 #'   - `lon.range`: Range of longitude for handling map boundaries.
 #' @export
+#' @examples
+#' cGENIE_exp_path <- PaleoClimR.example("cGENIE.permian.example")
+#' cGENIE.data.3D(
+#'   var = "ocn_O2",
+#'   experiment = cGENIE_exp_path
+#' )
+#'
 cGENIE.data.3D <- function(var, experiment,
                            year = "default",
                            model = "biogem") {

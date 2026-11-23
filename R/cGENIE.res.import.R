@@ -12,6 +12,12 @@
 #' @importFrom dplyr select where
 #' @return Data frame with imported data. Columns full of NAs are removed.
 #' @export
+#' @examples
+#' cGENIE_exp_path <- PaleoClimR.example("cGENIE.permian.example")
+#' cGENIE.res.import(
+#'   var = "ocn_O2",
+#'   experiment = cGENIE_exp_path,
+#' )
 cGENIE.res.import <- function(var, experiment, model = "biogem") {
 
   # Validate model

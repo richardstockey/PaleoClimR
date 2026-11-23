@@ -57,3 +57,47 @@ ggplot object
 Utility function to create a latitude or longitude transect plot
 from pre-filtered gridded data (e.g. using gen.transect.slice).
 }
+\examples{
+cGENIE_exp_path <- PaleoClimR.example("cGENIE.permian.example")
+
+oxygen <- cGENIE.data.3D(
+  var = "ocn_O2",
+  experiment = cGENIE_exp_path
+)
+oxygen <- clean.nc.df(oxygen)
+
+transect <- gen.transect.slice(
+  df = oxygen,
+  degrees = 0,
+  orientation = "lon",
+  upper.bound = 0,
+  lower.bound = max(oxygen$depth.max, na.rm = TRUE)
+)
+
+land_segments <- gen.continents.transect(
+  df = transect$df.slice,
+  var = "var",
+  orientation = "lon"
+)
+
+paleo.transect(
+  df.slice = transect$df.slice,
+  orientation = "lon",
+  box = transect$box,
+  land_segments = land_segments,
+  unit.factor = 1e6,
+  palette_name = pals::parula(1000),
+  min.value = 0,
+  max.value = 300,
+  intervals = 25,
+  custom.fg = "black",
+  upper.bound = 0,
+  scale.label = "Oxygen (\u00B5mol/kg)",
+  title_text = paste0(
+    "Oxygen at ",
+    transect$band.label,
+    "\u00B0 latitude"
+  ),
+  line.thickness = 1
+)
+}

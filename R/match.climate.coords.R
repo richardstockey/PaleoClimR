@@ -8,11 +8,34 @@
 #' @param lat.name Name of latitude column in coord.dat (default "p_lat").
 #' @param lng.name Name of longitude column in coord.dat (default "p_lng").
 #' @param max_dist Maximum allowed distance for matching (km, default 1000 km).
-#' @param na.method How to handle NA climate values: "nearest" (default; nearest neighbor), "same.lat" (nearest at same latitude), "keep" (keep NA). 
+#' @param na.method How to handle NA climate values: "nearest" (default; nearest neighbor), "same.lat" (nearest at same latitude), "keep" (keep NA).
 #' @param verbose Logical; if TRUE, print summary statistics (default TRUE).
 #' @return coord.dat with new columns: `matched_climate`, `lat.bin.mid`, `lon.bin.mid`.
-#' 
+#'
 #' @export
+#' @examples
+#' cGENIE_exp_path <- PaleoClimR.example("cGENIE.permian.example")
+#' data("PBDB.permian.example", package = "PaleoClimR")
+#'
+#' oxygen <- cGENIE.data(
+#'   var = "ocn_O2",
+#'   experiment = cGENIE_exp_path,
+#'   depth.level = 2
+#' )
+#'
+#' grid <- cGENIE.grid(
+#'   experiment = cGENIE_exp_path,
+#'   dims = 3
+#' )
+#'
+#' matched <- match.climate.coords(
+#'   clim.dat = oxygen,
+#'   grid.dat = grid,
+#'   coord.dat = PBDB.permian.example,
+#'   verbose = FALSE
+#' )
+#'
+#' head(matched[, c("p_lat", "p_lng", "matched_climate")])
 match.climate.coords <- function(clim.dat,
                                  grid.dat,
                                  coord.dat,

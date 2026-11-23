@@ -21,6 +21,19 @@
 #'
 #' @importFrom RNetCDF open.nc var.get.nc
 #' @export
+#' @examples
+#' cGENIE_exp_path <- PaleoClimR.example("cGENIE.permian.example")
+#'
+#' grid <- cGENIE.grid(
+#'   experiment = cGENIE_exp_path,
+#'   dims = 3
+#' )
+#'
+#' c(
+#'   longitude_cells = length(grid$lon),
+#'   latitude_cells = length(grid$lat),
+#'   depth_levels = length(grid$depth)
+#' )
 cGENIE.grid <- function(experiment = NULL,
                         dims = NULL,
                         model = "biogem") {

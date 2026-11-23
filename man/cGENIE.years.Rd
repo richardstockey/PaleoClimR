@@ -17,3 +17,9 @@ A data frame containing the extracted 2D lat-lon data field with corresponding g
 \description{
 Prints the years that are saved in a cGENIE model experiment
 }
+\examples{
+cGENIE_exp_path <- PaleoClimR.example("cGENIE.permian.example")
+cGENIE.years(
+  experiment = cGENIE_exp_path,
+)
+}

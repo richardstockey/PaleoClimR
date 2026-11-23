@@ -8,15 +8,24 @@ export(HADCM3.map)
 export(HADCM3.points.data)
 export(HADCM3.points.map)
 export(HADCM3.transect)
+export(PaleoClimR.example)
+export(cGENIE.adjacent.land)
+export(cGENIE.bw.redox)
 export(cGENIE.data)
 export(cGENIE.data.3D)
 export(cGENIE.get.nc)
 export(cGENIE.grid)
 export(cGENIE.map)
+export(cGENIE.omz)
+export(cGENIE.omz.map)
+export(cGENIE.omz.thickness)
+export(cGENIE.omz.volume)
 export(cGENIE.points.data)
 export(cGENIE.points.map)
 export(cGENIE.res.import)
 export(cGENIE.res.plot)
+export(cGENIE.shelf.data)
+export(cGENIE.shelf.map)
 export(cGENIE.transect)
 export(cGENIE.years)
 export(clean.nc.df)
@@ -28,12 +37,22 @@ export(match.climate.coords)
 export(nc.df.to.sf)
 export(paleo.map)
 export(paleo.transect)
-importFrom(RNetCDF,open.nc)
-importFrom(RNetCDF,var.get.nc)
-importFrom(dplyr,select)
-importFrom(dplyr,where)
+import(dplyr)
+importFrom(RNetCDF,
+  open.nc,
+  var.get.nc
+)
+importFrom(dplyr,
+  select,
+  where
+)
 importFrom(magrittr,"%>%")
-importFrom(readr,read_lines)
-importFrom(readr,read_table)
-importFrom(stringr,str_split)
-importFrom(stringr,str_trim)
+importFrom(readr,
+  read_lines,
+  read_table
+)
+importFrom(rlang,.data)
+importFrom(stringr,
+  str_split,
+  str_trim
+)

@@ -1,0 +1,192 @@
+---
+title: "Working with HADCM3 output in PaleoClimR"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Working with HADCM3 output in PaleoClimR}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 8,
+  fig.height = 5,
+  out.width = "100%"
+)
+library(PaleoClimR)
+```
+
+## Introduction
+
+PaleoClimR reads HADCM3L NetCDF files formatted by the BRIDGE group. This
+vignette demonstrates the package's HADCM3 functions for inspecting grids,
+extracting 2D and 3D data, mapping fields, plotting transects, and matching
+palaeogeographic occurrence points.
+
+The package includes a reduced HADCM3 example file containing the
+`insitu_T_ym_dpth` temperature field and the coordinates needed to interpret
+its grid.
+
+```{r example-file}
+HADCM3_exp_path <- PaleoClimR.example("HADCM3.permian.example")
+HADCM3_file <- "tfkSy_252o.pgclann"
+```
+
+## Inspecting grid and NetCDF data
+
+`HADCM3.grid()` returns longitude, latitude, and cell-edge coordinates. With
+`dims = 3`, it also returns the model depth levels and depth edges.
+
+```{r grid}
+hadcm3_grid <- HADCM3.grid(
+  file = HADCM3_file,
+  experiment = HADCM3_exp_path,
+  dims = 3
+)
+
+c(
+  longitude_cells = length(hadcm3_grid$lon),
+  latitude_cells = length(hadcm3_grid$lat),
+  depth_levels = length(hadcm3_grid$depth)
+)
+```
+
+`HADCM3.get.nc()` reads the requested field and returns it as an array along
+with the grid coordinates and time value.
+
+```{r get-netcdf}
+temperature_array <- HADCM3.get.nc(
+  var = "insitu_T_ym_dpth",
+  file = HADCM3_file,
+  experiment = HADCM3_exp_path
+)
+
+dim(temperature_array$var)
+```
+
+## Extracting 2D and 3D data
+
+`HADCM3.data()` extracts one horizontal depth slice and returns a data frame
+with cell bounds and a `var` column. In this example, depth level 1 is the
+shallowest level.
+
+```{r data-2d}
+temperature_surface <- HADCM3.data(
+  var = "insitu_T_ym_dpth",
+  file = HADCM3_file,
+  experiment = HADCM3_exp_path,
+  depth.level = 1
+)
+
+head(temperature_surface)
+```
+
+`HADCM3.data.3D()` returns the field across all model depths, with the depth
+midpoint and bounds included for each grid cell.
+
+```{r data-3d}
+temperature_3d <- HADCM3.data.3D(
+  var = "insitu_T_ym_dpth",
+  file = HADCM3_file,
+  experiment = HADCM3_exp_path
+)
+
+head(temperature_3d)
+```
+
+## Mapping HADCM3 fields
+
+`HADCM3.map()` maps a selected depth level. The bundled temperature values are
+in degrees Celsius (approximately -1 to 34 °C), so this example displays a
+0–40 °C colour range.
+
+```{r map}
+HADCM3.map(
+  var = "insitu_T_ym_dpth",
+  file = HADCM3_file,
+  experiment = HADCM3_exp_path,
+  depth.level = 1,
+  unit.factor = 1,
+  min.value = 0,
+  max.value = 40,
+  intervals = 4,
+  scale.label = "Temperature (\u00B0C)"
+)
+```
+
+## Creating transect plots
+
+`HADCM3.transect()` extracts the nearest latitude or longitude band and plots
+the field against depth. With `orientation = "lon"`, `degrees = 0` selects the
+latitude band nearest 0° and produces a longitude–depth transect.
+
+```{r transect}
+HADCM3.transect(
+  var = "insitu_T_ym_dpth",
+  file = HADCM3_file,
+  experiment = HADCM3_exp_path,
+  degrees = 0,
+  orientation = "lon",
+  continents.outlined = TRUE,
+  unit.factor = 1,
+  min.value = 0,
+  max.value = 40,
+  intervals = 4,
+  scale.label = "Temperature (\u00B0C)"
+)
+```
+
+## Matching palaeogeographic points
+
+The bundled `PBDB.permian.example` data include palaeogeographic coordinates
+in `p_lng` and `p_lat`. `HADCM3.points.data()` matches occurrences to the
+selected HADCM3 field and returns the matched climate value and model grid
+coordinates with the original occurrence records.
+
+```{r points-data}
+data("PBDB.permian.example", package = "PaleoClimR")
+
+matched_occurrences <- HADCM3.points.data(
+  var = "insitu_T_ym_dpth",
+  file = HADCM3_file,
+  experiment = HADCM3_exp_path,
+  depth.level = 1,
+  coord.dat = PBDB.permian.example
+)
+
+head(matched_occurrences[, c(
+  "p_lng", "p_lat", "matched_climate", "lat.bin.mid", "lon.bin.mid"
+)])
+```
+
+`HADCM3.points.map()` overlays those matched records on the map. The example
+uses phylum for a separate categorical point-colour scale; omit `points.col`
+to colour points using their matched temperature instead.
+
+```{r points-map}
+HADCM3.points.map(
+  var = "insitu_T_ym_dpth",
+  file = HADCM3_file,
+  experiment = HADCM3_exp_path,
+  depth.level = 1,
+  coord.dat = PBDB.permian.example,
+  unit.factor = 1,
+  min.value = 0,
+  max.value = 40,
+  intervals = 4,
+  scale.label = "Temperature (\u00B0C)",
+  points.col = "phylum",
+  points.scale.type = "categorical",
+  points.scale.label = "Phylum"
+)
+```
+
+## Summary
+
+The main HADCM3 workflow is to identify a file and experiment directory,
+inspect the grid with `HADCM3.grid()`, extract data with `HADCM3.data()` or
+`HADCM3.data.3D()`, and visualize it with `HADCM3.map()` or
+`HADCM3.transect()`. Use the point functions to associate palaeogeographic
+occurrences with model values and plot the matched records.

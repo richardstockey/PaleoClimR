@@ -33,3 +33,17 @@ it returns the default 36x36x16 cGENIE grid dimensions.
 \details{
 The function adjusts longitude values to be within -180 to 180 and reports if any values were outside this range.
 }
+\examples{
+cGENIE_exp_path <- PaleoClimR.example("cGENIE.permian.example")
+
+grid <- cGENIE.grid(
+  experiment = cGENIE_exp_path,
+  dims = 3
+)
+
+c(
+  longitude_cells = length(grid$lon),
+  latitude_cells = length(grid$lat),
+  depth_levels = length(grid$depth)
+)
+}

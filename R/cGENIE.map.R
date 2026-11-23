@@ -20,6 +20,13 @@
 #' @param col.labels (numeric) Labels for the color bar ticks.
 #' @return A ggplot object representing the map.
 #' @export
+#' @examples
+#' cGENIE_exp_path <- PaleoClimR.example("cGENIE.permian.example")
+#' cGENIE.map(
+#'   var = "ocn_O2",
+#'   experiment = cGENIE_exp_path,
+#'   depth.level = 2
+#' )
 cGENIE.map <- function(var, experiment,
                        depth.level = 1,
                        dims = NULL,

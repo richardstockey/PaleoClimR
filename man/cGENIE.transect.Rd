@@ -78,3 +78,15 @@ A ggplot object representing the transect plot.
 \description{
 This function creates transect plots from cGENIE model output .nc files.
 }
+\examples{
+cGENIE_exp_path <- PaleoClimR.example("cGENIE.permian.example")
+cGENIE.transect(
+  var = "ocn_O2",
+  experiment = cGENIE_exp_path,
+  degrees = 0,
+  orientation = "lon",
+  unit.factor = 1e6,
+  min.value = 0,
+  max.value = 300
+)
+}

@@ -53,7 +53,15 @@
 #' The function also matches specific points from a provided data frame and plots them on the map.
 #'
 #' @export
-
+#' @examples
+#' cGENIE_exp_path <- PaleoClimR.example("cGENIE.permian.example")
+#' data("PBDB.permian.example", package = "PaleoClimR")
+#' cGENIE.points.map(
+#'   var = "ocn_O2",
+#'   experiment = cGENIE_exp_path,
+#'   depth.level = 2,
+#'   coord.dat = PBDB.permian.example
+#' )
 cGENIE.points.map <- function(var, experiment,
                               depth.level = 1,
                               dims = NULL,
@@ -195,7 +203,7 @@ cGENIE.points.map <- function(var, experiment,
   points.scale.type <- match.arg(points.scale.type)
   points.legend.box <- match.arg(points.legend.box)
   use.points.col <- !is.null(points.col)
-  
+
   if (use.points.col) {
     if (!points.col %in% names(matched_points)) {
       stop("`points.col` ('", points.col, "') is not a column of `coord.dat`.")
@@ -207,7 +215,7 @@ cGENIE.points.map <- function(var, experiment,
       points.scale.type <- if (is.numeric(matched_points[[points.col]])) "continuous" else "categorical"
     }
     if (is.null(points.scale.label)) points.scale.label <- points.col
-    
+
     if (points.scale.type == "categorical") {
       # Categories come from the ORIGINAL column, so every category is kept even if all of its
       # rows are dropped later (missing coordinates, show.NAs = FALSE)
@@ -223,7 +231,7 @@ cGENIE.points.map <- function(var, experiment,
       }
     }
   }
-  
+
   # Plain data frame of point positions and the value(s) used for colour
   pts <- data.frame(
     lng = matched_points[[lng.name]],
@@ -237,14 +245,14 @@ cGENIE.points.map <- function(var, experiment,
       pts$point_value <- factor(as.character(pts$point_value), levels = points.levels)
     }
   }
-  
+
   # show.NAs = FALSE drops points with NA in the value used for colour
   colour.var <- if (use.points.col) "point_value" else "matched_climate"
   if (!show.NAs) pts <- pts[!is.na(pts[[colour.var]]), , drop = FALSE]
-  
+
   points_sf <- sf::st_as_sf(pts, coords = c("lng", "lat"), crs = 4326)
   points_sf <- sf::st_transform(points_sf, projection)
-  
+
   # --- Original behaviour: points coloured on the map's scale ---
   if (!use.points.col) {
     map.points <- clim.map +
@@ -253,7 +261,7 @@ cGENIE.points.map <- function(var, experiment,
                        shape = 21, size = 6, stroke = 1.0, alpha = 0.6)
     return(map.points)
   }
-  
+
   # --- Second colour scale ---
   if (points.scale.type == "continuous") {
     lo <- if (is.null(points.min.value)) min(pts$point_value, na.rm = TRUE) else points.min.value
@@ -282,7 +290,7 @@ cGENIE.points.map <- function(var, experiment,
       name = points.scale.label
     )
   }
-  
+
   map.points <- clim.map +
     ggnewscale::new_scale_fill() +          # everything after this uses a new, independent fill scale
     ggplot2::geom_sf(data = points_sf,
@@ -291,6 +299,6 @@ cGENIE.points.map <- function(var, experiment,
                      show.legend = TRUE) +  # draw a key for every level, even ones with no points
     fill.scale +
     ggplot2::theme(legend.position = "bottom", legend.box = points.legend.box)
-  
+
   return(map.points)
 }

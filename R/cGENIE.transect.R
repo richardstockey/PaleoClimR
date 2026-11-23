@@ -1,11 +1,11 @@
 #' Create Transect Plots from cGENIE Model Output
 #'
 #' This function creates transect plots from cGENIE model output .nc files.
-#' 
+#'
 #' @param var (character) Variable to visualize (e.g. "ocn_temp", "ocn_sal", "ocn_O2").
 #' @param experiment (character) Path or name of the experiment.
 #' @param orientation Character. Whether the transect is oriented along latitude ("lat") or longitude ("lon"). Default is "lat".
-#' @param degrees Numeric. The degree band of the specified latitude or longitude to include in the transect (default 0, meaning the equator/dateline). Will plot the nearest band to your chosen value. 
+#' @param degrees Numeric. The degree band of the specified latitude or longitude to include in the transect (default 0, meaning the equator/dateline). Will plot the nearest band to your chosen value.
 #' @param dims (numeric) Dimensionality of the data (almost certainly 3 if you're plotting a transect, set to 3 as default).
 #' @param year (numeric or character) Time step to visualize (default "default").
 #' @param unit.factor (numeric) Scaling factor for variable (default NULL; auto-set by var).
@@ -25,7 +25,17 @@
 #' @param lower.bound Numeric value indicating the lower bound for the y axis. Defaults to "default", which sets it to the maximum depth in the data.
 #' @return A ggplot object representing the transect plot.
 #' @export
-
+#' @examples
+#' cGENIE_exp_path <- PaleoClimR.example("cGENIE.permian.example")
+#' cGENIE.transect(
+#'   var = "ocn_O2",
+#'   experiment = cGENIE_exp_path,
+#'   degrees = 0,
+#'   orientation = "lon",
+#'   unit.factor = 1e6,
+#'   min.value = 0,
+#'   max.value = 300
+#' )
 cGENIE.transect <- function(experiment, var,
         degrees = 0,
         dims = 3,
@@ -173,7 +183,7 @@ cGENIE.transect <- function(experiment, var,
     custom.fg = custom.fg,
     upper.bound = upper.bound,
     scale.label = scale.label,
-    title_text = title_text, 
+    title_text = title_text,
     line.thickness = line.thickness
   )
     # Return the plot

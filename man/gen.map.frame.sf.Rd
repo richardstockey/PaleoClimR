@@ -24,3 +24,15 @@ An \code{sf} object representing the frame polygon.
 Creates an \code{sf} polygon representing the outline of the map.
 Useful for adding a border/frame around global map plots.
 }
+\examples{
+map_frame <- gen.map.frame.sf(n.steps = 90)
+
+ggplot2::ggplot(map_frame) +
+  ggplot2::geom_sf(
+    fill = NA,
+    colour = "#405a40",
+    linewidth = 0.6
+  ) +
+  ggplot2::theme_minimal() +
+  ggplot2::labs(title = "Global map frame")
+}

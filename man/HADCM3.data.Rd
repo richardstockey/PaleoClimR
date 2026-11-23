@@ -25,3 +25,13 @@ A data frame containing the extracted 2D lat-lon data field with corresponding g
 \description{
 This function extracts data from imported NetCDF (.nc) files, specifically designed for use with HADCM3 model outputs.
 }
+\examples{
+HADCM3_exp_path <- PaleoClimR.example("HADCM3.permian.example")
+HADCM3.data(
+  var = "insitu_T_ym_dpth",
+  file = "tfkSy_252o.pgclann",
+  experiment = HADCM3_exp_path,
+  depth.level = 1
+)
+
+}

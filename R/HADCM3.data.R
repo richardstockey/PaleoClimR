@@ -10,6 +10,15 @@
 #' @param year Year to extract data for (default is "default", meaning the last or only time point (note this is slightly different to cGENIE.data because HADCM3 outputs more commonly have only one time point)).
 #' @return A data frame containing the extracted 2D lat-lon data field with corresponding grid information.
 #' @export
+#' @examples
+#' HADCM3_exp_path <- PaleoClimR.example("HADCM3.permian.example")
+#' HADCM3.data(
+#'   var = "insitu_T_ym_dpth",
+#'   file = "tfkSy_252o.pgclann",
+#'   experiment = HADCM3_exp_path,
+#'   depth.level = 1
+#' )
+#'
 HADCM3.data <- function(var,
                         file,
                         experiment,

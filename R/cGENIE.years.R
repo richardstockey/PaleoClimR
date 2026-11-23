@@ -3,9 +3,13 @@
 #' @param experiment Directory containing the experiment's netCDF files.
 #' @param model The model type; defaults to "biogem".
 #' @return A data frame containing the extracted 2D lat-lon data field with corresponding grid information.
-#' 
+#'
 #' @export
-
+#' @examples
+#' cGENIE_exp_path <- PaleoClimR.example("cGENIE.permian.example")
+#' cGENIE.years(
+#'   experiment = cGENIE_exp_path,
+#' )
 cGENIE.years <- function(experiment,
                         model = "biogem"){
 

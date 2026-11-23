@@ -69,3 +69,11 @@ A ggplot object representing the map.
 \description{
 Generate Maps from cGENIE Model Output
 }
+\examples{
+cGENIE_exp_path <- PaleoClimR.example("cGENIE.permian.example")
+cGENIE.map(
+  var = "ocn_O2",
+  experiment = cGENIE_exp_path,
+  depth.level = 2
+)
+}
