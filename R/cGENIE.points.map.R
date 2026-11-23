@@ -28,6 +28,23 @@
 #' @param custom.fg (character) Foreground color for dark mode (default NULL; auto-set if darkmode = TRUE).
 #' @param col.labels (numeric) Labels for the color bar ticks.
 #' @param show.NAs (logical) Whether to show NA values on the map (default FALSE).
+#' @param points.col (character) Name of a column in `coord.dat` used to colour the points on a second,
+#'   independent colour scale. Default NULL: points are coloured by the matched cGENIE value on the map's scale.
+#' @param points.scale.type (character) "auto" (default; numeric columns are continuous, everything else
+#'   categorical), "continuous" or "categorical". Use "categorical" to force e.g. 0/1 codes to be treated as categories.
+#' @param points.levels (character) Categories of a categorical second scale, in the order they should appear
+#'   in the legend. Default NULL: the levels of the column if it is a factor, otherwise the order of first
+#'   appearance in `coord.dat`. All categories are always shown in the legend, even if no plotted point has
+#'   that value.
+#' @param points.palette Colours for the second scale. Continuous: a vector of colours (default pals::viridis(1000)).
+#'   Categorical: a (preferably named) vector with a colour for every category, e.g.
+#'   c(oxic = "steelblue", anoxic = "firebrick") (default: evenly spaced hues in the order of the levels).
+#' @param points.scale.label (character) Legend title for the second scale (default: `points.col`).
+#' @param points.min.value,points.max.value (numeric) Limits of a continuous second scale (default: range of the data).
+#'   Values outside the limits are shown in the end colours.
+#' @param points.intervals (numeric) Tick spacing for a continuous second scale (default NULL: automatic).
+#' @param points.legend.box (character) "vertical" (default; second scale below the map's scale) or
+#'   "horizontal" (side by side).
 #' @return A ggplot object representing the generated map with the specified variable visualized across geographical coordinates.
 #'
 #' @details
@@ -60,7 +77,16 @@ cGENIE.points.map <- function(var, experiment,
                               custom.bg = NULL,
                               custom.fg = NULL,
                               col.labels = NULL,
-                              show.NAs = TRUE){
+                              show.NAs = TRUE,
+                              points.col = NULL,
+                              points.scale.type = c("auto", "continuous", "categorical"),
+                              points.levels = NULL,
+                              points.palette = NULL,
+                              points.scale.label = NULL,
+                              points.min.value = NULL,
+                              points.max.value = NULL,
+                              points.intervals = NULL,
+                              points.legend.box = c("vertical", "horizontal")){
 
   # Set default values based on variable
   unit.factor <- if(is.null(unit.factor)) switch(var,
@@ -166,31 +192,105 @@ cGENIE.points.map <- function(var, experiment,
                          darkmode = darkmode,
                          col.labels = col.labels)
 
-
-  matched_points$lat <- matched_points$p_lat
-  matched_points$lng <- matched_points$p_lng
-
-  # Create spatial object with the chosen points from start of script
-  points <- as.data.frame(cbind(matched_points$lng, matched_points$lat, matched_points$matched_climate*unit.factor))
-  if(show.NAs == FALSE){
-  points <- stats::na.omit(points)
+  points.scale.type <- match.arg(points.scale.type)
+  points.legend.box <- match.arg(points.legend.box)
+  use.points.col <- !is.null(points.col)
+  
+  if (use.points.col) {
+    if (!points.col %in% names(matched_points)) {
+      stop("`points.col` ('", points.col, "') is not a column of `coord.dat`.")
+    }
+    if (!requireNamespace("ggnewscale", quietly = TRUE)) {
+      stop("Package 'ggnewscale' is needed for `points.col`: install.packages('ggnewscale')")
+    }
+    if (points.scale.type == "auto") {
+      points.scale.type <- if (is.numeric(matched_points[[points.col]])) "continuous" else "categorical"
+    }
+    if (is.null(points.scale.label)) points.scale.label <- points.col
+    
+    if (points.scale.type == "categorical") {
+      # Categories come from the ORIGINAL column, so every category is kept even if all of its
+      # rows are dropped later (missing coordinates, show.NAs = FALSE)
+      raw     <- coord.dat[[points.col]]
+      raw.chr <- as.character(raw[!is.na(raw)])
+      if (is.null(points.levels)) {
+        points.levels <- if (is.factor(raw)) levels(raw) else unique(raw.chr)
+      }
+      unknown <- setdiff(unique(raw.chr), points.levels)
+      if (length(unknown) > 0) {
+        warning("Values not in `points.levels` will be plotted as NA: ",
+                paste(unknown, collapse = ", "))
+      }
+    }
   }
-  points_sp <- sp::SpatialPointsDataFrame(coords = points[,1:2], data = as.data.frame(points[,3]))
-  names(points_sp) <- "matched_climate"
-
-  # code in colour scale for matched points
-  palette_name_points <- palette_name
-  min.value_1 <- min.value
-  max.value_1 <- max.value
-  intervals_1 <- intervals
-  # make plottable object
-  points_spsf <- sf::st_as_sf(points_sp)
-  sf::st_crs(points_spsf) <- 4326
-
-  # Plot map with points
+  
+  # Plain data frame of point positions and the value(s) used for colour
+  pts <- data.frame(
+    lng = matched_points[[lng.name]],
+    lat = matched_points[[lat.name]],
+    matched_climate = matched_points$matched_climate * unit.factor
+  )
+  if (use.points.col) {
+    pts$point_value <- matched_points[[points.col]]
+    if (points.scale.type == "categorical") {
+      # fixed level order, including levels with no points
+      pts$point_value <- factor(as.character(pts$point_value), levels = points.levels)
+    }
+  }
+  
+  # show.NAs = FALSE drops points with NA in the value used for colour
+  colour.var <- if (use.points.col) "point_value" else "matched_climate"
+  if (!show.NAs) pts <- pts[!is.na(pts[[colour.var]]), , drop = FALSE]
+  
+  points_sf <- sf::st_as_sf(pts, coords = c("lng", "lat"), crs = 4326)
+  points_sf <- sf::st_transform(points_sf, projection)
+  
+  # --- Original behaviour: points coloured on the map's scale ---
+  if (!use.points.col) {
+    map.points <- clim.map +
+      ggplot2::geom_sf(data = points_sf,
+                       ggplot2::aes(geometry = geometry, fill = .data$matched_climate),
+                       shape = 21, size = 6, stroke = 1.0, alpha = 0.6)
+    return(map.points)
+  }
+  
+  # --- Second colour scale ---
+  if (points.scale.type == "continuous") {
+    lo <- if (is.null(points.min.value)) min(pts$point_value, na.rm = TRUE) else points.min.value
+    hi <- if (is.null(points.max.value)) max(pts$point_value, na.rm = TRUE) else points.max.value
+    pal <- if (is.null(points.palette)) pals::viridis(1000) else points.palette
+    fill.scale <- ggplot2::scale_fill_gradientn(
+      colours = pal,
+      limits = c(lo, hi),
+      breaks = if (is.null(points.intervals)) ggplot2::waiver() else seq(lo, hi, points.intervals),
+      oob = scales::squish,
+      na.value = "grey50",
+      name = points.scale.label,
+      guide = ggplot2::guide_colourbar()  # adjust size/ticks here to match the map's colour bar
+    )
+  } else {
+    pal <- if (is.null(points.palette)) scales::hue_pal()(length(points.levels)) else points.palette
+    if (!is.null(names(pal)) && !all(points.levels %in% names(pal))) {
+      stop("`points.palette` has no colour for: ",
+           paste(setdiff(points.levels, names(pal)), collapse = ", "))
+    }
+    fill.scale <- ggplot2::scale_fill_manual(
+      values = pal,
+      limits = points.levels,   # all categories, in order, even if absent from the plotted points
+      drop = FALSE,
+      na.value = "grey50",
+      name = points.scale.label
+    )
+  }
+  
   map.points <- clim.map +
-    ggplot2::geom_sf(data = sf::st_transform(points_spsf, projection), ggplot2::aes(geometry = geometry, fill = .data$matched_climate), shape = 21, size = 6, stroke = 1.0, alpha = 0.6) # WGS 84 / Equal Earth Greenwich
-
+    ggnewscale::new_scale_fill() +          # everything after this uses a new, independent fill scale
+    ggplot2::geom_sf(data = points_sf,
+                     ggplot2::aes(geometry = geometry, fill = .data$point_value),
+                     shape = 21, size = 6, stroke = 1.0, alpha = 0.6,
+                     show.legend = TRUE) +  # draw a key for every level, even ones with no points
+    fill.scale +
+    ggplot2::theme(legend.position = "bottom", legend.box = points.legend.box)
+  
   return(map.points)
-
 }
