@@ -31,7 +31,6 @@ expect the path to the experiment directory; the NetCDF files are in its
 
 ```{r example-path}
 cGENIE_exp_path <- PaleoClimR.example("cGENIE.permian.example")
-cGENIE_exp_path
 ```
 
 ## Inspecting the grid and NetCDF data
