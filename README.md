@@ -20,6 +20,7 @@
 - **Przemyslaw Gruszka** - *Contributor* - [PrzemGruszka](https://github.com/PrzemGruszka)
 - **Aspen Sartin** - *Contributor* - [aspensartin](https://github.com/aspensartin)
 - **Dawid Nehrenberg** - *Contributor* - [DawidNehrenberg](https://github.com/DawidNehrenberg)
+- **Dan Lunt** - *Contributor* - [danlunt1976](https://github.com/danlunt1976)
 - **Pedro Monarrez** - *Contributor* - [pmmonarrez](https://github.com/pmmonarrez)
 
 Note that contributions as defined here involve elements of conceptualisation, beta testing and discussion, as well as primary code contribution, that may not be reflected within standard GitHub definitions of the term ***Contributor***. 
