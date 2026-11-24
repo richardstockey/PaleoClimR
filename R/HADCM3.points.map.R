@@ -46,12 +46,13 @@
 #' @examples
 #' HADCM3_exp_path <- PaleoClimR.example("HADCM3.permian.example")
 #' data("PBDB.permian.example", package = "PaleoClimR")
+#' # Use a small subset so the example runs quickly.
 #' HADCM3.points.map(
 #'   var = "insitu_T_ym_dpth",
 #'   file = "tfkSy_252o.pgclann",
 #'   experiment = HADCM3_exp_path,
 #'   depth.level = 1,
-#'   coord.dat = PBDB.permian.example
+#'   coord.dat = utils::head(PBDB.permian.example, 100)
 #' )
 HADCM3.points.map <- function(var,
                               file,

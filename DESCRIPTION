@@ -1,7 +1,7 @@
 Package: PaleoClimR
 Type: Package
 Title: Extracting, Visualising, and Analysing Paleoclimate Model Data
-Version: 1.0.0
+Version: 1.0.1
 Authors@R: c(
     person("Richard G.", "Stockey", email = "r.g.stockey@soton.ac.uk", role = c("aut", "cre")),
     person("Alison T.", "Cribb", role = "ctb"),
